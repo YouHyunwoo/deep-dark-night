@@ -1,0 +1,15 @@
+@charset "UTF-8";
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: darkolivegreen;
+    height: 100%;
+}
+
+canvas {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    background-color: #fff;
+}
