@@ -2,8 +2,29 @@ import { TimeSystem } from './system.js';
 import { World, Map } from './world.js';
 import { GameObject } from './object.js';
 
+
+
+window.requestAFrame = window.requestAnimationFrame ||
+						window.webkitRequestAnimationFrame ||
+						window.mozRequestAnimationFrame ||
+						window.oRequestAnimationFrame ||
+						((callback) => window.setTimeout(callback, 1000 / 60));
+
+window.cancelAFrame = window.cancelAnimationFrame ||
+						window.webkitCancelAnimationFrame ||
+						window.mozCancelAnimationFrame ||
+						window.oCancelAnimationFrame ||
+						((id) => window.clearTimeout(id));
+
+
+
 class Game {
+
+    #handler;
+
     constructor() {
+        this.#handler = null;
+
         this.canvas = null;
         this.context = null;
 
@@ -41,6 +62,14 @@ class Game {
             });
         });
 
+        canvas.addEventListener('pointermove', (e) => {
+            this.events.push({
+                type: 'mousemove',
+                x: e.offsetX,
+                y: e.offsetY
+            });
+        });
+
         canvas.addEventListener('pointerup', (e) => {
             this.events.push({
                 type: 'mouseup',
@@ -65,16 +94,9 @@ class Game {
         
         this.gameInit();
     
-        const timeDelta = 1 / 30;
-    
-        setInterval(() => {
-            context.clearRect(0, 0, canvas.width, canvas.height);
+        const timeNow = Date.now();
 
-            this.update(timeDelta);
-            this.draw(context);
-
-            this.events = [];
-        }, 30);
+        this.#handler = window.requestAFrame(() => this.gameLoop(timeNow));
     }
 
     gameInit() {
@@ -90,6 +112,20 @@ class Game {
 
         this.world.maps.push(map);
     }
+
+    gameLoop(timeLast) {
+		const timeNow = Date.now();
+		const timeDelta = (timeNow - timeLast) / 1000;
+
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        this.update(timeDelta);
+        this.draw(this.context);
+
+        this.events = [];
+
+		this.#handler = window.requestAFrame(() => this.gameLoop(timeNow));
+	}
 
     update(timeDelta) {
         this.timeSystem.update(timeDelta);
@@ -133,6 +169,9 @@ class Player {
                 this.destination[1] = event.y;
 
                 this.isThereDestination = true;
+            }
+            else if (event.type === 'mousemove') {
+                
             }
         }
 
