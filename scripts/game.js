@@ -1,6 +1,8 @@
 import { TimeSystem } from './system.js';
 import { World, Map } from './world.js';
 import { GameObject } from './object.js';
+import { Sprite } from './sprite.js';
+import { character as characterSpriteSheet } from './data/sprites.js';
 
 
 
@@ -160,6 +162,11 @@ class Player {
 
         this.object.width = 100;
         this.object.height = 100;
+
+        const sprite = this.object.sprite = new Sprite(characterSpriteSheet);
+        sprite.cropInOriginalImage = [0, 5 / 8, 1 / 4, 1 / 8];
+        sprite.scale = [2, 2];
+        sprite.anchor = [0.5, 0.9];
     }
 
     update(timeDelta) {
@@ -171,7 +178,7 @@ class Player {
                 this.isThereDestination = true;
             }
             else if (event.type === 'mousemove') {
-                
+
             }
         }
 
