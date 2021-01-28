@@ -109,6 +109,7 @@ class Game {
         const map = new Map(this.world);
     
         this.player = new Player(this);
+        this.player.map = map;
 
         map.ground.push(this.player.object);
 
@@ -158,12 +159,16 @@ class Player {
         this.destination = [0, 0];
         this.speed = 1000;
 
+        this.mouseover = null;
+        this.selected = null;
+
         this.object = new GameObject();
 
         this.object.width = 100;
         this.object.height = 100;
 
         const sprite = this.object.sprite = new Sprite(characterSpriteSheet);
+
         sprite.cropInOriginalImage = [0, 5 / 8, 1 / 4, 1 / 8];
         sprite.scale = [2, 2];
         sprite.anchor = [0.5, 0.9];
@@ -172,13 +177,32 @@ class Player {
     update(timeDelta) {
         for (const event of this.game.events) {
             if (event.type === 'mousedown') {
+                if (this.mouseover) {
+                    this.selected = this.mouseover;
+                }
+
                 this.destination[0] = event.x;
                 this.destination[1] = event.y;
 
                 this.isThereDestination = true;
             }
             else if (event.type === 'mousemove') {
+                this.mouseover = null;
 
+                const map = this.map;
+
+                map.ground.forEach(obj => {
+                    if (obj == this.object) {
+                        return;
+                    }
+
+                    const area = obj.getSpriteArea();
+                    const mouse = [event.x, event.y];
+
+                    if (containsArea(area, mouse)) {
+                        this.mouseover = obj;
+                    }
+                });
             }
         }
 
@@ -203,16 +227,39 @@ class Player {
                 this.object.y += normalized[1] * speed;
             }
         }
+
+        if (this.selected) {
+            
+        }
     }
 
     draw(context) {
         context.save();
+        
+        if (this.selected) {
+            const area = this.selected.getSpriteArea();
 
-        context.fillStyle = 'red';
-        context.fillRect(10, 10, 200, 10);
+            context.strokeStyle = 'red';
+            context.strokeRect(...area);
+        }
+
+        if (this.mouseover) {
+            const area = this.mouseover.getSpriteArea();
+
+            context.lineWidth = 3;
+            context.strokeStyle = 'green';
+            context.strokeRect(...area);
+        }
 
         context.restore();
     }
+}
+
+function containsArea(area, mouse) {
+    const [x, y, w, h] = area;
+    const [mx, my] = mouse;
+
+    return x <= mx && mx < x + w && y <= my && my < y + h;
 }
 
 

@@ -38,6 +38,10 @@ export class GameObject {
 
         context.restore();
     }
+
+    getSpriteArea() {
+        return this.sprite?.getSpriteArea(this.x, this.y);
+    }
 }
 
 export class Stone extends GameObject {

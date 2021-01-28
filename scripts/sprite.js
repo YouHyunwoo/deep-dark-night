@@ -43,22 +43,40 @@ export class Sprite {
     }
 
     #drawSprite(context, x, y) {
-        const originalSize = this.#spriteSheet.getImageSize();
+        const [sx, sy, sw, sh] = this.#getSourceArea();
+        const [dx, dy, dw, dh] = this.#getDestinationArea(sw, sh);
+
+        context.drawImage(this.#spriteSheet.image, sx, sy, sw, sh, x + dx, y + dy, dw, dh);
+    }
+    
+    #getSourceArea() {
+        const [imageWidth, imageHeight] = this.#spriteSheet.getImageSize();
 
         const cropPosition = this.cropInOriginalImage.slice(0, 2);
         const cropSize = this.cropInOriginalImage.slice(2, 4);
 
-        const sx = originalSize[0] * cropPosition[0];
-        const sy = originalSize[1] * cropPosition[1];
-        const sw = originalSize[0] * cropSize[0];
-        const sh = originalSize[1] * cropSize[1];
+        const sx = imageWidth * cropPosition[0];
+        const sy = imageHeight * cropPosition[1];
+        const sw = imageWidth * cropSize[0];
+        const sh = imageHeight * cropSize[1];
 
-        const scaledWidth = sw * this.scale[0];
-        const scaledHeight = sh * this.scale[1];
+        return [sx, sy, sw, sh];
+    }
+
+    #getDestinationArea(sourceWidth, sourceHeight) {
+        const scaledWidth = sourceWidth * this.scale[0];
+        const scaledHeight = sourceHeight * this.scale[1];
         const dx = -scaledWidth * this.anchor[0];
         const dy = -scaledHeight * this.anchor[1];
 
-        context.drawImage(this.#spriteSheet.image, sx, sy, sw, sh, x + dx, y + dy, scaledWidth, scaledHeight);
+        return [dx, dy, scaledWidth, scaledHeight];
+    }
+
+    getSpriteArea(x, y) {
+        const [sx, sy, sw, sh] = this.#getSourceArea();
+        const [dx, dy, dw, dh] = this.#getDestinationArea(sw, sh);
+
+        return [x + dx, y + dy, dw, dh];
     }
 }
 
