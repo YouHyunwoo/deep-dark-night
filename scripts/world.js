@@ -42,7 +42,9 @@ export class Map {
 
     generateObjects(count) {
         for (let i = 0; i < count; i++) {
-            const obj = new Stone();
+            const obj = new Stone('stone');
+
+            obj.map = this;
 
             obj.x = Math.random() * this.world.game.canvas.width;
             obj.y = Math.random() * this.world.game.canvas.height;
@@ -53,6 +55,20 @@ export class Map {
 
     generateEnvironments() {
 
+    }
+
+    removeGameObject(obj) {
+        let index = this.ground.indexOf(obj);
+
+        if (index >= 0) {
+            this.ground.splice(index, 1);
+        }
+
+        index = this.sky.indexOf(obj);
+
+        if (index >= 0) {
+            this.sky.splice(index, 1);
+        }
     }
 
     update(timeDelta) {

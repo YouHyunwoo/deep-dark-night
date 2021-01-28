@@ -155,14 +155,30 @@ class Player {
     constructor(game) {
         this.game = game;
 
+        this.map = null;
+
+        this.states = [
+            new IdleState(this, 'idle'),
+            new MoveState(this, 'move'),
+            new GatherState(this, 'gather')
+        ];
+
+        this.state = this.states[0];
+
+        this.inventory = {};
+
         this.isThereDestination = false;
         this.destination = [0, 0];
         this.speed = 1000;
+        
+        this.gatheringProgress = 0;
+        this.gatheringRange = 20;
+        this.gatheringSpeed = 1;
 
         this.mouseover = null;
         this.selected = null;
 
-        this.object = new GameObject();
+        this.object = new GameObject('player');
 
         this.object.width = 100;
         this.object.height = 100;
@@ -175,70 +191,18 @@ class Player {
     }
 
     update(timeDelta) {
-        for (const event of this.game.events) {
-            if (event.type === 'mousedown') {
-                if (this.mouseover) {
-                    this.selected = this.mouseover;
-                }
-
-                this.destination[0] = event.x;
-                this.destination[1] = event.y;
-
-                this.isThereDestination = true;
-            }
-            else if (event.type === 'mousemove') {
-                this.mouseover = null;
-
-                const map = this.map;
-
-                map.ground.forEach(obj => {
-                    if (obj == this.object) {
-                        return;
-                    }
-
-                    const area = obj.getSpriteArea();
-                    const mouse = [event.x, event.y];
-
-                    if (containsArea(area, mouse)) {
-                        this.mouseover = obj;
-                    }
-                });
-            }
-        }
-
-        if (this.isThereDestination) {
-            const speed = this.speed * timeDelta;
-        
-            const dx = this.destination[0] - this.object.x;
-            const dy = this.destination[1] - this.object.y;
-    
-            const length = Math.sqrt(dx ** 2 + dy ** 2);
-    
-            if (speed > length) {
-                this.object.x = this.destination[0];
-                this.object.y = this.destination[1];
-
-                this.isThereDestination = false;
-            }
-            else {
-                const normalized = [dx / length, dy / length];
-    
-                this.object.x += normalized[0] * speed;
-                this.object.y += normalized[1] * speed;
-            }
-        }
-
-        if (this.selected) {
-            
-        }
+        this.state.update(timeDelta);
     }
 
     draw(context) {
+        this.state.draw(context);
+
         context.save();
         
-        if (this.selected) {
+        if (this.selected && this.selected !== this.mouseover) {
             const area = this.selected.getSpriteArea();
 
+            context.lineWidth = 3;
             context.strokeStyle = 'red';
             context.strokeRect(...area);
         }
@@ -252,6 +216,205 @@ class Player {
         }
 
         context.restore();
+    }
+}
+
+class State {
+    constructor(owner, id) {
+        this.owner = owner;
+        this.id = id;
+    }
+
+    update(timeDelta) {}
+    draw(context) {}
+}
+
+class IdleState extends State {
+    constructor(owner, id) {
+        super(owner, id);
+    }
+
+    update(timeDelta) {
+        const player = this.owner;
+
+        for (const event of player.game.events) {
+            if (event.type === 'mousedown') {
+                if (player.mouseover) {
+                    player.selected = player.mouseover;
+                    
+                    player.state = player.states[2];
+                }
+                else {
+                    player.destination[0] = event.x;
+                    player.destination[1] = event.y;
+
+                    player.state = player.states[1];
+                }
+            }
+            else if (event.type === 'mousemove') {
+                player.mouseover = null;
+
+                const map = player.map;
+
+                map.ground.forEach(obj => {
+                    if (obj == player.object) {
+                        return;
+                    }
+
+                    const area = obj.getSpriteArea();
+                    const mouse = [event.x, event.y];
+
+                    if (containsArea(area, mouse)) {
+                        player.mouseover = obj;
+                    }
+                });
+            }
+        }
+    }
+
+    draw(context) {
+        const player = this.owner;
+
+        context.save();
+        
+        if (player.selected && player.selected !== player.mouseover) {
+            const area = player.selected.getSpriteArea();
+
+            context.lineWidth = 3;
+            context.strokeStyle = 'red';
+            context.strokeRect(...area);
+        }
+
+        if (player.mouseover) {
+            const area = player.mouseover.getSpriteArea();
+
+            context.lineWidth = 3;
+            context.strokeStyle = 'green';
+            context.strokeRect(...area);
+        }
+
+        context.restore();
+    }
+}
+
+class MoveState extends State {
+    constructor(owner, id) {
+        super(owner, id);
+    }
+
+    update(timeDelta) {
+        const player = this.owner;
+
+        for (const event of player.game.events) {
+            if (event.type === 'mousedown') {
+                if (player.mouseover) {
+                    player.selected = player.mouseover;
+                    
+                    player.state = player.states[2];
+                }
+                else {
+                    player.destination[0] = event.x;
+                    player.destination[1] = event.y;
+                }
+            }
+            else if (event.type === 'mousemove') {
+                player.mouseover = null;
+
+                const map = player.map;
+
+                map.ground.forEach(obj => {
+                    if (obj == player.object) {
+                        return;
+                    }
+
+                    const area = obj.getSpriteArea();
+                    const mouse = [event.x, event.y];
+
+                    if (containsArea(area, mouse)) {
+                        player.mouseover = obj;
+                    }
+                });
+            }
+        }
+
+        const speed = player.speed * timeDelta;
+    
+        const dx = player.destination[0] - player.object.x;
+        const dy = player.destination[1] - player.object.y;
+
+        const length = Math.sqrt(dx ** 2 + dy ** 2);
+
+        if (speed > length) {
+            player.object.x = player.destination[0];
+            player.object.y = player.destination[1];
+
+            player.state = player.states[0];
+        }
+        else {
+            const normalized = [dx / length, dy / length];
+
+            player.object.x += normalized[0] * speed;
+            player.object.y += normalized[1] * speed;
+        }
+    }
+}
+
+class GatherState extends State {
+    constructor(owner, id) {
+        super(owner, id);
+
+        this.isGathering = false;
+    }
+
+    update(timeDelta) {
+        const player = this.owner;
+
+        if (this.isGathering) {
+            player.gatheringProgress += player.gatheringSpeed * timeDelta;
+
+            console.log(`[ Log ] 플레이어의 수집 정도: ${player.gatheringProgress}`);
+            if (player.gatheringProgress >= 1) {
+                player.gatheringProgress = 0;
+
+                this.isGathering = false;
+                
+                if (!player.selected.name in player.inventory) {
+                    player.inventory[player.selected.name] = 0;
+                }
+
+                player.inventory[player.selected.name] += 1;
+
+                console.log(`[ Log ] 플레이어가 ${player.selected.name}을(를) 수집했다.`);
+
+                player.selected.remove();
+                player.selected = null;
+
+                player.state = player.states[0];
+            }
+        }
+        else {
+            const speed = player.speed * timeDelta;
+    
+            const dx = player.selected.x - player.object.x;
+            const dy = player.selected.y - player.object.y;
+    
+            const length = Math.sqrt(dx ** 2 + dy ** 2);
+    
+            if (speed + player.gatheringRange > length) {
+                const normalized = [dx / length, dy / length];
+                
+                player.object.x = player.selected.x - normalized[0] * player.gatheringRange;
+                player.object.y = player.selected.y - normalized[1] * player.gatheringRange;
+    
+                this.isGathering = true;
+            }
+            else {
+                const normalized = [dx / length, dy / length];
+    
+                player.object.x += normalized[0] * speed;
+                player.object.y += normalized[1] * speed;
+            }
+        }
     }
 }
 

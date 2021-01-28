@@ -4,13 +4,21 @@ import { stone as spriteSheetStone } from './data/sprites.js';
 
 
 export class GameObject {
-    constructor() {
+    constructor(name) {
+        this.map = null;
+
+        this.name = name;
+
         this.x = 0;
         this.y = 0;
         this.width = 0;
         this.height = 0;
 
         this.sprite = null;
+    }
+
+    remove() {
+        this.map?.removeGameObject(this);
     }
 
     draw(context) {
@@ -45,8 +53,8 @@ export class GameObject {
 }
 
 export class Stone extends GameObject {
-    constructor() {
-        super();
+    constructor(name) {
+        super(name);
 
         this.sprite = new Sprite(spriteSheetStone);
     }
