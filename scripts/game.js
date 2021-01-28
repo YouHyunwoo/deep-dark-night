@@ -167,12 +167,11 @@ class Player {
 
         this.inventory = {};
 
-        this.isThereDestination = false;
         this.destination = [0, 0];
         this.speed = 1000;
         
         this.gatheringProgress = 0;
-        this.gatheringRange = 20;
+        this.gatheringRange = 50;
         this.gatheringSpeed = 1;
 
         this.mouseover = null;
@@ -239,6 +238,8 @@ class IdleState extends State {
 
         for (const event of player.game.events) {
             if (event.type === 'mousedown') {
+                player.selected = null;
+
                 if (player.mouseover) {
                     player.selected = player.mouseover;
                     
@@ -270,30 +271,6 @@ class IdleState extends State {
                 });
             }
         }
-    }
-
-    draw(context) {
-        const player = this.owner;
-
-        context.save();
-        
-        if (player.selected && player.selected !== player.mouseover) {
-            const area = player.selected.getSpriteArea();
-
-            context.lineWidth = 3;
-            context.strokeStyle = 'red';
-            context.strokeRect(...area);
-        }
-
-        if (player.mouseover) {
-            const area = player.mouseover.getSpriteArea();
-
-            context.lineWidth = 3;
-            context.strokeStyle = 'green';
-            context.strokeRect(...area);
-        }
-
-        context.restore();
     }
 }
 
@@ -363,18 +340,57 @@ class GatherState extends State {
     constructor(owner, id) {
         super(owner, id);
 
+        this.gatheringProgress = 0;
+
         this.isGathering = false;
     }
 
     update(timeDelta) {
         const player = this.owner;
 
-        if (this.isGathering) {
-            player.gatheringProgress += player.gatheringSpeed * timeDelta;
+        for (const event of player.game.events) {
+            if (event.type === 'mousedown') {
+                player.selected = null;
+                this.isGathering = false;
+                this.gatheringProgress = 0;
 
-            console.log(`[ Log ] 플레이어의 수집 정도: ${player.gatheringProgress}`);
-            if (player.gatheringProgress >= 1) {
-                player.gatheringProgress = 0;
+                if (player.mouseover) {
+                    player.selected = player.mouseover;
+                }
+                else {
+                    player.destination[0] = event.x;
+                    player.destination[1] = event.y;
+
+                    player.state = player.states[1];
+                    return;
+                }
+            }
+            else if (event.type === 'mousemove') {
+                player.mouseover = null;
+
+                const map = player.map;
+
+                map.ground.forEach(obj => {
+                    if (obj == player.object) {
+                        return;
+                    }
+
+                    const area = obj.getSpriteArea();
+                    const mouse = [event.x, event.y];
+
+                    if (containsArea(area, mouse)) {
+                        player.mouseover = obj;
+                    }
+                });
+            }
+        }
+
+        if (this.isGathering) {
+            this.gatheringProgress += player.gatheringSpeed * timeDelta;
+
+            console.log(`[ Log ] 플레이어의 수집 정도: ${this.gatheringProgress}`);
+            if (this.gatheringProgress >= 1) {
+                this.gatheringProgress = 0;
 
                 this.isGathering = false;
                 
@@ -393,27 +409,57 @@ class GatherState extends State {
             }
         }
         else {
-            const speed = player.speed * timeDelta;
+            const range = player.gatheringRange;
+
+            const distance = player.speed * timeDelta;
     
             const dx = player.selected.x - player.object.x;
             const dy = player.selected.y - player.object.y;
     
             const length = Math.sqrt(dx ** 2 + dy ** 2);
     
-            if (speed + player.gatheringRange > length) {
-                const normalized = [dx / length, dy / length];
-                
-                player.object.x = player.selected.x - normalized[0] * player.gatheringRange;
-                player.object.y = player.selected.y - normalized[1] * player.gatheringRange;
-    
+            if (range >= length) {
                 this.isGathering = true;
             }
             else {
+                const reach = length - range;
                 const normalized = [dx / length, dy / length];
-    
-                player.object.x += normalized[0] * speed;
-                player.object.y += normalized[1] * speed;
+
+                if (distance >= reach) {
+                    player.object.x = player.selected.x - normalized[0] * range;
+                    player.object.y = player.selected.y - normalized[1] * range;
+
+                    this.isGathering = true;
+                }
+                else {
+                    player.object.x += normalized[0] * distance;
+                    player.object.y += normalized[1] * distance;
+                }
             }
+        }
+    }
+
+    draw(context) {
+        const player = this.owner;
+
+        if (this.isGathering) {
+            const area = player.object.getSpriteArea();
+
+            context.fillStyle = 'black';
+            context.fillRect(area[0], area[1] + area[3], area[2], 10);
+
+            context.fillStyle = 'red';
+            context.fillRect(area[0], area[1] + area[3], area[2] * this.gatheringProgress, 10);
+        }
+        else {
+            context.strokeStyle = 'red';
+
+            context.beginPath();
+
+            context.moveTo(player.object.x, player.object.y);
+            context.lineTo(player.selected.x, player.selected.y);
+
+            context.stroke();
         }
     }
 }
