@@ -1,8 +1,3 @@
-import { Sprite } from "./sprite.js";
-import { stone as spriteSheetStone } from './data/sprites.js';
-
-
-
 export class GameObject {
     constructor(name) {
         this.map = null;
@@ -49,14 +44,5 @@ export class GameObject {
 
     getSpriteArea() {
         return this.sprite?.getSpriteArea(this.x, this.y);
-    }
-}
-
-export class Stone extends GameObject {
-    constructor(name) {
-        super(name);
-
-        this.sprite = new Sprite(spriteSheetStone);
-        this.sprite.anchor = [0.5, 0.9];
     }
 }

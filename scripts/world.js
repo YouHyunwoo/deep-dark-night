@@ -1,4 +1,4 @@
-import { Stone } from "./object.js";
+import { Stone } from "./data/objects.js";
 import { TimeSystem } from "./system.js";
 
 
@@ -47,8 +47,6 @@ export class Map {
         this.environments = {
             ground: null
         };
-
-        this.init();
     }
 
     init() {
