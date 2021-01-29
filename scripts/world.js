@@ -27,7 +27,7 @@ export class World {
 
         if (this.timeSystem.isNight()) {
             context.fillStyle = 'rgba(0, 0, 0, 0.7)';
-            context.fillRect(0, 0, this.game.canvas.width, this.game.canvas.height);
+            context.fillRect(0, 0, this.game.engine.canvas.width, this.game.engine.canvas.height);
         }
     }
 }
@@ -62,11 +62,11 @@ export class Map {
 
             obj.map = this;
 
-            obj.x = Math.random() * this.world.game.canvas.width;
-            obj.y = Math.random() * this.world.game.canvas.height;
+            obj.x = Math.random() * this.world.game.engine.canvas.width;
+            obj.y = Math.random() * this.world.game.engine.canvas.height;
 
-            const scale = Math.random() * 3 + 1;
-            
+            const scale = Math.random() * 0.5 + 0.5;
+
             obj.sprite.scale = [scale, scale];
 
             this.ground.push(obj);

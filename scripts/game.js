@@ -18,8 +18,40 @@ window.cancelAFrame = window.cancelAnimationFrame ||
 						((id) => window.clearTimeout(id));
 
 
-
 class Game {
+    constructor(engine) {
+        this.engine = engine;
+
+        this.world = null;
+        this.player = null;
+    }
+
+    init() {
+        this.world = new World(this);
+        this.world.init();
+
+            const map = new Map(this.world);
+        
+                this.player = new Player(this);
+                this.player.map = map;
+
+            map.ground.push(this.player.object);
+
+        this.world.maps.push(map);
+    }
+
+    update(timeDelta) {
+        this.world.update(timeDelta);
+        this.player.update(timeDelta);
+    }
+
+    draw(context) {
+        this.world.draw(context);
+        this.player.draw(context);
+    }
+}
+
+class Engine {
 
     #handler;
 
@@ -29,10 +61,9 @@ class Game {
         this.canvas = null;
         this.context = null;
 
-        this.world = null;
-        this.player = null;
-
         this.events = [];
+
+        this.game = null;
     }
 
     init() {
@@ -90,27 +121,14 @@ class Game {
                 key: e.key
             })
         });
-        
-        this.gameInit();
+    }
+
+    start() {
+        this.game.init();
     
         const timeNow = Date.now();
 
         this.#handler = window.requestAFrame(() => this.gameLoop(timeNow));
-    }
-
-    gameInit() {
-        this.world = new World(this);
-        this.world.init();
-
-            const map = new Map(this.world);
-        
-                this.player = new Player(this);
-                this.player.map = map;
-
-            map.ground.push(this.player.object);
-
-
-        this.world.maps.push(map);
     }
 
     gameLoop(timeLast) {
@@ -119,25 +137,13 @@ class Game {
 
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        this.update(timeDelta);
-        this.draw(this.context);
+        this.game.update(timeDelta);
+        this.game.draw(this.context);
 
         this.events = [];
 
 		this.#handler = window.requestAFrame(() => this.gameLoop(timeNow));
 	}
-
-    update(timeDelta) {
-        this.world.update(timeDelta);
-
-        this.player.update(timeDelta);
-    }
-
-    draw(context) {
-        this.world.draw(context);
-
-        this.player.draw(context);
-    }
 }
 
 
@@ -162,7 +168,7 @@ class Player {
         
         this.gatherings = [];
         this.gatheringProgress = 0;
-        this.gatheringRange = 50;
+        this.gatheringRange = 20;
         this.gatheringSpeed = 1;
 
         this.mouseover = null;
@@ -243,7 +249,7 @@ class IdleState extends State {
     update(timeDelta) {
         const player = this.owner;
 
-        for (const event of player.game.events) {
+        for (const event of player.game.engine.events) {
             if (event.type === 'mousedown') {
                 player.selected = null;
 
@@ -289,7 +295,7 @@ class MoveState extends State {
     update(timeDelta) {
         const player = this.owner;
 
-        for (const event of player.game.events) {
+        for (const event of player.game.engine.events) {
             if (event.type === 'mousedown') {
                 if (player.mouseover) {
                     player.selected = player.mouseover;
@@ -355,7 +361,7 @@ class GatherState extends State {
     update(timeDelta) {
         const player = this.owner;
 
-        for (const event of player.game.events) {
+        for (const event of player.game.engine.events) {
             if (event.type === 'mousedown') {
                 player.selected = null;
                 this.isGathering = false;
@@ -409,7 +415,7 @@ class GatherState extends State {
 
                 player.gatherings.push({
                     item: '돌',
-                    count: Math.floor(player.selected.sprite.scale[0] + Math.random() * 2),
+                    count: Math.floor(player.selected.sprite.scale[0] + 1 + Math.random() * 3),
                     progress: 0
                 });
 
@@ -485,6 +491,11 @@ function containsArea(area, mouse) {
 }
 
 
-const game = new Game();
+const engine = new Engine();
 
-game.init();
+engine.init();
+
+engine.game = new Game(engine);
+
+engine.start();
+
