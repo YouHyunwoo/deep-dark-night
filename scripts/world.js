@@ -1,18 +1,34 @@
 import { Stone } from "./object.js";
+import { TimeSystem } from "./system.js";
+
+
 
 export class World {
     constructor(game) {
         this.game = game;
 
+        this.systems = [];
         this.maps = [];
     }
 
+    init() {
+        this.timeSystem = new TimeSystem();
+
+        this.systems.push(this.timeSystem);
+    }
+
     update(timeDelta) {
+        this.systems.forEach(system => system.update(timeDelta));
         this.maps.forEach(map => map.update(timeDelta));
     }
 
     draw(context) {
         this.maps.forEach(map => map.draw(context));
+
+        if (this.timeSystem.isNight()) {
+            context.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            context.fillRect(0, 0, this.game.canvas.width, this.game.canvas.height);
+        }
     }
 }
 

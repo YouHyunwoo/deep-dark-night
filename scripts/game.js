@@ -1,4 +1,3 @@
-import { TimeSystem } from './system.js';
 import { World, Map } from './world.js';
 import { GameObject } from './object.js';
 import { Sprite } from './sprite.js';
@@ -29,8 +28,6 @@ class Game {
 
         this.canvas = null;
         this.context = null;
-
-        this.timeSystem = null;
 
         this.world = null;
         this.player = null;
@@ -102,16 +99,16 @@ class Game {
     }
 
     gameInit() {
-        this.timeSystem = new TimeSystem();
-
         this.world = new World(this);
-    
-        const map = new Map(this.world);
-    
-        this.player = new Player(this);
-        this.player.map = map;
+        this.world.init();
 
-        map.ground.push(this.player.object);
+            const map = new Map(this.world);
+        
+                this.player = new Player(this);
+                this.player.map = map;
+
+            map.ground.push(this.player.object);
+
 
         this.world.maps.push(map);
     }
@@ -131,8 +128,6 @@ class Game {
 	}
 
     update(timeDelta) {
-        this.timeSystem.update(timeDelta);
-
         this.world.update(timeDelta);
 
         this.player.update(timeDelta);
@@ -140,11 +135,6 @@ class Game {
 
     draw(context) {
         this.world.draw(context);
-
-        if (this.timeSystem.isNight()) {
-            context.fillStyle = 'rgba(0, 0, 0, 0.7)';
-            context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        }
 
         this.player.draw(context);
     }
