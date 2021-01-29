@@ -57,5 +57,6 @@ export class Stone extends GameObject {
         super(name);
 
         this.sprite = new Sprite(spriteSheetStone);
+        this.sprite.anchor = [0.5, 0.9];
     }
 }

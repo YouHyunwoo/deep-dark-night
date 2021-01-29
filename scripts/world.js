@@ -65,6 +65,10 @@ export class Map {
             obj.x = Math.random() * this.world.game.canvas.width;
             obj.y = Math.random() * this.world.game.canvas.height;
 
+            const scale = Math.random() * 3 + 1;
+            
+            obj.sprite.scale = [scale, scale];
+
             this.ground.push(obj);
         }
     }

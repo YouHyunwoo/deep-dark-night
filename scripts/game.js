@@ -160,6 +160,7 @@ class Player {
         this.destination = [0, 0];
         this.speed = 1000;
         
+        this.gatherings = [];
         this.gatheringProgress = 0;
         this.gatheringRange = 50;
         this.gatheringSpeed = 1;
@@ -181,6 +182,12 @@ class Player {
 
     update(timeDelta) {
         this.state.update(timeDelta);
+
+        this.gatherings.forEach(gathering => {
+            gathering.progress += timeDelta;
+        });
+
+        this.gatherings = this.gatherings.filter(gathering => gathering.progress < 1);
     }
 
     draw(context) {
@@ -203,6 +210,16 @@ class Player {
             context.strokeStyle = 'green';
             context.strokeRect(...area);
         }
+
+        this.gatherings.forEach(gathering => {
+            const text = `${gathering.item} +${gathering.count}`;
+
+            context.font = '24px serif';
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            context.fillStyle = `rgba(255, 255, 255, ${1 - gathering.progress})`;
+            context.fillText(text, this.object.x, this.object.y - gathering.progress * 20);
+        })
 
         context.restore();
     }
@@ -389,6 +406,12 @@ class GatherState extends State {
                 }
 
                 player.inventory[player.selected.name] += 1;
+
+                player.gatherings.push({
+                    item: '돌',
+                    count: Math.floor(player.selected.sprite.scale[0] + Math.random() * 2),
+                    progress: 0
+                });
 
                 console.log(`[ Log ] 플레이어가 ${player.selected.name}을(를) 수집했다.`);
 
