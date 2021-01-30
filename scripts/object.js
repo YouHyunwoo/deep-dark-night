@@ -1,8 +1,9 @@
 export class GameObject {
-    constructor(name) {
+    constructor(name='') {
         this.map = null;
 
         this.name = name;
+        this.components = [];
         this.tags = [];
 
         this.x = 0;
@@ -11,6 +12,38 @@ export class GameObject {
         this.height = 0;
 
         this.sprite = null;
+    }
+
+    init() {
+        this.components.forEach(component => {
+            component.onInitialize();
+        });
+    }
+
+    dispose() {
+        this.components.forEach(component => {
+            component.onDispose();
+        });
+    }
+
+    addComponents(...components) {
+        this.components = this.components.concat(components);
+        components.forEach(component => {
+            component.owner = this;
+            component.onAdded();
+        });
+    }
+
+    removeComponents(...components) {
+        this.components = this.components.filter(component => !components.includes(component));
+        components.forEach(component => {
+            component.owner = null;
+            component.onRemoved();
+        });
+    }
+
+    containsComponent(componentName) {
+        return this.components.some(component => component.name === componentName);
     }
 
     addTags(...tags) {
@@ -59,3 +92,129 @@ export class GameObject {
         return this.sprite?.getSpriteArea(this.x, this.y);
     }
 }
+
+export class Component {
+    constructor(name='') {
+        this.owner = null;
+
+        this.name = name;
+    }
+
+    onInitialize() {}
+    onDispose() {}
+    onAdded() {}
+    onRemoved() {}
+    onUpdate(timeDelta) {}
+    onDraw(context) {}
+}
+
+function testGameObject() {
+    testCreateGameObject();
+    testTags();
+    testComponents();
+}
+
+function testCreateGameObject() {
+    testCreateEmptyGameObject();
+}
+
+function testCreateEmptyGameObject() {
+    const gameObject = new GameObject('name');
+
+    console.assert(gameObject.name === 'name');
+    console.assert(gameObject.components.length === 0);
+    console.assert(gameObject.tags.length === 0);
+}
+
+function testTags() {
+    testAddTags();
+    testRemoveTags();
+    testContainsTag();
+}
+
+function testAddTags() {
+    const gameObject = new GameObject('Stone');
+
+    gameObject.addTags('object', 'ground');
+    gameObject.addTags('hi', 'hello', 'okay');
+
+    console.assert(gameObject.tags.length === 5);
+}
+
+function testRemoveTags() {
+    const gameObject = new GameObject('Stone');
+
+    gameObject.addTags('object', 'ground');
+    gameObject.addTags('hi', 'hello', 'okay');
+
+    gameObject.removeTags('hi');
+    gameObject.removeTags('hello', 'okay');
+
+    console.assert(gameObject.tags.length === 2);
+}
+
+function testContainsTag() {
+    const gameObject = new GameObject('Stone');
+
+    const tags = ['object', 'ground', 'hi', 'hello', 'okay'];
+
+    gameObject.addTags(...tags);
+
+    console.assert(!gameObject.containsTag('hey'));
+    console.assert(tags.every(tag => gameObject.containsTag(tag)));
+    console.assert(gameObject.tags.length === 5);
+}
+
+function testComponents() {
+    testAddComponents();
+    testRemoveComponents();
+    testContainsComponent();
+}
+
+function testAddComponents() {
+    const gameObject = new GameObject('Stone');
+
+    const components = [
+        new Component('Transform'),
+        new Component('SpriteRenderer'),
+        new Component('Inventory')
+    ];
+
+    gameObject.addComponents(...components);
+
+    console.assert(gameObject.components.length === 3);
+}
+
+function testRemoveComponents() {
+    const gameObject = new GameObject('Stone');
+
+    const components = [
+        new Component('Transform'),
+        new Component('SpriteRenderer'),
+        new Component('Inventory')
+    ];
+
+    gameObject.addComponents(...components);
+
+    gameObject.removeComponents(components[0], components[1]);
+
+    console.assert(gameObject.components.length === 1);
+    console.assert(gameObject.components[0] === components[2]);
+}
+
+function testContainsComponent() {
+    const gameObject = new GameObject('Stone');
+
+    const components = [
+        new Component('Transform'),
+        new Component('SpriteRenderer'),
+        new Component('Inventory')
+    ];
+
+    gameObject.addComponents(...components);
+
+    console.assert(components.every(component => gameObject.containsComponent(component.name)));
+    console.assert(gameObject.components.length === 3);
+}
+
+testGameObject();
