@@ -32,7 +32,7 @@ export class Sprite {
         this.scale = [1, 1];
     }
 
-    draw(context, x, y) {
+    draw(context, x=0, y=0) {
         if (this.isDrawable()) {
             this.#drawSprite(context, x, y);
         }

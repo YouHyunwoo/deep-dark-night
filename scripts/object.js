@@ -1,3 +1,7 @@
+import { Component } from './component.js';
+
+
+
 export class GameObject {
     
     #initialized;
@@ -18,11 +22,13 @@ export class GameObject {
         this.width = 0;
         this.height = 0;
 
-        this.sprite = null;
+        // this.sprite = null;
     }
 
     init() {
         if (!this.#initialized) {
+            this.onInitialize();
+
             this.components.forEach(component => {
                 component.onInitialize();
             });
@@ -33,6 +39,8 @@ export class GameObject {
 
     dispose() {
         if (this.#initialized && !this.#disposed) {
+            this.onDispose();
+
             this.components.forEach(component => {
                 component.onDispose();
             });
@@ -67,6 +75,12 @@ export class GameObject {
         return this.components.some(component => component.name === componentName);
     }
 
+    findComponents(componentName) {
+        console.assert(componentName);
+        
+        return this.components.filter(component => component.name === componentName);
+    }
+
     addTags(...tags) {
         if (!this.#disposed) {
             this.tags = this.tags.concat(tags);
@@ -87,48 +101,28 @@ export class GameObject {
 
     update(timeDelta) {
         if (this.#initialized && !this.#disposed) {
-            
+            this.onUpdate(timeDelta);
+
+            this.components.forEach(component => {
+                component.onUpdate(timeDelta);
+            });
         }
     }
 
     draw(context) {
         if (this.#initialized && !this.#disposed) {
-            if (this.#isDrawableSprite()) {
-                this.#drawSprite(context);
-            }
-            else {
-                this.#drawBlackRectangle(context);
-            }
+            context.save();
+
+            context.translate(this.x, this.y);
+
+            this.onDraw(context);
+
+            this.components.forEach(component => {
+                component.onDraw(context);
+            });
+
+            context.restore();
         }
-    }
-
-    #isDrawableSprite() {
-        return this.sprite?.isDrawable();
-    }
-
-    #drawSprite(context) {
-        this.sprite?.draw(context, this.x, this.y);
-    }
-
-    #drawBlackRectangle(context) {
-        context.save();
-
-        context.fillStyle = 'black';
-        context.fillRect(this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
-
-        context.restore();
-    }
-
-    getSpriteArea() {
-        return this.sprite?.getSpriteArea(this.x, this.y);
-    }
-}
-
-export class Component {
-    constructor(name='') {
-        this.owner = null;
-
-        this.name = name;
     }
 
     onInitialize() {}

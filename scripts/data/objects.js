@@ -1,15 +1,18 @@
 import { GameObject } from '../object.js';
 import { Sprite } from "../sprite.js";
+import { SpriteRenderer } from './components.js';
 
 import { stone as spriteSheetStone } from './sprites.js';
 
 
 
 export class Stone extends GameObject {
-    constructor(name) {
-        super(name);
+    onInitialize() {
+        const spriteRenderer = new SpriteRenderer('SpriteRenderer');
 
-        this.sprite = new Sprite(spriteSheetStone);
-        this.sprite.anchor = [0.5, 0.9];
+        spriteRenderer.sprite = new Sprite(spriteSheetStone);
+        spriteRenderer.sprite.anchor = [0.5, 0.9];
+
+        this.addComponents(spriteRenderer);
     }
 }

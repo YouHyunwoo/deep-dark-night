@@ -3,6 +3,7 @@ import { GameObject } from './object.js';
 import { Sprite } from './sprite.js';
 import { character as characterSpriteSheet } from './data/sprites.js';
 import { containsArea } from './geometry/area.js';
+import { SpriteRenderer } from './data/components.js';
 
 
 
@@ -35,14 +36,20 @@ export class Player {
 
         this.object = new GameObject('player');
 
-        this.object.width = 100;
-        this.object.height = 100;
+        this.object.width = 20;
+        this.object.height = 16;
 
-        const sprite = this.object.sprite = new Sprite(characterSpriteSheet);
+        const spriteRenderer = new SpriteRenderer('SpriteRenderer');
+
+        const sprite = spriteRenderer.sprite = new Sprite(characterSpriteSheet);
 
         sprite.cropInOriginalImage = [0, 5 / 8, 1 / 4, 1 / 8];
         sprite.scale = [2, 2];
         sprite.anchor = [0.5, 0.9];
+
+        this.object.addComponents(spriteRenderer);
+
+        this.object.init();
     }
 
     update(timeDelta) {
@@ -61,7 +68,7 @@ export class Player {
         context.save();
         
         if (this.selected && this.selected !== this.mouseover) {
-            const area = this.selected.getSpriteArea();
+            const area = this.selected.findComponents('SpriteRenderer')[0].getSpriteArea();
 
             context.lineWidth = 3;
             context.strokeStyle = 'red';
@@ -69,7 +76,7 @@ export class Player {
         }
 
         if (this.mouseover) {
-            const area = this.mouseover.getSpriteArea();
+            const area = this.mouseover.findComponents('SpriteRenderer')[0].getSpriteArea();
 
             context.lineWidth = 3;
             context.strokeStyle = 'green';
@@ -138,7 +145,7 @@ class IdleState extends ObjectState {
                         return;
                     }
 
-                    const area = obj.getSpriteArea();
+                    const area = obj.findComponents('SpriteRenderer')[0].getSpriteArea();
                     const mouse = [event.x, event.y];
 
                     if (containsArea(area, mouse)) {
@@ -180,7 +187,7 @@ class MoveState extends ObjectState {
                         return;
                     }
 
-                    const area = obj.getSpriteArea();
+                    const area = obj.findComponents('SpriteRenderer')[0].getSpriteArea();
                     const mouse = [event.x, event.y];
 
                     if (containsArea(area, mouse)) {
@@ -251,7 +258,7 @@ class GatherState extends ObjectState {
                         return;
                     }
 
-                    const area = obj.getSpriteArea();
+                    const area = obj.findComponents('SpriteRenderer')[0].getSpriteArea();
                     const mouse = [event.x, event.y];
 
                     if (containsArea(area, mouse)) {
@@ -325,7 +332,7 @@ class GatherState extends ObjectState {
         const player = this.owner;
 
         if (this.isGathering) {
-            const area = player.object.getSpriteArea();
+            const area = player.object.findComponents('SpriteRenderer')[0].getSpriteArea();
 
             context.fillStyle = 'black';
             context.fillRect(area[0], area[1] + area[3], area[2], 10);

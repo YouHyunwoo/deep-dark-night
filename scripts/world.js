@@ -57,6 +57,7 @@ export class Map {
     generateObjects(count) {
         for (let i = 0; i < count; i++) {
             const obj = new Stone('stone');
+            obj.init();
 
             obj.map = this;
 
@@ -65,7 +66,7 @@ export class Map {
 
             const scale = Math.random() * 0.5 + 0.5;
 
-            obj.sprite.scale = [scale, scale];
+            obj.findComponents('SpriteRenderer')[0].sprite.scale = [scale, scale];
 
             this.ground.push(obj);
         }
