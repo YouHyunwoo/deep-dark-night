@@ -15,11 +15,11 @@ export class StateContext {
     transit(stateId, exitArgs, enterArgs) {
         console.assert(stateId !== null);
 
-        this.state.exit(...(exitArgs ?? []));
+        this.state.onExit(...(exitArgs ?? []));
 
         this.state = this.states[stateId];
 
-        this.state.enter(...(enterArgs ?? []));
+        this.state.onEnter(...(enterArgs ?? []));
     }
 
     request(messageId, ...messageContents) {
@@ -33,8 +33,8 @@ export class State {
         this.id = id;
     }
 
-    enter(...exitArgs) {}
-    exit(...enterArgs) {}
+    onEnter(...exitArgs) {}
+    onExit(...enterArgs) {}
 
     request(messageId, ...messageContents) {}
 }

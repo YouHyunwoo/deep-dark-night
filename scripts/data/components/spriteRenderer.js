@@ -1,4 +1,4 @@
-import { Component } from '../component.js';
+import { Component } from '../../component.js';
 
 
 
@@ -44,8 +44,6 @@ export class SpriteRenderer extends Component {
     }
 
     getSpriteArea() {
-        const obj = this.owner;
-
-        return this.sprite?.getSpriteArea(obj.x, obj.y);
+        return this.sprite?.getSpriteArea(0, 0);
     }
 }

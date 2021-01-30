@@ -21,8 +21,6 @@ export class GameObject {
         this.y = 0;
         this.width = 0;
         this.height = 0;
-
-        // this.sprite = null;
     }
 
     init() {
@@ -97,6 +95,8 @@ export class GameObject {
 
     remove() {
         this.map?.removeGameObject(this);
+
+        this.dispose();
     }
 
     update(timeDelta) {
@@ -123,6 +123,22 @@ export class GameObject {
 
             context.restore();
         }
+    }
+
+    localToGlobal(positionInLocal) {
+        const positionInOwner = [positionInLocal[0] + this.x, positionInLocal[1] + this.y];
+        
+        return this.owner?.localToGlobal(positionInOwner) ?? positionInOwner;
+    }
+
+    globalToLocal(positionInGlobal) {
+        const positionInOwner = this.owner?.globalToLocal(positionInGlobal) ?? positionInGlobal;
+
+        return [positionInOwner[0] - this.x, positionInOwner[1] - this.y];
+    }
+
+    isDisposed() {
+        return this.#disposed;
     }
 
     onInitialize() {}

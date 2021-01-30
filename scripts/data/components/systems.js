@@ -1,5 +1,10 @@
-export class TimeSystem {
-    constructor() {
+import { Component } from "../../component.js";
+
+
+
+export class TimeSystem extends Component {
+    constructor(name) {
+        super(name);
         this.time = 0;
 
         this.speed = 3600;

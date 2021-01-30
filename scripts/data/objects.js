@@ -1,6 +1,6 @@
 import { GameObject } from '../object.js';
+import { SpriteRenderer } from './components/spriteRenderer.js';
 import { Sprite } from "../sprite.js";
-import { SpriteRenderer } from './components.js';
 
 import { stone as spriteSheetStone } from './sprites.js';
 
