@@ -1,15 +1,3 @@
-window.requestAFrame = window.requestAnimationFrame ||
-                        window.webkitRequestAnimationFrame ||
-                        window.mozRequestAnimationFrame ||
-                        window.oRequestAnimationFrame ||
-                        ((callback) => window.setTimeout(callback, 1000 / 60));
-
-window.cancelAFrame = window.cancelAnimationFrame ||
-                        window.webkitCancelAnimationFrame ||
-                        window.mozCancelAnimationFrame ||
-                        window.oCancelAnimationFrame ||
-                        ((id) => window.clearTimeout(id));
-
 export class Engine {
     constructor() {
         this.canvas = null;
@@ -75,6 +63,18 @@ export class Engine {
                 key: e.key
             })
         });
+
+        window.requestAFrame = window.requestAnimationFrame ||
+                        window.webkitRequestAnimationFrame ||
+                        window.mozRequestAnimationFrame ||
+                        window.oRequestAnimationFrame ||
+                        ((callback) => window.setTimeout(callback, 1000 / 60));
+
+        window.cancelAFrame = window.cancelAnimationFrame ||
+                        window.webkitCancelAnimationFrame ||
+                        window.mozCancelAnimationFrame ||
+                        window.oCancelAnimationFrame ||
+                        ((id) => window.clearTimeout(id));
     }
 
     start() {

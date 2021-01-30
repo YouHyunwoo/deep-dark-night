@@ -1,4 +1,4 @@
-import { State } from './util/state.js';
+import { State, StateContext } from './util/state.js';
 import { GameObject } from './object.js';
 import { Sprite } from './sprite.js';
 import { character as characterSpriteSheet } from './data/sprites.js';
@@ -12,13 +12,13 @@ export class Player {
 
         this.map = null;
 
-        this.states = [
+        const states = [
             new IdleState(this, 'idle'),
             new MoveState(this, 'move'),
             new GatherState(this, 'gather')
         ];
 
-        this.state = this.states[0];
+        this.state = new StateContext(states);
 
         this.inventory = {};
 
@@ -46,7 +46,7 @@ export class Player {
     }
 
     update(timeDelta) {
-        this.state.update(timeDelta);
+        this.state.request('update', timeDelta);
 
         this.gatherings.forEach(gathering => {
             gathering.progress += timeDelta;
@@ -56,7 +56,7 @@ export class Player {
     }
 
     draw(context) {
-        this.state.draw(context);
+        this.state.request('draw', context);
 
         context.save();
         
@@ -119,13 +119,13 @@ class IdleState extends ObjectState {
                 if (player.mouseover) {
                     player.selected = player.mouseover;
                     
-                    player.state = player.states[2];
+                    player.state.transit('gather');
                 }
                 else {
                     player.destination[0] = event.x;
                     player.destination[1] = event.y;
 
-                    player.state = player.states[1];
+                    player.state.transit('move');
                 }
             }
             else if (event.type === 'mousemove') {
@@ -163,7 +163,7 @@ class MoveState extends ObjectState {
                 if (player.mouseover) {
                     player.selected = player.mouseover;
                     
-                    player.state = player.states[2];
+                    player.state.transit('gather');
                 }
                 else {
                     player.destination[0] = event.x;
@@ -201,7 +201,7 @@ class MoveState extends ObjectState {
             player.object.x = player.destination[0];
             player.object.y = player.destination[1];
 
-            player.state = player.states[0];
+            player.state.transit('idle');
         }
         else {
             const normalized = [dx / length, dy / length];
@@ -237,7 +237,7 @@ class GatherState extends ObjectState {
                     player.destination[0] = event.x;
                     player.destination[1] = event.y;
 
-                    player.state = player.states[1];
+                    player.state.transit('move');
                     return;
                 }
             }
@@ -287,7 +287,7 @@ class GatherState extends ObjectState {
                 player.selected.remove();
                 player.selected = null;
 
-                player.state = player.states[0];
+                player.state.transit('idle');
             }
         }
         else {
