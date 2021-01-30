@@ -3,6 +3,7 @@ export class GameObject {
         this.map = null;
 
         this.name = name;
+        this.tags = [];
 
         this.x = 0;
         this.y = 0;
@@ -10,6 +11,18 @@ export class GameObject {
         this.height = 0;
 
         this.sprite = null;
+    }
+
+    addTags(...tags) {
+        this.tags = this.tags.concat(tags);
+    }
+
+    removeTags(...tags) {
+        this.tags = this.tags.filter(tag => !tags.includes(tag));
+    }
+
+    containsTag(tag) {
+        return this.tags.includes(tag);
     }
 
     remove() {
