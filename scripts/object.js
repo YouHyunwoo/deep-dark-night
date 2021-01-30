@@ -1,6 +1,13 @@
 export class GameObject {
+    
+    #initialized;
+    #disposed;
+
     constructor(name='') {
         this.map = null;
+
+        this.#initialized = false;
+        this.#disposed = false;
 
         this.name = name;
         this.components = [];
@@ -15,23 +22,37 @@ export class GameObject {
     }
 
     init() {
-        this.components.forEach(component => {
-            component.onInitialize();
-        });
+        if (!this.#initialized) {
+            this.components.forEach(component => {
+                component.onInitialize();
+            });
+    
+            this.#initialized = true;
+        }
     }
 
     dispose() {
-        this.components.forEach(component => {
-            component.onDispose();
-        });
+        if (this.#initialized && !this.#disposed) {
+            this.components.forEach(component => {
+                component.onDispose();
+            });
+    
+            this.#disposed = true;
+        }
     }
 
     addComponents(...components) {
-        this.components = this.components.concat(components);
-        components.forEach(component => {
-            component.owner = this;
-            component.onAdded();
-        });
+        if (!this.#disposed) {
+            this.components = this.components.concat(components);
+            components.forEach(component => {
+                component.owner = this;
+                component.onAdded();
+
+                if (this.#initialized) {
+                    component.onInitialize();
+                }
+            });
+        }
     }
 
     removeComponents(...components) {
@@ -47,7 +68,9 @@ export class GameObject {
     }
 
     addTags(...tags) {
-        this.tags = this.tags.concat(tags);
+        if (!this.#disposed) {
+            this.tags = this.tags.concat(tags);
+        }
     }
 
     removeTags(...tags) {
@@ -62,12 +85,20 @@ export class GameObject {
         this.map?.removeGameObject(this);
     }
 
-    draw(context) {
-        if (this.#isDrawableSprite()) {
-            this.#drawSprite(context);
+    update(timeDelta) {
+        if (this.#initialized && !this.#disposed) {
+            
         }
-        else {
-            this.#drawBlackRectangle(context);
+    }
+
+    draw(context) {
+        if (this.#initialized && !this.#disposed) {
+            if (this.#isDrawableSprite()) {
+                this.#drawSprite(context);
+            }
+            else {
+                this.#drawBlackRectangle(context);
+            }
         }
     }
 
