@@ -11,23 +11,13 @@ export class World extends Component {
 
         this.game = game;
 
-        this.systems = [];
         this.maps = [];
     }
 
     onInitialize() {
-        this.timeSystem = new TimeSystem();
-        
-        this.#addSystems(this.timeSystem);
-
-
         const map = this.#generateSimpleMap();
 
         this.maps.push(map);
-    }
-
-    #addSystems(...systems) {
-        this.systems.concat(systems);
     }
 
     #generateSimpleMap() {
@@ -43,17 +33,11 @@ export class World extends Component {
     }
 
     onUpdate(timeDelta) {
-        this.systems.forEach(system => system.update(timeDelta));
         this.maps.forEach(map => map.update(timeDelta));
     }
 
     onDraw(context) {
         this.maps.forEach(map => map.draw(context));
-
-        if (this.timeSystem.isNight()) {
-            context.fillStyle = 'rgba(0, 0, 0, 0.7)';
-            context.fillRect(0, 0, this.game.engine.canvas.width, this.game.engine.canvas.height);
-        }
     }
 }
 

@@ -5,13 +5,26 @@ import { Component } from "../../engine/game/component.js";
 export class TimeSystem extends Component {
     constructor(name) {
         super(name);
-        this.time = 0;
 
+        this.time = 0;
         this.speed = 3600;
     }
 
-    update(timeDelta) {
+    onInitialize() {
+        const scene = this.owner.scene;
+
+        this.engine = scene.game.engine;
+    }
+
+    onUpdate(timeDelta) {
         this.time += this.speed * timeDelta;
+    }
+
+    onDraw(context) {
+        if (this.isNight()) {
+            context.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            context.fillRect(0, 0, this.engine.canvas.width, this.engine.canvas.height);
+        }
     }
 
     getSeconds() {

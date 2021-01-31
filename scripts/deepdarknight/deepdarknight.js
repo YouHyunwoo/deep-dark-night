@@ -9,6 +9,7 @@ import { SpriteRenderer } from '../data/components/spriteRenderer.js';
 import { character as characterSpriteSheet } from '../data/sprites.js';
 import { Area } from '../engine/math/geometry/area.js';
 import { Vector2 } from '../engine/math/geometry/vector.js';
+import { TimeSystem } from '../data/components/systems.js';
 
 
 
@@ -22,6 +23,7 @@ class GameScene extends Scene {
     onInitialize() {
         this.#createWorld();
         this.#createPlayer();
+        this.#createTimeSystemObject();
     }
 
     #createWorld() {
@@ -41,9 +43,9 @@ class GameScene extends Scene {
     }
 
     #initializeWorld() {
-        this.world.init();
+        this.addGameObject(this.world);
 
-        this.objects.push(this.world);
+        this.world.init();
     }
 
     #createPlayer() {
@@ -99,9 +101,21 @@ class GameScene extends Scene {
         this.player.width = 20;
         this.player.height = 16;
 
-        this.player.init();
+        this.addGameObject(this.player);
 
-        this.objects.push(this.player);
+        this.player.init();
+    }
+
+    #createTimeSystemObject() {
+        this.timeSystem = new GameObject('TimeSystem');
+
+        const timeSystem = new TimeSystem('TimeSystem');
+
+        this.timeSystem.addComponents(timeSystem);
+
+        this.addGameObject(this.timeSystem);
+
+        this.timeSystem.init();
     }
 }
 

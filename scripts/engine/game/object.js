@@ -12,6 +12,8 @@ export class GameObject {
         this.#initialized = false;
         this.#disposed = false;
 
+        this.scene = null;
+
         this.owner = null;
         
         this.name = name;
@@ -93,7 +95,7 @@ export class GameObject {
         return this.tags.includes(tag);
     }
 
-    addGameObject(...objects) {
+    addGameObjects(...objects) {
         if (!this.#disposed) {
             this.objects = this.objects.concat(objects);
             objects.forEach(obj => {
@@ -107,7 +109,7 @@ export class GameObject {
         }
     }
 
-    removeGameObject(...objects) {
+    removeGameObjects(...objects) {
         this.objects = this.objects.filter(obj => !objects.includes(obj));
         objects.forEach(obj => {
             obj.owner = null;
