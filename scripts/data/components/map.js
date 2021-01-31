@@ -1,5 +1,6 @@
 import { Component } from '../../engine/game/component.js';
-import { containsArea } from '../../engine/math/geometry/area.js';
+import { Area } from '../../engine/math/geometry/area.js';
+import { Vector2 } from '../../engine/math/geometry/vector.js';
 import { Stone } from '../objects.js';
 
 
@@ -10,8 +11,7 @@ export class Map extends Component {
 
         this.world = world;
 
-        this.width = 800;
-        this.height = 800;
+        this.area = new Area(0, 0, 800, 800);
 
         this.backgroundColor = 'saddlebrown';
 
@@ -40,12 +40,12 @@ export class Map extends Component {
 
             obj.map = this;
 
-            obj.x = Math.random() * this.world.game.engine.canvas.width;
-            obj.y = Math.random() * this.world.game.engine.canvas.height;
+            obj.area.x = Math.random() * this.world.game.engine.canvas.width;
+            obj.area.y = Math.random() * this.world.game.engine.canvas.height;
 
             const scale = Math.random() * 0.5 + 0.5;
 
-            obj.findComponents('SpriteRenderer')[0].sprite.scale = [scale, scale];
+            obj.findComponents('SpriteRenderer')[0].sprite.scale = Vector2.full(scale);
 
             this.ground.push(obj);
         }
@@ -81,7 +81,7 @@ export class Map extends Component {
         context.save();
 
         context.fillStyle = this.backgroundColor;
-        context.fillRect(0, 0, this.width, this.height);
+        context.fillRect(...this.area.toList());
 
         this.ground.forEach(obj => {
             obj.draw(context);
@@ -94,7 +94,7 @@ export class Map extends Component {
         context.restore();
     }
 
-    findGameObjectPointingByMouse(mousePosition, exceptions) {
+    findGameObjectPointingByMouse(mousePosition, exceptionObjects) {
         let result = null;
 
         const camera = this.world.game.camera;
@@ -104,20 +104,21 @@ export class Map extends Component {
 
         layers.reverse().forEach(layer => {
             layer.reverse().forEach(obj => {
-                if (result && exceptions.includes(obj)) {
+                if (result && exceptionObjects.includes(obj)) {
                     return;
                 }
     
-                const area = obj.findComponents('SpriteRenderer')[0].getSpriteArea();
-                const areaInWorld = [
-                    ...obj.localToGlobal(area.slice(0, 2)),
-                    ...area.slice(2)
-                ];
-    
-                if (containsArea(areaInWorld, mouseInWorld)) {
+                const spriteRenderer = obj.findComponents('SpriteRenderer')[0];
+                const area = spriteRenderer.getSpriteArea();
+                const areaPosition = area.getPosition();
+                const areaSize = area.getSize();
+                const areaPositionInWorld = obj.localToGlobal(areaPosition);
+                const areaInWorld = Area.combine(areaPositionInWorld, areaSize);
+                
+                if (areaInWorld.containsVector(mouseInWorld)) {
                     result = obj;
                 }
-            })
+            });
         });
 
         return result;

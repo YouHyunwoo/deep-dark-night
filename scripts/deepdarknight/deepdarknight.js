@@ -7,6 +7,8 @@ import { Sprite } from '../engine/graphic/sprite.js';
 import { Gathering, Movement, Player, PlayerState, Inventory } from '../data/components/player.js';
 import { SpriteRenderer } from '../data/components/spriteRenderer.js';
 import { character as characterSpriteSheet } from '../data/sprites.js';
+import { Area } from '../engine/math/geometry/area.js';
+import { Vector2 } from '../engine/math/geometry/vector.js';
 
 
 
@@ -66,9 +68,9 @@ class GameScene extends Scene {
 
         const sprite = spriteRenderer.sprite = new Sprite(characterSpriteSheet);
 
-        sprite.cropInOriginalImage = [0, 5 / 8, 1 / 4, 1 / 8];
-        sprite.scale = [2, 2];
-        sprite.anchor = [0.5, 0.9];
+        sprite.cropInOriginalImage = new Area(0, 5 / 8, 1 / 4, 1 / 8);
+        sprite.scale = Vector2.full(2);
+        sprite.anchor = new Vector2(0.5, 0.9);
 
         this.player.addComponents(spriteRenderer);
     

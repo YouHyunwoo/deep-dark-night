@@ -1,3 +1,5 @@
+import { Area } from '../math/geometry/area.js';
+import { Vector2 } from '../math/geometry/vector.js';
 import { Component } from './component.js';
 
 
@@ -17,10 +19,11 @@ export class GameObject {
         this.components = [];
         this.tags = [];
 
-        this.x = 0;
-        this.y = 0;
-        this.width = 0;
-        this.height = 0;
+        this.area = Area.zeros();
+        // this.x = 0;
+        // this.y = 0;
+        // this.width = 0;
+        // this.height = 0;
     }
 
     init() {
@@ -113,7 +116,7 @@ export class GameObject {
         if (this.#initialized && !this.#disposed) {
             context.save();
 
-            context.translate(this.x, this.y);
+            context.translate(...this.area.getPosition().toList());
 
             this.onDraw(context);
 
@@ -126,7 +129,7 @@ export class GameObject {
     }
 
     localToGlobal(positionInLocal) {
-        const positionInOwner = [positionInLocal[0] + this.x, positionInLocal[1] + this.y];
+        const positionInOwner = positionInLocal.add(this.area.getPosition());
         
         return this.owner?.localToGlobal(positionInOwner) ?? positionInOwner;
     }
@@ -134,7 +137,7 @@ export class GameObject {
     globalToLocal(positionInGlobal) {
         const positionInOwner = this.owner?.globalToLocal(positionInGlobal) ?? positionInGlobal;
 
-        return [positionInOwner[0] - this.x, positionInOwner[1] - this.y];
+        return positionInOwner.subtract(this.area.getPosition());
     }
 
     isDisposed() {

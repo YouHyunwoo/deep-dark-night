@@ -1,22 +1,36 @@
-export class SpriteSheet { // 자료구조인지 객체인지 명확히 하기
+import { Area } from "../math/geometry/area.js";
+import { Vector2 } from "../math/geometry/vector.js";
+
+
+
+export class SpriteSheet {
+    
+    #image;
+    #imageSize;
+    #imageLoaded;
+
     constructor(imageSource) {
-        this.imageSize = [0, 0];
-        this.imageLoaded = false;
+        this.#imageSize = Vector2.zeros();
+        this.#imageLoaded = false;
         
-        this.image = new Image();
-        this.image.onload = () => {
-            this.imageSize = [this.image.width, this.image.height];
-            this.imageLoaded = true;
+        this.#image = new Image();
+        this.#image.onload = () => {
+            this.#imageSize = new Vector2(this.#image.width, this.#image.height);
+            this.#imageLoaded = true;
         }
-        this.image.src = imageSource;
+        this.#image.src = imageSource;
+    }
+
+    draw(context, ...args) {
+        context.drawImage(this.#image, ...args);
     }
 
     getImageSize() {
-        return this.imageSize;
+        return this.#imageSize;
     }
 
     isLoaded() {
-        return this.imageLoaded;
+        return this.#imageLoaded;
     }
 }
 
@@ -27,14 +41,14 @@ export class Sprite {
     constructor(spriteSheet) {
         this.#spriteSheet = spriteSheet;
         
-        this.cropInOriginalImage = [0, 0, 1, 1];
-        this.anchor = [0, 0];
-        this.scale = [1, 1];
+        this.cropInOriginalImage = new Area(0, 0, 1, 1);
+        this.scale = Vector2.ones();
+        this.anchor = Vector2.zeros();
     }
 
-    draw(context, x=0, y=0) {
+    draw(context, position) {
         if (this.isDrawable()) {
-            this.#drawSprite(context, x, y);
+            this.#drawSprite(context, position);
         }
     }
 
@@ -42,41 +56,43 @@ export class Sprite {
         return this.#spriteSheet?.isLoaded();
     }
 
-    #drawSprite(context, x, y) {
-        const [sx, sy, sw, sh] = this.#getSourceArea();
-        const [dx, dy, dw, dh] = this.#getDestinationArea(sw, sh);
+    #drawSprite(context, position) {
+        const sourceArea = this.#getSourceArea();
+        const sourceSize = sourceArea.getSize();
+        const destinationArea = this.#getDestinationArea(sourceSize);
 
-        context.drawImage(this.#spriteSheet.image, sx, sy, sw, sh, x + dx, y + dy, dw, dh);
+        destinationArea.moveBy(position);
+        
+        this.#spriteSheet.draw(context, ...sourceArea.toList(), ...destinationArea.toList());
     }
     
     #getSourceArea() {
-        const [imageWidth, imageHeight] = this.#spriteSheet.getImageSize();
+        const imageSize = this.#spriteSheet.getImageSize();
 
-        const cropPosition = this.cropInOriginalImage.slice(0, 2);
-        const cropSize = this.cropInOriginalImage.slice(2, 4);
+        const cropPosition = this.cropInOriginalImage.getPosition();
+        const cropSize = this.cropInOriginalImage.getSize();
 
-        const sx = imageWidth * cropPosition[0];
-        const sy = imageHeight * cropPosition[1];
-        const sw = imageWidth * cropSize[0];
-        const sh = imageHeight * cropSize[1];
+        const sourcePosition = imageSize.multiplyEach(cropPosition);
+        const sourceSize = imageSize.multiplyEach(cropSize);
 
-        return [sx, sy, sw, sh];
+        return Area.combine(sourcePosition, sourceSize);
     }
 
-    #getDestinationArea(sourceWidth, sourceHeight) {
-        const scaledWidth = sourceWidth * this.scale[0];
-        const scaledHeight = sourceHeight * this.scale[1];
-        const dx = -scaledWidth * this.anchor[0];
-        const dy = -scaledHeight * this.anchor[1];
+    #getDestinationArea(sourceSize) {
+        const scaledSize = sourceSize.multiplyEach(this.scale);
+        const destinationPosition = scaledSize.multiplyEach(this.anchor).multiply(-1);
 
-        return [dx, dy, scaledWidth, scaledHeight];
+        return Area.combine(destinationPosition, scaledSize);
     }
 
-    getSpriteArea(x, y) {
-        const [sx, sy, sw, sh] = this.#getSourceArea();
-        const [dx, dy, dw, dh] = this.#getDestinationArea(sw, sh);
+    getSpriteArea(position) {
+        const sourceArea = this.#getSourceArea();
+        const sourceSize = sourceArea.getSize();
+        const destinationArea = this.#getDestinationArea(sourceSize);
 
-        return [x + dx, y + dy, dw, dh];
+        destinationArea.moveBy(position);
+
+        return destinationArea;
     }
 }
 

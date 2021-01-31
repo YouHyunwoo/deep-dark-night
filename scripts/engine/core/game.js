@@ -23,7 +23,7 @@ export class Game {
     draw(context) {
         context.save();
 
-        context.translate(-this.camera.x, -this.camera.y);
+        context.translate(-this.camera.position.x, -this.camera.position.y);
 
         this.scene.draw(context);
 

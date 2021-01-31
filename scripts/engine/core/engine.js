@@ -1,3 +1,7 @@
+import { Vector2 } from '../math/geometry/vector.js';
+
+
+
 export class Engine {
     constructor() {
         this.canvas = null;
@@ -29,24 +33,21 @@ export class Engine {
         canvas.addEventListener('pointerdown', (e) => {
             this.events.push({
                 type: 'mousedown',
-                x: e.offsetX,
-                y: e.offsetY
+                position: new Vector2(e.offsetX, e.offsetY)
             });
         });
 
         canvas.addEventListener('pointermove', (e) => {
             this.events.push({
                 type: 'mousemove',
-                x: e.offsetX,
-                y: e.offsetY
+                position: new Vector2(e.offsetX, e.offsetY)
             });
         });
 
         canvas.addEventListener('pointerup', (e) => {
             this.events.push({
                 type: 'mouseup',
-                x: e.offsetX,
-                y: e.offsetY
+                position: new Vector2(e.offsetX, e.offsetY)
             })
         });
 

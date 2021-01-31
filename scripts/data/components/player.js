@@ -1,4 +1,6 @@
 import { Component } from '../../engine/game/component.js';
+import { Area } from '../../engine/math/geometry/area.js';
+import { Vector2 } from '../../engine/math/geometry/vector.js';
 
 
 
@@ -24,29 +26,33 @@ export class Player extends Component {
         for (const event of this.game.engine.events) {
             if (event.type === 'keyup') {
                 if (event.key === 'a') {
-                    this.game.camera.x -= 10;
+                    this.game.camera.position.x -= 10;
                 }
                 if (event.key === 'd') {
-                    this.game.camera.x += 10;
+                    this.game.camera.position.x += 10;
                 }
                 if (event.key === 'w') {
-                    this.game.camera.y -= 10;
+                    this.game.camera.position.y -= 10;
                 }
                 if (event.key === 's') {
-                    this.game.camera.y += 10;
+                    this.game.camera.position.y += 10;
                 }
             }
             else if (event.type === 'mousedown') {
+                const mousePosition = event.position;
+                
                 if (this.mouseover) {
                     this.clickGameObjectInMap();
                 }
                 else {
                     this.selected = null;
-                    this.clickGroundInMap([event.x, event.y]);
+                    this.clickGroundInMap(mousePosition);
                 }
             }
             else if (event.type === 'mousemove') {
-                this.mouseover = this.findGameObjectPointingByMouseInMap([event.x, event.y]);
+                const mousePosition = event.position;
+
+                this.mouseover = this.findGameObjectPointingByMouseInMap(mousePosition);
             }
         }
 
@@ -61,37 +67,31 @@ export class Player extends Component {
 
     onDraw(context) {
         if (this.selected && this.selected !== this.mouseover) {
-            const area = this.selected.findComponents('SpriteRenderer')[0].getSpriteArea();
-            const areaInWorld = [
-                ...this.selected.localToGlobal(area.slice(0, 2)),
-                ...area.slice(2)
-            ];
-
-            const areaInPlayer = [
-                ...this.owner.globalToLocal(areaInWorld.slice(0, 2)),
-                ...area.slice(2)
-            ];
+            const spriteRenderer = this.selected.findComponents('SpriteRenderer')[0];
+            const area = spriteRenderer.getSpriteArea();
+            const areaPosition = area.getPosition();
+            const areaSize = area.getSize();
+            const areaPositionInWorld = this.selected.localToGlobal(areaPosition);
+            const areaPositionInPlayer = this.owner.globalToLocal(areaPositionInWorld);
+            const areaInPlayer = Area.combine(areaPositionInPlayer, areaSize);
 
             context.lineWidth = 3;
             context.strokeStyle = 'red';
-            context.strokeRect(...areaInPlayer);
+            context.strokeRect(...areaInPlayer.toList());
         }
 
         if (this.mouseover) {
-            const area = this.mouseover.findComponents('SpriteRenderer')[0].getSpriteArea();
-            const areaInWorld = [
-                ...this.mouseover.localToGlobal(area.slice(0, 2)),
-                ...area.slice(2)
-            ];
-            
-            const areaInPlayer = [
-                ...this.owner.globalToLocal(areaInWorld.slice(0, 2)),
-                ...area.slice(2)
-            ];
+            const spriteRenderer = this.mouseover.findComponents('SpriteRenderer')[0];
+            const area = spriteRenderer.getSpriteArea();
+            const areaPosition = area.getPosition();
+            const areaSize = area.getSize();
+            const areaPositionInWorld = this.mouseover.localToGlobal(areaPosition);
+            const areaPositionInPlayer = this.owner.globalToLocal(areaPositionInWorld);
+            const areaInPlayer = Area.combine(areaPositionInPlayer, areaSize);
 
             context.lineWidth = 3;
             context.strokeStyle = 'green';
-            context.strokeRect(...areaInPlayer);
+            context.strokeRect(...areaInPlayer.toList());
         }
     }
 
@@ -159,7 +159,7 @@ export class Movement extends Component {
 
         this.arrived = true;
 
-        this.destination = [0, 0];
+        this.destination = Vector2.zeros();
         this.range = 0;
         this.speed = 1000;
     }
@@ -175,39 +175,34 @@ export class Movement extends Component {
 
             const distance = this.speed * timeDelta;
     
-            const source = [this.object.x, this.object.y];
+            const source = this.object.area.getPosition();
             const destination = this.destination;
     
-            const sourceToDestination = [
-                destination[0] - source[0],
-                destination[1] - source[1]
-            ];
+            const sourceToDestination = destination.subtract(source);
     
-            const length = this.#getMagnitude(sourceToDestination);
+            const length = sourceToDestination.getMagnitude();
     
             if (range >= length) {
                 this.arrived = true;
             }
             else {
                 const reach = length - range;
-                const normalized = [sourceToDestination[0] / length, sourceToDestination[1] / length];
+                const normalized = sourceToDestination.normalize();
     
+                let positionObject = null;
+
                 if (distance >= reach) {
-                    this.object.x = destination[0] - normalized[0] * range;
-                    this.object.y = destination[1] - normalized[1] * range;
+                    positionObject = destination.subtract(normalized.multiply(range));
 
                     this.arrived = true;
                 }
                 else {
-                    this.object.x += normalized[0] * distance;
-                    this.object.y += normalized[1] * distance;
+                    positionObject = source.add(normalized.multiply(distance));
                 }
+
+                this.object.area.moveTo(positionObject);
             }
         }
-    }
-
-    #getMagnitude(vector) {
-        return Math.sqrt(vector[0] ** 2 + vector[1] ** 2);
     }
 
     moveTo(position) {
@@ -252,7 +247,7 @@ export class Gathering extends Component {
                 
                 if (this.targetObject) {
                     const itemName = this.targetObject.name;
-                    const itemCount = Math.floor(this.targetObject.findComponents('SpriteRenderer')[0].sprite.scale[0] + 1 + Math.random() * 3);
+                    const itemCount = Math.floor(this.targetObject.findComponents('SpriteRenderer')[0].sprite.scale.x + 1 + Math.random() * 3);
 
                     this.inventory.addItems({
                         name: itemName,
@@ -292,13 +287,18 @@ export class Gathering extends Component {
         context.restore();
 
         if (this.isGathering) {
-            const area = this.owner.findComponents('SpriteRenderer')[0].getSpriteArea();
+            const spriteRenderer = this.owner.findComponents('SpriteRenderer')[0];
+            const area = spriteRenderer.getSpriteArea();
+            const areaBar = new Area(area.x, area.y + area.height, area.width, 10);
+            const areaProgress = areaBar.copy();
+
+            areaProgress.width *= this.progress;
 
             context.fillStyle = 'black';
-            context.fillRect(area[0], area[1] + area[3], area[2], 10);
+            context.fillRect(...areaBar.toList());
 
             context.fillStyle = 'red';
-            context.fillRect(area[0], area[1] + area[3], area[2] * this.progress, 10);
+            context.fillRect(...areaProgress.toList());
         }
         else {
             // targetobject가 있으면
@@ -307,8 +307,8 @@ export class Gathering extends Component {
 
                 context.beginPath();
     
-                context.moveTo(this.object.x, this.object.y);
-                context.lineTo(this.targetObject.x, this.targetObject.y);
+                context.moveTo(...this.object.area.getPosition().toList());
+                context.lineTo(...this.targetObject.area.getPosition().toList());
     
                 context.stroke();
             }
@@ -448,7 +448,7 @@ class GatherState extends State {
         this.isGathering = false;
 
         this.movement.range = this.gathering.range;
-        this.movement.moveTo([targetObject.x, targetObject.y]);
+        this.movement.moveTo(targetObject.area.getPosition());
     }
 
     onUpdate(timeDelta) {
@@ -459,7 +459,7 @@ class GatherState extends State {
                 this.isGathering = true;
             }
             else {
-                this.movement.moveTo([this.targetObject.x, this.targetObject.y]);
+                this.movement.moveTo(this.targetObject.area.getPosition());
             }
         }
     }

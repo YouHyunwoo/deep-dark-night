@@ -1,10 +1,14 @@
 import { Component } from '../../engine/game/component.js';
+import { Area } from '../../engine/math/geometry/area.js';
+import { Vector2 } from '../../engine/math/geometry/vector.js';
 
 
 
 export class SpriteRenderer extends Component {
     constructor(name) {
         super(name);
+
+        this.basePosition = Vector2.zeros();
 
         this.sprite = null;
     }
@@ -24,26 +28,21 @@ export class SpriteRenderer extends Component {
     #drawBlackRectangle(context) {
         const obj = this.owner;
 
-        const area = [
-            -obj.width / 2,
-            -obj.height / 2,
-            obj.width,
-            obj.height
-        ]
+        const area = new Area(-obj.width / 2, -obj.height / 2, obj.width, obj.height);
 
         context.save();
 
         context.fillStyle = 'black';
-        context.fillRect(...area);
+        context.fillRect(...area.toList());
 
         context.restore();
     }
 
     #drawSprite(context) {
-        this.sprite.draw(context);
+        this.sprite.draw(context, this.basePosition);
     }
 
     getSpriteArea() {
-        return this.sprite?.getSpriteArea(0, 0);
+        return this.sprite?.getSpriteArea(this.basePosition);
     }
 }

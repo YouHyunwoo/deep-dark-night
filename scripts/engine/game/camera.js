@@ -1,10 +1,17 @@
+import { Vector2 } from "../math/geometry/vector.js";
+
+
+
 export class Camera {
     constructor() {
-        this.x = 0;
-        this.y = 0;
+        this.position = Vector2.zeros();
     }
 
     screenToWorld(positionInScreen) {
-        return [positionInScreen[0] + this.x, positionInScreen[1] + this.y];
+        return positionInScreen.add(this.position);
+    }
+
+    worldToScreen(positionInWorld) {
+        return positionInWorld.subtract(this.position);
     }
 }
