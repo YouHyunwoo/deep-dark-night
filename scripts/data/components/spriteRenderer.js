@@ -10,7 +10,15 @@ export class SpriteRenderer extends Component {
 
         this.basePosition = Vector2.zeros();
 
+        this.animation = null;
         this.sprite = null;
+    }
+
+    onUpdate(timeDelta) {
+        if (this.animation) {
+            this.animation.update(timeDelta);
+            this.sprite = this.animation.getSprite();
+        }
     }
 
     onDraw(context) {

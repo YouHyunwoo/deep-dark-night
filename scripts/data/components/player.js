@@ -25,6 +25,7 @@ export class Player extends Component {
     onUpdate(timeDelta) {
         for (const event of this.game.engine.events) {
             if (event.type === 'keyup') {
+                console.log(event.key);
                 if (event.key === 'a') {
                     this.game.camera.position.x -= 10;
                 }

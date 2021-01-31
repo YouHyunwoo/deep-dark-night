@@ -97,7 +97,59 @@ export class Sprite {
 }
 
 export class SpriteAnimation {
-    constructor() {
+    constructor(...frames) {
+        this.frames = frames ?? [];
+        this.speed = 1;
 
+        this.timeElapsed = 0;
+        this.currentFrameIndex = 0;
+        this.timeCumulated = [0];
+
+        frames.reduce((acc, cur) => {
+            const timeElapsed = acc + cur.duration;
+
+            this.timeCumulated.push(timeElapsed);
+
+            return acc + cur.duration;
+        }, 0);
+    }
+
+    addFrames(...frames) {
+        frames.forEach(frame => {
+            const lastIndex = this.timeCumulated.length - 1;
+            const cumulated = this.timeCumulated[lastIndex] + frame.duration;
+
+            this.timeCumulated.push(cumulated);
+            this.frames.push(frame);
+        });
+    }
+
+    update(timeDelta) {
+        const frameCount = this.frames.length;
+
+        this.timeElapsed = (this.timeElapsed + this.speed * timeDelta) % this.timeCumulated[frameCount];
+
+        for (let i = 0; i < frameCount; i++) {
+            const index = (this.currentFrameIndex + i) % frameCount;
+
+            const lowerBound = this.timeCumulated[index];
+            const upperBound = this.timeCumulated[index + 1];
+
+            if (lowerBound <= this.timeElapsed && this.timeElapsed < upperBound) {
+                this.currentFrameIndex = index % frameCount;
+                break;
+            }
+        }
+    }
+
+    getSprite() {
+        return this.frames[this.currentFrameIndex].sprite;
+    }
+}
+
+export class SpriteAnimationFrame {
+    constructor(sprite, duration) {
+        this.sprite = sprite;
+        this.duration = duration;
     }
 }
