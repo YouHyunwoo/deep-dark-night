@@ -1,5 +1,4 @@
 import { Area } from '../math/geometry/area.js';
-import { Vector2 } from '../math/geometry/vector.js';
 import { Component } from './component.js';
 
 
@@ -10,20 +9,18 @@ export class GameObject {
     #disposed;
 
     constructor(name='') {
-        this.map = null;
-
         this.#initialized = false;
         this.#disposed = false;
 
+        this.owner = null;
+        
         this.name = name;
         this.components = [];
         this.tags = [];
 
+        this.objects = [];
+
         this.area = Area.zeros();
-        // this.x = 0;
-        // this.y = 0;
-        // this.width = 0;
-        // this.height = 0;
     }
 
     init() {
@@ -96,8 +93,34 @@ export class GameObject {
         return this.tags.includes(tag);
     }
 
+    addGameObject(...objects) {
+        if (!this.#disposed) {
+            this.objects = this.objects.concat(objects);
+            objects.forEach(obj => {
+                obj.owner = this;
+                obj.onAdded();
+
+                if (this.#initialized) {
+                    obj.onInitialize();
+                }
+            });
+        }
+    }
+
+    removeGameObject(...objects) {
+        this.objects = this.objects.filter(obj => !objects.includes(obj));
+        objects.forEach(obj => {
+            obj.owner = null;
+            obj.onRemoved();
+        });
+    }
+
+    findGameObjects(gameObjectName) {
+        return this.objects.filter(obj => obj.name === gameObjectName);
+    }
+
     remove() {
-        this.map?.removeGameObject(this);
+        this.owner?.removeGameObject(this);
 
         this.dispose();
     }
@@ -109,6 +132,8 @@ export class GameObject {
             this.components.forEach(component => {
                 component.onUpdate(timeDelta);
             });
+
+            this.objects.forEach(obj => obj.update(timeDelta));
         }
     }
 
@@ -123,6 +148,8 @@ export class GameObject {
             this.components.forEach(component => {
                 component.onDraw(context);
             });
+
+            this.objects.forEach(obj => obj.draw(context));
 
             context.restore();
         }
