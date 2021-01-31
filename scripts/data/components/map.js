@@ -15,13 +15,10 @@ export class Map extends Component {
 
         this.backgroundColor = 'saddlebrown';
 
-        // this.layers = [
-        //     { id: 'ground', objects: [] },
-        //     { id: 'sky', objects: [] },
-        // ];
-
-        this.ground = [];
-        this.sky = [];
+        this.layers = [
+            { id: 'ground', objects: [] },
+            { id: 'sky', objects: [] },
+        ];
 
         this.environments = {
             ground: null
@@ -47,7 +44,7 @@ export class Map extends Component {
 
             obj.findComponents('SpriteRenderer')[0].sprite.scale = Vector2.full(scale);
 
-            this.ground.push(obj);
+            this.layers[0].objects.push(obj);
         }
     }
 
@@ -55,18 +52,14 @@ export class Map extends Component {
 
     }
 
-    removeGameObject(obj) {
-        let index = this.ground.indexOf(obj);
+    removeGameObject(object) {
+        this.layers.forEach(layer => {
+            let index = layer.objects.indexOf(object);
 
-        if (index >= 0) {
-            this.ground.splice(index, 1);
-        }
-
-        index = this.sky.indexOf(obj);
-
-        if (index >= 0) {
-            this.sky.splice(index, 1);
-        }
+            if (index >= 0) {
+                layer.objects.splice(index, 1);
+            }
+        });
     }
 
     onUpdate(timeDelta) {
@@ -74,7 +67,7 @@ export class Map extends Component {
             this.generateObjects(1);
         }
 
-        this.ground = this.ground.sort((a, b) => a.y - b.y);
+        this.layers[0].objects = this.layers[0].objects.sort((a, b) => a.y - b.y);
     }
 
     onDraw(context) {
@@ -83,13 +76,11 @@ export class Map extends Component {
         context.fillStyle = this.backgroundColor;
         context.fillRect(...this.area.toList());
 
-        this.ground.forEach(obj => {
-            obj.draw(context);
+        this.layers.forEach(layer => {
+            layer.objects.forEach(object => {
+                object.draw(context);
+            });
         });
-
-        this.sky.forEach(obj => {
-            obj.draw(context);
-        })
 
         context.restore();
     }
@@ -100,23 +91,21 @@ export class Map extends Component {
         const camera = this.world.game.camera;
         const mouseInWorld = camera.screenToWorld(mousePosition);
 
-        const layers = [ this.ground, this.sky ];
-
-        layers.reverse().forEach(layer => {
-            layer.reverse().forEach(obj => {
-                if (result && exceptionObjects.includes(obj)) {
+        this.layers.reverse().forEach(layer => {
+            layer.objects.reverse().forEach(object => {
+                if (result && exceptionObjects.includes(object)) {
                     return;
                 }
     
-                const spriteRenderer = obj.findComponents('SpriteRenderer')[0];
+                const spriteRenderer = object.findComponents('SpriteRenderer')[0];
                 const area = spriteRenderer.getSpriteArea();
                 const areaPosition = area.getPosition();
                 const areaSize = area.getSize();
-                const areaPositionInWorld = obj.localToGlobal(areaPosition);
+                const areaPositionInWorld = object.localToGlobal(areaPosition);
                 const areaInWorld = Area.combine(areaPositionInWorld, areaSize);
                 
                 if (areaInWorld.containsVector(mouseInWorld)) {
-                    result = obj;
+                    result = object;
                 }
             });
         });

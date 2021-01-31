@@ -96,8 +96,8 @@ export class Sprite {
     }
 }
 
-// export class SpriteAnimation {
-//     constructor() {
+export class SpriteAnimation {
+    constructor() {
 
-//     }
-// }
+    }
+}

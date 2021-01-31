@@ -1,6 +1,5 @@
 import { Component } from '../../engine/game/component.js';
 import { GameObject } from '../../engine/game/object.js';
-import { TimeSystem } from './systems.js';
 import { Map } from './map.js';
 
 
