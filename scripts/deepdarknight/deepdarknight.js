@@ -1,12 +1,12 @@
-import { Engine } from './engine.js';
-import { Game } from './game.js';
-import { World } from './data/components/world.js';
-import { GameObject } from './object.js';
-import { Gathering, Movement, Player, PlayerState, Inventory } from './data/components/player.js';
-import { SpriteRenderer } from './data/components/spriteRenderer.js';
-import { Sprite } from './sprite.js';
-import { character as characterSpriteSheet } from './data/sprites.js';
-import { Scene } from './scene.js';
+import { Engine } from '../engine/core/engine.js';
+import { Game } from '../engine/core/game.js';
+import { Scene } from '../engine/game/scene.js';
+import { GameObject } from '../engine/game/object.js';
+import { World } from '../data/components/world.js';
+import { Sprite } from '../engine/graphic/sprite.js';
+import { Gathering, Movement, Player, PlayerState, Inventory } from '../data/components/player.js';
+import { SpriteRenderer } from '../data/components/spriteRenderer.js';
+import { character as characterSpriteSheet } from '../data/sprites.js';
 
 
 

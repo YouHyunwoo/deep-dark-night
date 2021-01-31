@@ -1,5 +1,4 @@
-import { Component } from '../../component.js';
-import { containsArea } from '../../geometry/area.js';
+import { Component } from '../../engine/game/component.js';
 
 
 

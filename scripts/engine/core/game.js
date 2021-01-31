@@ -1,5 +1,5 @@
-import { Camera } from './camera.js';
-import { Scene } from './core/scene.js';
+import { Camera } from '../game/camera.js';
+import { Scene } from './scene.js';
 
 
 

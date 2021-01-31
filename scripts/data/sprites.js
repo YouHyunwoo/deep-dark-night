@@ -1,4 +1,4 @@
-import { SpriteSheet } from '../sprite.js';
+import { SpriteSheet } from '../engine/graphic/sprite.js';
 
 
 export const stone = new SpriteSheet('images/stone.png');
