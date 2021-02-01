@@ -6,6 +6,7 @@ import { World } from '../data/components/world.js';
 import { Gathering, Movement, Player, PlayerState, Inventory } from '../data/components/player.js';
 import { SpriteRenderer } from '../data/components/spriteRenderer.js';
 import { TimeSystem } from '../data/components/systems.js';
+import { Animator } from '../data/components/animator.js';
 import { aniCharacterMoveUp, aniCharacterIdleDown } from '../data/animations.js';
 
 
@@ -65,9 +66,14 @@ class GameScene extends Scene {
 
         const spriteRenderer = new SpriteRenderer('SpriteRenderer');
 
-        spriteRenderer.animation = aniCharacterIdleDown;
-
         this.player.addComponents(spriteRenderer);
+
+
+        const animator = new Animator('Animator');
+
+        animator.animation = aniCharacterIdleDown;
+
+        this.player.addComponents(animator);
     
 
         const playerState = new PlayerState('State');

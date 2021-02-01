@@ -15,6 +15,11 @@ export const aniCharacterMoveDown = generateAnimation(character, 8, 4, 'right', 
 export const aniCharacterMoveRight = generateAnimation(character, 8, 4, 'right', 6, [0.2, 0.2, 0.2, 0.2], characterSpriteCallback);
 export const aniCharacterMoveLeft = generateAnimation(character, 8, 4, 'right', 7, [0.2, 0.2, 0.2, 0.2], characterSpriteCallback);
 
+export const aniCharacterAttackUp = generateAnimation(character, 8, 4, 'right', 0, [0.1, 0.4], characterSpriteCallback);
+export const aniCharacterAttackDown = generateAnimation(character, 8, 4, 'right', 1, [0.1, 0.4], characterSpriteCallback);
+export const aniCharacterAttackRight = generateAnimation(character, 8, 4, 'right', 2, [0.1, 0.4], characterSpriteCallback);
+export const aniCharacterAttackLeft = generateAnimation(character, 8, 4, 'right', 3, [0.1, 0.4], characterSpriteCallback);
+
 function characterSpriteCallback(sprite) {
     sprite.scale = Vector2.full(2);
     sprite.anchor = new Vector2(0.5, 0.9);

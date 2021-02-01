@@ -1,6 +1,11 @@
 import { Component } from '../../engine/game/component.js';
 import { Area } from '../../engine/math/geometry/area.js';
 import { Vector2 } from '../../engine/math/geometry/vector.js';
+import {
+    aniCharacterIdleDown, aniCharacterIdleLeft, aniCharacterIdleRight, aniCharacterIdleUp,
+    aniCharacterMoveDown, aniCharacterMoveLeft, aniCharacterMoveRight, aniCharacterMoveUp,
+    aniCharacterAttackDown, aniCharacterAttackLeft, aniCharacterAttackRight, aniCharacterAttackUp,
+} from '../animations.js';
 
 
 
@@ -14,6 +19,8 @@ export class Player extends Component {
 
         this.mouseover = null;
         this.selected = null;
+
+        this.direction = 'down';
     }
 
     onInitialize() {
@@ -25,7 +32,8 @@ export class Player extends Component {
     onUpdate(timeDelta) {
         for (const event of this.game.engine.events) {
             if (event.type === 'keyup') {
-                console.log(event.key);
+                // console.log(event.key);
+
                 if (event.key === 'a') {
                     this.game.camera.position.x -= 10;
                 }
@@ -158,15 +166,16 @@ export class Movement extends Component {
     constructor(name) {
         super(name);
 
-        this.arrived = true;
+        this.isArrived = true;
 
         this.destination = Vector2.zeros();
         this.range = 0;
-        this.speed = 1000;
+        this.speed = 200;
     }
 
     onInitialize() {
         this.object = this.owner;
+        this.player = this.owner.findComponents('Player')[0];
         this.state = this.owner.findComponents('State')[0];
     }
 
@@ -180,11 +189,28 @@ export class Movement extends Component {
             const destination = this.destination;
     
             const sourceToDestination = destination.subtract(source);
+
+            const angle = Math.atan2(...sourceToDestination.reverse().toList());
+            
+            const absAngle = Math.abs(angle);
+
+            if (absAngle < Math.PI / 4) {
+                this.player.direction = 'right';
+            }
+            else if (absAngle > Math.PI * 3 / 4) {
+                this.player.direction = 'left';
+            }
+            else if (angle > 0) {
+                this.player.direction = 'down';
+            }
+            else {
+                this.player.direction = 'up';
+            }
     
             const length = sourceToDestination.getMagnitude();
     
             if (range >= length) {
-                this.arrived = true;
+                this.isArrived = true;
             }
             else {
                 const reach = length - range;
@@ -195,7 +221,7 @@ export class Movement extends Component {
                 if (distance >= reach) {
                     positionObject = destination.subtract(normalized.multiply(range));
 
-                    this.arrived = true;
+                    this.isArrived = true;
                 }
                 else {
                     positionObject = source.add(normalized.multiply(distance));
@@ -207,7 +233,7 @@ export class Movement extends Component {
     }
 
     moveTo(position) {
-        this.arrived = false;
+        this.isArrived = false;
         this.destination = position;
     }
 }
@@ -404,6 +430,10 @@ export class State extends Component {
 
     onEnter() {}
     onExit() {}
+
+    transit(stateId, exitArgs, enterArgs) {
+        this.owner.transit(stateId, exitArgs, enterArgs);
+    }
 }
 
 export class PlayerState extends StateContext {
@@ -423,9 +453,59 @@ export class PlayerState extends StateContext {
 }
 
 class IdleState extends State {
+    onInitialize() {
+        const stateContext = this.owner;
+        const object = stateContext.owner;
+
+        this.player = object.findComponents('Player')[0];
+        this.animator = object.findComponents('Animator')[0];
+    }
+
+    onEnter() {
+        console.log('hi');
+        if (this.player.direction === 'up') {
+            this.animator.animation = aniCharacterIdleUp;
+        }
+        else if (this.player.direction === 'down') {
+            this.animator.animation = aniCharacterIdleDown;
+        }
+        else if (this.player.direction === 'right') {
+            this.animator.animation = aniCharacterIdleRight;
+        }
+        else if (this.player.direction === 'left') {
+            this.animator.animation = aniCharacterIdleLeft;
+        }
+    }
 }
 
 class MoveState extends State {
+    onInitialize() {
+        const stateContext = this.owner;
+        const object = stateContext.owner;
+
+        this.player = object.findComponents('Player')[0];
+        this.animator = object.findComponents('Animator')[0];
+        this.movement = object.findComponents('Movement')[0];
+    }
+
+    onUpdate(timeDelta) {
+        if (this.player.direction === 'up') {
+            this.animator.animation = aniCharacterMoveUp;
+        }
+        else if (this.player.direction === 'down') {
+            this.animator.animation = aniCharacterMoveDown;
+        }
+        else if (this.player.direction === 'right') {
+            this.animator.animation = aniCharacterMoveRight;
+        }
+        else if (this.player.direction === 'left') {
+            this.animator.animation = aniCharacterMoveLeft;
+        }
+
+        if (this.movement.isArrived) {
+            this.transit('idle');
+        }
+    }
 }
 
 class GatherState extends State {
@@ -441,6 +521,8 @@ class GatherState extends State {
 
         this.movement = object.findComponents('Movement')[0];
         this.gathering = object.findComponents('Gathering')[0];
+        this.player = object.findComponents('Player')[0];
+        this.animator = object.findComponents('Animator')[0];
     }
 
     onEnter(targetObject) {
@@ -453,14 +535,45 @@ class GatherState extends State {
     }
 
     onUpdate(timeDelta) {
-        if (!this.isGathering) {
-            if (this.movement.arrived) {
+        if (this.isGathering) {
+            if (this.player.direction === 'up') {
+                this.animator.animation = aniCharacterAttackUp;
+            }
+            else if (this.player.direction === 'down') {
+                this.animator.animation = aniCharacterAttackDown;
+            }
+            else if (this.player.direction === 'right') {
+                this.animator.animation = aniCharacterAttackRight;
+            }
+            else if (this.player.direction === 'left') {
+                this.animator.animation = aniCharacterAttackLeft;
+            }
+
+            if (!this.gathering.isGathering) {
+                this.transit('idle');
+            }
+        }
+        else {
+            if (this.movement.isArrived) {
                 this.gathering.gather(this.targetObject);
 
                 this.isGathering = true;
             }
             else {
                 this.movement.moveTo(this.targetObject.area.getPosition());
+
+                if (this.player.direction === 'up') {
+                    this.animator.animation = aniCharacterMoveUp;
+                }
+                else if (this.player.direction === 'down') {
+                    this.animator.animation = aniCharacterMoveDown;
+                }
+                else if (this.player.direction === 'right') {
+                    this.animator.animation = aniCharacterMoveRight;
+                }
+                else if (this.player.direction === 'left') {
+                    this.animator.animation = aniCharacterMoveLeft;
+                }
             }
         }
     }

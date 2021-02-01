@@ -10,15 +10,7 @@ export class SpriteRenderer extends Component {
 
         this.basePosition = Vector2.zeros();
 
-        this.animation = null;
         this.sprite = null;
-    }
-
-    onUpdate(timeDelta) {
-        if (this.animation) {
-            this.animation.update(timeDelta);
-            this.sprite = this.animation.getSprite();
-        }
     }
 
     onDraw(context) {
@@ -47,10 +39,10 @@ export class SpriteRenderer extends Component {
     }
 
     #drawSprite(context) {
-        this.sprite.draw(context, this.basePosition);
+        this.sprite?.draw(context, this.basePosition);
     }
 
     getSpriteArea() {
-        return this.sprite?.getSpriteArea(this.basePosition);
+        return this.sprite?.getSpriteArea(this.basePosition) ?? Area.zeros();
     }
 }

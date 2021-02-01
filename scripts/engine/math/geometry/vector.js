@@ -54,6 +54,10 @@ export class Vector2 {
         return new Vector2(this.x, this.y);
     }
 
+    reverse() {
+        return new Vector2(this.y, this.x);
+    }
+
     toList() {
         return [this.x, this.y];
     }
