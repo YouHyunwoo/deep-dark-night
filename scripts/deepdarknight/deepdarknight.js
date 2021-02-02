@@ -7,7 +7,7 @@ import { Gathering, Movement, Player, PlayerState, Inventory } from '../data/com
 import { SpriteRenderer } from '../data/components/spriteRenderer.js';
 import { TimeSystem } from '../data/components/systems.js';
 import { Animator } from '../data/components/animator.js';
-import { aniCharacterMoveUp, aniCharacterIdleDown } from '../data/animations.js';
+import { aniCharacterIdleDown } from '../data/animations.js';
 
 
 

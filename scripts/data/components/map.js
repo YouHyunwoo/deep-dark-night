@@ -1,7 +1,7 @@
 import { Component } from '../../engine/game/component.js';
 import { Area } from '../../engine/math/geometry/area.js';
 import { Vector2 } from '../../engine/math/geometry/vector.js';
-import { Stone } from '../objects.js';
+import { Stone, Tree } from '../objects.js';
 
 
 
@@ -26,13 +26,22 @@ export class Map extends Component {
     }
 
     onInitialize() {
-        this.generateObjects(10);
+        this.generateObjects();
         this.generateEnvironments();
     }
 
-    generateObjects(count) {
+    generateObjects() {
+        const stoneCount = ~~(Math.random() * 10);
+        const treeCount = ~~(Math.random() * 5);
+
+        this.generateStone(stoneCount);
+        this.generateTree(treeCount);
+    }
+
+    generateStone(count) {
         for (let i = 0; i < count; i++) {
             const obj = new Stone('stone');
+
             obj.init();
 
             obj.map = this;
@@ -43,6 +52,23 @@ export class Map extends Component {
             const scale = Math.random() * 0.5 + 0.5;
 
             obj.findComponents('SpriteRenderer')[0].sprite.scale = Vector2.full(scale);
+
+            this.layers[0].objects.push(obj);
+        }
+    }
+
+    generateTree(count) {
+        for (let i = 0; i < count; i++) {
+            const obj = new Tree('tree');
+
+            obj.init();
+
+            obj.map = this;
+
+            obj.area.x = Math.random() * this.world.game.engine.canvas.width;
+            obj.area.y = Math.random() * this.world.game.engine.canvas.height;
+
+            obj.findComponents('SpriteRenderer')[0].sprite.scale = Vector2.full(3);
 
             this.layers[0].objects.push(obj);
         }
@@ -64,7 +90,11 @@ export class Map extends Component {
 
     onUpdate(timeDelta) {
         if (Math.random() > 0.99) {
-            this.generateObjects(1);
+            this.generateStone(1);
+        }
+
+        if (Math.random() > 0.999) {
+            this.generateTree(1);
         }
 
         this.layers[0].objects = this.layers[0].objects.sort((a, b) => a.y - b.y);

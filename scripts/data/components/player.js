@@ -462,7 +462,6 @@ class IdleState extends State {
     }
 
     onEnter() {
-        console.log('hi');
         if (this.player.direction === 'up') {
             this.animator.animation = aniCharacterIdleUp;
         }
