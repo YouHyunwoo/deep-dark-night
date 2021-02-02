@@ -62,6 +62,10 @@ export class Vector2 {
         return [this.x, this.y];
     }
 
+    toString() {
+        return this.toList();
+    }
+
     static full(value) {
         return new Vector2(value, value);
     }

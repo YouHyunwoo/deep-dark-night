@@ -102,6 +102,8 @@ class GameScene extends Scene {
 
         this.addGameObject(this.player);
 
+        // this.world.findComponents('World')[0].maps[0].findComponents('Map')[0].layers[0].objects.push(this.player);
+
         this.player.init();
     }
 

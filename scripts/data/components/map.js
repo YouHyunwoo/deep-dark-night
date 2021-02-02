@@ -97,7 +97,14 @@ export class Map extends Component {
             this.generateTree(1);
         }
 
-        this.layers[0].objects = this.layers[0].objects.sort((a, b) => a.y - b.y);
+        this.layers[0].objects = this.layers[0].objects.sort((a, b) => {
+            console.log(a.name, b.name);
+            if (a.name === 'player') {
+                console.log(a.area.y - b.area.y);
+            }
+            
+            return a.area.y - b.area.y;
+        });
     }
 
     onDraw(context) {
