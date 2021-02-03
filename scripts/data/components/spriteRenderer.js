@@ -17,7 +17,7 @@ export class SpriteRenderer extends Component {
         if (this.sprite) {
             context.save();
 
-            this.#drawBlackRectangle(context);
+            // this.#drawBlackRectangle(context);
 
             this.#drawSprite(context);
     

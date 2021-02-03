@@ -32,6 +32,10 @@ export class GameObject {
             this.components.forEach(component => {
                 component.onInitialize();
             });
+
+            this.objects.forEach(object => {
+                object.init();
+            });
     
             this.#initialized = true;
         }
@@ -39,6 +43,10 @@ export class GameObject {
 
     dispose() {
         if (this.#initialized && !this.#disposed) {
+            this.objects.forEach(object => {
+                object.dispose();
+            });
+
             this.onDispose();
 
             this.components.forEach(component => {
@@ -71,7 +79,7 @@ export class GameObject {
         });
     }
 
-    containsComponent(componentName) {
+    hasComponent(componentName) {
         return this.components.some(component => component.name === componentName);
     }
 
@@ -91,7 +99,7 @@ export class GameObject {
         this.tags = this.tags.filter(tag => !tags.includes(tag));
     }
 
-    containsTag(tag) {
+    hasTag(tag) {
         return this.tags.includes(tag);
     }
 
@@ -103,7 +111,7 @@ export class GameObject {
                 obj.onAdded();
 
                 if (this.#initialized) {
-                    obj.onInitialize();
+                    obj.init();
                 }
             });
         }
@@ -122,7 +130,7 @@ export class GameObject {
     }
 
     remove() {
-        this.owner?.removeGameObject(this);
+        this.owner?.removeGameObjects(this);
 
         this.dispose();
     }
@@ -202,7 +210,7 @@ function testCreateEmptyGameObject() {
 function testTags() {
     testAddTags();
     testRemoveTags();
-    testContainsTag();
+    testhasTag();
 }
 
 function testAddTags() {
@@ -226,22 +234,22 @@ function testRemoveTags() {
     console.assert(gameObject.tags.length === 2);
 }
 
-function testContainsTag() {
+function testhasTag() {
     const gameObject = new GameObject('Stone');
 
     const tags = ['object', 'ground', 'hi', 'hello', 'okay'];
 
     gameObject.addTags(...tags);
 
-    console.assert(!gameObject.containsTag('hey'));
-    console.assert(tags.every(tag => gameObject.containsTag(tag)));
+    console.assert(!gameObject.hasTag('hey'));
+    console.assert(tags.every(tag => gameObject.hasTag(tag)));
     console.assert(gameObject.tags.length === 5);
 }
 
 function testComponents() {
     testAddComponents();
     testRemoveComponents();
-    testContainsComponent();
+    testhasComponent();
 }
 
 function testAddComponents() {
@@ -275,7 +283,7 @@ function testRemoveComponents() {
     console.assert(gameObject.components[0] === components[2]);
 }
 
-function testContainsComponent() {
+function testhasComponent() {
     const gameObject = new GameObject('Stone');
 
     const components = [
@@ -286,7 +294,7 @@ function testContainsComponent() {
 
     gameObject.addComponents(...components);
 
-    console.assert(components.every(component => gameObject.containsComponent(component.name)));
+    console.assert(components.every(component => gameObject.hasComponent(component.name)));
     console.assert(gameObject.components.length === 3);
 }
 

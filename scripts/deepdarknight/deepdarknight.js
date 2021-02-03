@@ -3,11 +3,18 @@ import { Game } from '../engine/core/game.js';
 import { Scene } from '../engine/game/scene.js';
 import { GameObject } from '../engine/game/object.js';
 import { World } from '../data/components/world.js';
-import { Gathering, Movement, Player, PlayerState, Inventory } from '../data/components/player.js';
+import { Map } from '../data/components/map.js';
+import { ObjectSort } from '../data/components/objectSort.js';
+import { ObjectGenerator } from '../data/components/objectGenerator.js';
+import { Gathering, Movement, Player, PlayerState } from '../data/components/player.js';
+import { Inventory } from '../data/components/character/inventory.js';
+import { Stone, Tree } from '../data/objects.js';
 import { SpriteRenderer } from '../data/components/spriteRenderer.js';
-import { TimeSystem } from '../data/components/systems.js';
 import { Animator } from '../data/components/animator.js';
 import { aniCharacterIdleDown } from '../data/animations.js';
+import { Vector2 } from '../engine/math/geometry/vector.js';
+import { Area } from '../engine/math/geometry/area.js';
+import { TimeSystem } from '../data/components/timeSystem.js';
 
 
 
@@ -19,104 +26,172 @@ class DeepDarkNight extends Game {
 
 class GameScene extends Scene {
     onInitialize() {
-        this.#createWorld();
-        this.#createPlayer();
-        this.#createTimeSystemObject();
+        this.#addWorldToScene();
+        this.#addTimeSystemToScene();
+        // this.#addUISystemToScene();
     }
 
-    #createWorld() {
-        this.#createWorldObject();
-        this.#addWorldComponent();
-        this.#initializeWorld();
-    }
+    #addWorldToScene() {
+        const canvas = this.game.engine.canvas;
 
-    #createWorldObject() {
         this.world = new GameObject('world');
-    }
 
-    #addWorldComponent() {
-        const world = new World('World', this.game);
+        {
+            // const componentWorld = new World('World');
 
-        this.world.addComponents(world);
-    }
+            // this.world.addComponents(componentWorld);
 
-    #initializeWorld() {
+
+            const map = new GameObject('map');
+
+            map.area = new Area(0, 0, 800, 800);
+
+            {
+                const componentMap = new Map('Map');
+
+                map.addComponents(componentMap);
+
+                const componentObjectSort = new ObjectSort('ObjectSort');
+
+                map.addComponents(componentObjectSort);
+
+                const componentObjectGenerator = new ObjectGenerator('ObjectGenerator');
+
+                map.addComponents(componentObjectGenerator);
+
+
+                const layerGround = new GameObject('ground');
+
+                {
+                    const player = this.player = new GameObject('player');
+
+                    player.width = 20;
+                    player.height = 16;
+
+                    player.addTags('@ground');
+
+                    {
+                        const componentPlayer = new Player('Player', this.game);
+
+                        componentPlayer.map = map;
+
+                        player.addComponents(componentPlayer);
+
+
+                        const spriteRenderer = new SpriteRenderer('SpriteRenderer');
+
+                        player.addComponents(spriteRenderer);
+
+
+                        const animator = new Animator('Animator');
+
+                        animator.animation = aniCharacterIdleDown;
+
+                        player.addComponents(animator);
+                    
+
+                        const playerState = new PlayerState('State');
+
+                        player.addComponents(playerState);
+
+
+                        const movement = new Movement('Movement');
+
+                        player.addComponents(movement);
+
+
+                        const gathering = new Gathering('Gathering');
+
+                        player.addComponents(gathering);
+
+
+                        const inventory = new Inventory('Inventory');
+
+                        player.addComponents(inventory);
+                    }
+
+                    layerGround.addGameObjects(player);
+
+
+                    // const stoneCount = ~~(Math.random() * 10);
+
+                    // for (let i = 0; i < stoneCount; i++) {
+                    //     const object = new Stone('stone');
+            
+                    //     object.addTags('@ground');
+            
+                    //     object.area.x = Math.random() * canvas.width;
+                    //     object.area.y = Math.random() * canvas.height;
+            
+                    //     object.init();
+            
+                    //     const scale = Math.random() * 0.5 + 0.5;
+            
+                    //     object.findComponents('SpriteRenderer')[0].sprite.scale = Vector2.full(scale);
+            
+                    //     layerGround.addGameObjects(object);
+                    // }
+
+
+                    const treeCount = ~~(Math.random() * 5);
+
+                    for (let i = 0; i < treeCount; i++) {
+                        const object = new Tree('tree');
+            
+                        object.addTags('@ground');
+            
+                        object.area.x = Math.random() * canvas.width;
+                        object.area.y = Math.random() * canvas.height;
+            
+                        object.init();
+            
+                        object.findComponents('SpriteRenderer')[0].sprite.scale = Vector2.full(3);
+            
+                        layerGround.addGameObjects(object);
+                    }
+                }
+
+                map.addGameObjects(layerGround);
+
+                const layerSky = new GameObject('sky');
+
+                map.addGameObjects(layerSky);
+            }
+            
+            this.world.addGameObjects(map);
+        }
+
         this.addGameObject(this.world);
 
         this.world.init();
     }
 
-    #createPlayer() {
-        this.#createPlayerObject();
-        this.#addPlayerComponent();
-        this.#initializePlayer();
-    }
+    #addTimeSystemToScene() {
+        this.timeSystem = new GameObject('timeSystem');
 
-    #createPlayerObject() {
-        this.player = new GameObject('player');
-    }
+        {
+            const componentTimeSystem = new TimeSystem('TimeSystem');
 
-    #addPlayerComponent() {
-        const player = new Player('Player', this.game);
-
-        player.map = this.world.findComponents('World')[0].maps[0];
-
-        this.player.addComponents(player);
-
-
-        const spriteRenderer = new SpriteRenderer('SpriteRenderer');
-
-        this.player.addComponents(spriteRenderer);
-
-
-        const animator = new Animator('Animator');
-
-        animator.animation = aniCharacterIdleDown;
-
-        this.player.addComponents(animator);
-    
-
-        const playerState = new PlayerState('State');
-
-        this.player.addComponents(playerState);
-
-
-        const movement = new Movement('Movement');
-
-        this.player.addComponents(movement);
-
-
-        const gathering = new Gathering('Gathering');
-
-        this.player.addComponents(gathering);
-
-
-        const inventory = new Inventory('Inventory');
-
-        this.player.addComponents(inventory);
-    }
-
-    #initializePlayer() {
-        this.player.width = 20;
-        this.player.height = 16;
-
-        this.addGameObject(this.player);
-
-        // this.world.findComponents('World')[0].maps[0].findComponents('Map')[0].layers[0].objects.push(this.player);
-
-        this.player.init();
-    }
-
-    #createTimeSystemObject() {
-        this.timeSystem = new GameObject('TimeSystem');
-
-        const timeSystem = new TimeSystem('TimeSystem');
-
-        this.timeSystem.addComponents(timeSystem);
+            this.timeSystem.addComponents(componentTimeSystem);
+        }
 
         this.addGameObject(this.timeSystem);
 
         this.timeSystem.init();
+    }
+
+    #addUISystemToScene() {
+        this.uiSystem = new GameObject('uiSystem');
+
+        {
+            const componentUISystem = new UISystem('UISystem');
+
+            this.uiSystem.addComponents(componentUISystem);
+        }
+
+        this.addGameObject(this.uiSystem);
+
+        this.uiSystem.init();
     }
 }
 
@@ -127,13 +202,4 @@ engine.init();
 
 engine.game = new DeepDarkNight(engine);
 
-const GlobalEngine = engine;
-const GlobalGame = engine.game;
-const GlobalScene = engine.game.scene;
-const GlobalCamera = engine.game.camera;
-
 engine.start();
-
-
-
-export { GlobalEngine as Engine, GlobalGame as Game, GlobalScene as Scene, GlobalCamera as Camera };

@@ -32,8 +32,8 @@ export class Scene {
         this.objects
             .map((object, index) => [index, object])
             .sort((a, b) => {
-                const aForScreen = a[1].containsTag('Screen');
-                const bForScreen = b[1].containsTag('Screen');
+                const aForScreen = a[1].hasTag('Screen');
+                const bForScreen = b[1].hasTag('Screen');
 
                 if (aForScreen && bForScreen || !aForScreen && !bForScreen) {
                     return a[0] - b[0];
