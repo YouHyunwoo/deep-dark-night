@@ -25,7 +25,7 @@ export class InventoryWindow extends Component {
         this.player = player;
         this.game = scene.game;
 
-        this.inventory = this.player.findComponents('Inventory')[0];
+        this.inventory = this.player.findComponent('Inventory');
     }
 
     onUpdate(timeDelta) {

@@ -11,12 +11,12 @@ export class IdleState extends State {
         const goContext = goState.owner;
         const goPlayer = goContext.owner;
 
-        this.player = goPlayer.findComponents('Player')[0];
-        this.animator = goPlayer.findComponents('Animator')[0];
+        this.direction = goPlayer.findComponent('Direction');
+        this.animator = goPlayer.findComponent('Animator');
     }
 
     onEnter() {
-        const direction = this.player.direction;
+        const direction = this.direction.direction;
         
         this.animator.animation = animations.character.idle[direction];
     }

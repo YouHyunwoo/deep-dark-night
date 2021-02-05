@@ -6,7 +6,9 @@ import { World } from '../data/components/world.js';
 import { Map } from '../data/components/map.js';
 import { ObjectSort } from '../data/components/objectSort.js';
 import { ObjectGenerator } from '../data/components/objectGenerator.js';
-import { Player, Movement, Gathering } from '../data/components/player.js';
+import { Player, Gathering } from '../data/components/player.js';
+import { Movement } from '../data/components/character/movement.js';
+import { Direction } from '../data/components/character/direction.js';
 import { Stone, Tree } from '../data/objects.js';
 import { SpriteRenderer } from '../data/components/spriteRenderer.js';
 import { Animator } from '../data/components/animator.js';
@@ -71,8 +73,7 @@ class GameScene extends Scene {
                 {
                     const player = this.player = new GameObject('player');
 
-                    player.width = 20;
-                    player.height = 16;
+                    player.area = new Area(100, 100, 20, 16);
 
                     player.addTags('@ground');
 
@@ -91,9 +92,12 @@ class GameScene extends Scene {
 
                         const animator = new Animator('Animator');
 
-                        animator.animation = animations.character.idle.down;
-
                         player.addComponents(animator);
+
+
+                        const direction = new Direction('Direction');
+
+                        player.addComponents(direction);
 
 
                         const movement = new Movement('Movement');
@@ -170,7 +174,7 @@ class GameScene extends Scene {
             
                         const scale = Math.random() * 0.5 + 0.5;
             
-                        object.findComponents('SpriteRenderer')[0].sprite.scale = Vector2.full(scale);
+                        object.findComponent('SpriteRenderer').sprite.scale = Vector2.full(scale);
             
                         layerGround.addGameObjects(object);
                     }
@@ -188,7 +192,7 @@ class GameScene extends Scene {
             
                         object.init();
             
-                        object.findComponents('SpriteRenderer')[0].sprite.scale = Vector2.full(3);
+                        object.findComponent('SpriteRenderer').sprite.scale = Vector2.full(3);
             
                         layerGround.addGameObjects(object);
                     }

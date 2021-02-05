@@ -43,7 +43,7 @@ export class ObjectGenerator extends Component {
 
             const scale = Math.random() * 0.5 + 0.5;
 
-            object.findComponents('SpriteRenderer')[0].sprite.scale = Vector2.full(scale);
+            object.findComponent('SpriteRenderer').sprite.scale = Vector2.full(scale);
             
             console.log(`stone: ${i+1}/${count}`);
         }
@@ -60,7 +60,7 @@ export class ObjectGenerator extends Component {
 
             object.init();
 
-            object.findComponents('SpriteRenderer')[0].sprite.scale = Vector2.full(3);
+            object.findComponent('SpriteRenderer').sprite.scale = Vector2.full(3);
 
             this.addGameObjects(object);
         }

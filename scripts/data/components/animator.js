@@ -10,7 +10,7 @@ export class Animator extends Component {
     }
 
     onInitialize() {
-        this.spriteRenderer = this.owner.findComponents('SpriteRenderer')[0];
+        this.spriteRenderer = this.owner.findComponent('SpriteRenderer');
     }
 
     onUpdate(timeDelta) {

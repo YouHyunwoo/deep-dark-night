@@ -17,10 +17,10 @@ export class GatherState extends State {
         const goContext = goState.owner;
         const goPlayer = goContext.owner;
 
-        this.movement = goPlayer.findComponents('Movement')[0];
-        this.gathering = goPlayer.findComponents('Gathering')[0];
-        this.player = goPlayer.findComponents('Player')[0];
-        this.animator = goPlayer.findComponents('Animator')[0];
+        this.movement = goPlayer.findComponent('Movement');
+        this.gathering = goPlayer.findComponent('Gathering');
+        this.direction = goPlayer.findComponent('Direction');
+        this.animator = goPlayer.findComponent('Animator');
     }
 
     onEnter(targetObject) {
@@ -34,7 +34,7 @@ export class GatherState extends State {
 
     onUpdate(timeDelta) {
         if (this.isGathering) {
-            const direction = this.player.direction;
+            const direction = this.direction.direction;
         
             this.animator.animation = animations.character.attack[direction];
 
@@ -51,7 +51,7 @@ export class GatherState extends State {
             else {
                 this.movement.moveTo(this.targetObject.area.getPosition());
 
-                const direction = this.player.direction;
+                const direction = this.direction.direction;
         
                 this.animator.animation = animations.character.move[direction];
             }

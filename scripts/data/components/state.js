@@ -73,7 +73,7 @@ export class State extends Component {
     onInitialize() {
         const object = this.owner;
         const parent = object.owner;
-        const context = parent.findComponents('StateContext')[0];
+        const context = parent.findComponent('StateContext');
 
         this.context = context;
     }

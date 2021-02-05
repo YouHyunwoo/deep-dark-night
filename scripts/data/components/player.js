@@ -23,14 +23,14 @@ export class Player extends Component {
         const game = scene.game;
 
         this.game = game;
-        this.componentMap = map.findComponents('Map')[0];
+        this.componentMap = map.findComponent('Map');
         
-        this.movement = goPlayer.findComponents('Movement')[0];
-        this.gathering = goPlayer.findComponents('Gathering')[0];
+        this.movement = goPlayer.findComponent('Movement');
+        this.gathering = goPlayer.findComponent('Gathering');
 
-        const goState = goPlayer.findGameObjects('state')[0];
+        const goState = goPlayer.findGameObject('state');
         
-        this.state = goState.findComponents('StateContext')[0];
+        this.state = goState.findComponent('StateContext');
     }
 
     onUpdate(timeDelta) {
@@ -80,7 +80,7 @@ export class Player extends Component {
 
     onDraw(context) {
         if (this.selected && this.selected !== this.mouseover) {
-            const spriteRenderer = this.selected.findComponents('SpriteRenderer')[0];
+            const spriteRenderer = this.selected.findComponent('SpriteRenderer');
             const area = spriteRenderer.getSpriteArea();
             const areaPosition = area.getPosition();
             const areaSize = area.getSize();
@@ -94,7 +94,7 @@ export class Player extends Component {
         }
 
         if (this.mouseover) {
-            const spriteRenderer = this.mouseover.findComponents('SpriteRenderer')[0];
+            const spriteRenderer = this.mouseover.findComponent('SpriteRenderer');
             const area = spriteRenderer.getSpriteArea();
             const areaPosition = area.getPosition();
             const areaSize = area.getSize();
@@ -153,7 +153,7 @@ export class Gathering extends Component {
 
     onInitialize() {
         this.object = this.owner;
-        this.inventory = this.owner.findComponents('Inventory')[0];
+        this.inventory = this.owner.findComponent('Inventory');
     }
 
     onUpdate(timeDelta) {
@@ -172,7 +172,7 @@ export class Gathering extends Component {
                 
                 if (this.targetObject) {
                     const itemName = this.targetObject.name;
-                    const itemCount = Math.floor(this.targetObject.findComponents('SpriteRenderer')[0].sprite.scale.x + 1 + Math.random() * 3);
+                    const itemCount = Math.floor(this.targetObject.findComponent('SpriteRenderer').sprite.scale.x + 1 + Math.random() * 3);
 
                     this.inventory.addItems({
                         name: itemName,
@@ -212,7 +212,7 @@ export class Gathering extends Component {
         context.restore();
 
         if (this.isGathering) {
-            const spriteRenderer = this.owner.findComponents('SpriteRenderer')[0];
+            const spriteRenderer = this.owner.findComponent('SpriteRenderer');
             const area = spriteRenderer.getSpriteArea();
             const areaBar = new Area(area.x, area.y + area.height, area.width, 10);
             const areaProgress = areaBar.copy();

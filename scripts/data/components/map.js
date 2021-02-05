@@ -45,7 +45,7 @@ export class Map extends Component {
                     continue;
                 }
     
-                const spriteRenderer = object.findComponents('SpriteRenderer')[0];
+                const spriteRenderer = object.findComponent('SpriteRenderer');
                 const area = spriteRenderer.getSpriteArea();
                 const areaPosition = area.getPosition();
                 const areaSize = area.getSize();
