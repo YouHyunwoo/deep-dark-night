@@ -90,6 +90,18 @@ export class GameObject {
         return this.components.filter(component => component.name === componentName);
     }
 
+    findComponent(componentName) {
+        console.assert(componentName);
+
+        for (const component of this.components) {
+            if (component.name === componentName) {
+                return component;
+            }
+        }
+
+        return null;
+    }
+
     addTags(...tags) {
         if (!this.#disposed) {
             this.tags = this.tags.concat(tags);
@@ -128,6 +140,18 @@ export class GameObject {
 
     findGameObjects(gameObjectName) {
         return this.objects.filter(obj => obj.name === gameObjectName);
+    }
+
+    findGameObject(gameObjectName) {
+        console.assert(gameObjectName);
+
+        for (const object of this.objects) {
+            if (object.name === gameObjectName) {
+                return object;
+            }
+        }
+
+        return null;
     }
 
     remove() {
