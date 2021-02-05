@@ -6,9 +6,10 @@ import { World } from '../data/components/world.js';
 import { Map } from '../data/components/map.js';
 import { ObjectSort } from '../data/components/objectSort.js';
 import { ObjectGenerator } from '../data/components/objectGenerator.js';
-import { Player, Gathering } from '../data/components/player.js';
+import { Player } from '../data/components/player.js';
 import { Movement } from '../data/components/character/movement.js';
 import { Direction } from '../data/components/character/direction.js';
+import { Gathering } from '../data/components/character/gathering.js';
 import { Stone, Tree } from '../data/objects.js';
 import { SpriteRenderer } from '../data/components/spriteRenderer.js';
 import { Animator } from '../data/components/animator.js';
@@ -21,8 +22,6 @@ import { Vector2 } from '../engine/math/geometry/vector.js';
 import { Area } from '../engine/math/geometry/area.js';
 import { TimeSystem } from '../data/components/timeSystem.js';
 import { InventoryWindow } from '../data/components/ui/inventory.js';
-import { animations } from '../data/animations.js';
-
 
 
 
