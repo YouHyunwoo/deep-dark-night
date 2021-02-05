@@ -15,6 +15,8 @@ import { aniCharacterIdleDown } from '../data/animations.js';
 import { Vector2 } from '../engine/math/geometry/vector.js';
 import { Area } from '../engine/math/geometry/area.js';
 import { TimeSystem } from '../data/components/timeSystem.js';
+import { UISystem } from '../data/components/uiSystem.js';
+import { InventoryWindow } from '../data/components/ui/inventory.js';
 
 
 
@@ -28,7 +30,7 @@ class GameScene extends Scene {
     onInitialize() {
         this.#addWorldToScene();
         this.#addTimeSystemToScene();
-        // this.#addUISystemToScene();
+        this.#addUISystemToScene();
     }
 
     #addWorldToScene() {
@@ -187,6 +189,10 @@ class GameScene extends Scene {
             const componentUISystem = new UISystem('UISystem');
 
             this.uiSystem.addComponents(componentUISystem);
+
+            const componentInventoryWindow = new InventoryWindow('InventoryWindow');
+
+            this.uiSystem.addComponents(componentInventoryWindow);
         }
 
         this.addGameObject(this.uiSystem);

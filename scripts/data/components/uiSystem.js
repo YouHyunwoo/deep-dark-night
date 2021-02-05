@@ -1,4 +1,4 @@
-import { Component } from "../../engine/game/component";
+import { Component } from '../../engine/game/component.js';
 
 
 
