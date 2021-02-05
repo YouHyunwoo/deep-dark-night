@@ -1,5 +1,5 @@
-import { Component } from '../../engine/game/component.js';
-import { Area } from '../../engine/math/geometry/area.js';
+import { Component } from '../../../engine/game/component.js';
+import { Area } from '../../../engine/math/geometry/area.js';
 
 
 
@@ -7,10 +7,8 @@ export class Player extends Component {
     constructor(name) {
         super(name);
 
-        this.mouseover = null;
+        this.pointed = null;
         this.selected = null;
-
-        this.direction = 'down';
     }
 
     onInitialize() {
@@ -22,7 +20,7 @@ export class Player extends Component {
         const game = scene.game;
 
         this.game = game;
-        this.componentMap = map.findComponent('Map');
+        this.map = map.findComponent('Map');
         
         this.movement = goPlayer.findComponent('Movement');
         this.gathering = goPlayer.findComponent('Gathering');
@@ -53,7 +51,7 @@ export class Player extends Component {
             else if (event.type === 'mousedown') {
                 const mousePosition = event.position;
                 
-                if (this.mouseover) {
+                if (this.pointed) {
                     this.clickGameObjectInMap();
                 }
                 else {
@@ -64,7 +62,7 @@ export class Player extends Component {
             else if (event.type === 'mousemove') {
                 const mousePosition = event.position;
 
-                this.mouseover = this.findGameObjectPointingByMouseInMap(mousePosition);
+                this.pointed = this.findGameObjectPointingByMouseInMap(mousePosition);
             }
         }
 
@@ -72,13 +70,13 @@ export class Player extends Component {
             this.selected = null;
         }
 
-        if (this.mouseover?.isDisposed()) {
-            this.mouseover = null;
+        if (this.pointed?.isDisposed()) {
+            this.pointed = null;
         }
     }
 
     onDraw(context) {
-        if (this.selected && this.selected !== this.mouseover) {
+        if (this.selected && this.selected !== this.pointed) {
             const spriteRenderer = this.selected.findComponent('SpriteRenderer');
             const area = spriteRenderer.getSpriteArea();
             const areaPosition = area.getPosition();
@@ -92,12 +90,12 @@ export class Player extends Component {
             context.strokeRect(...areaInPlayer.toList());
         }
 
-        if (this.mouseover) {
-            const spriteRenderer = this.mouseover.findComponent('SpriteRenderer');
+        if (this.pointed) {
+            const spriteRenderer = this.pointed.findComponent('SpriteRenderer');
             const area = spriteRenderer.getSpriteArea();
             const areaPosition = area.getPosition();
             const areaSize = area.getSize();
-            const areaPositionInWorld = this.mouseover.localToGlobal(areaPosition);
+            const areaPositionInWorld = this.pointed.localToGlobal(areaPosition);
             const areaPositionInPlayer = this.owner.globalToLocal(areaPositionInWorld);
             const areaInPlayer = Area.combine(areaPositionInPlayer, areaSize);
 
@@ -108,8 +106,8 @@ export class Player extends Component {
     }
 
     clickGameObjectInMap() {
-        if (this.selected !== this.mouseover) {
-            this.selected = this.mouseover;
+        if (this.selected !== this.pointed) {
+            this.selected = this.pointed;
 
             this.gathering.cancel();
 
@@ -129,7 +127,7 @@ export class Player extends Component {
     }
 
     findGameObjectPointingByMouseInMap(mousePosition) {
-        const gameObject = this.componentMap.findGameObjectPointingByMouse(mousePosition, [this.owner]);
+        const gameObject = this.map.findGameObjectPointingByMouse(mousePosition, [this.owner]);
 
         return gameObject;
     }

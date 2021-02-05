@@ -6,7 +6,7 @@ import { World } from '../data/components/world.js';
 import { Map } from '../data/components/map.js';
 import { ObjectSort } from '../data/components/objectSort.js';
 import { ObjectGenerator } from '../data/components/objectGenerator.js';
-import { Player } from '../data/components/player.js';
+import { Player } from '../data/components/player/player.js';
 import { Movement } from '../data/components/character/movement.js';
 import { Direction } from '../data/components/character/direction.js';
 import { Gathering } from '../data/components/character/gathering.js';
