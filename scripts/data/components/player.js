@@ -1,14 +1,6 @@
 import { Component } from '../../engine/game/component.js';
-import { Area } from '../../engine/math/geometry/area.js';
 import { Vector2 } from '../../engine/math/geometry/vector.js';
-import {
-    aniCharacterIdleDown, aniCharacterIdleLeft, aniCharacterIdleRight, aniCharacterIdleUp,
-    aniCharacterMoveDown, aniCharacterMoveLeft, aniCharacterMoveRight, aniCharacterMoveUp,
-    aniCharacterAttackDown, aniCharacterAttackLeft, aniCharacterAttackRight, aniCharacterAttackUp,
-} from '../animations.js';
-
-import { Sprite } from '../../engine/graphic/sprite.js';
-import { stone as spriteSheetStone, tree as spriteSheetTree } from '../sprites.js';
+import { Area } from '../../engine/math/geometry/area.js';
 
 
 
@@ -23,8 +15,8 @@ export class Player extends Component {
     }
 
     onInitialize() {
-        const object = this.owner;
-        const layer = object.owner;
+        const goPlayer = this.owner;
+        const layer = goPlayer.owner;
         const map = layer.owner;
         const world = map.owner;
         const scene = world.scene;
@@ -33,9 +25,12 @@ export class Player extends Component {
         this.game = game;
         this.componentMap = map.findComponents('Map')[0];
         
-        this.state = this.owner.findComponents('State')[0];
-        this.movement = this.owner.findComponents('Movement')[0];
-        this.gathering = this.owner.findComponents('Gathering')[0];
+        this.movement = goPlayer.findComponents('Movement')[0];
+        this.gathering = goPlayer.findComponents('Gathering')[0];
+
+        const goState = goPlayer.findGameObjects('state')[0];
+        
+        this.state = goState.findComponents('StateContext')[0];
     }
 
     onUpdate(timeDelta) {
@@ -140,139 +135,6 @@ export class Player extends Component {
         return gameObject;
     }
 }
-
-// export class Inventory extends Component {
-//     constructor(name) {
-//         super(name);
-
-//         this.items = {};
-
-//         this.isWindowShowing = false;
-
-//         this.positionWindow = new Vector2(400, 100);
-//         this.sizeWindow = new Vector2(250, 300);
-//     }
-
-//     onInitialize() {
-//         const object = this.owner;
-//         const layer = object.owner;
-//         const map = layer.owner;
-//         const world = map.owner;
-//         const scene = world.scene;
-//         const game = scene.game;
-
-//         this.game = game;
-//         this.camera = this.game.camera;
-//     }
-
-//     onUpdate(timeDelta) {
-//         for (const event of this.game.engine.events) {
-//             if (event.type === 'keyup') {
-//                 if (event.key === 'i') {
-//                     this.isWindowShowing = !this.isWindowShowing;
-//                 }
-//             }
-//             // else if (event.type === 'mousedown') {
-//             //     const mousePosition = event.position;
-//             // }
-//             // else if (event.type === 'mousemove') {
-//             //     const mousePosition = event.position;
-//             // }
-//         }
-//     }
-
-//     onDraw(context) {
-//         if (this.isWindowShowing) {
-//             const positionWorldInScreen = this.owner.globalToLocal(this.positionWindow);
-//             const offsetTitle = new Vector2(10, 24);
-//             const positionTitle = positionWorldInScreen.add(offsetTitle);
-            
-//             context.save();
-
-//             context.fillStyle = 'white';
-//             context.fillRect(...positionWorldInScreen.toList(), ...this.sizeWindow.toList());
-
-//             context.font = '24px serif';
-//             context.fillStyle = 'Black';
-//             context.fillText('Inventory', ...positionTitle.toList());
-
-//             const itemNames = Object.keys(this.items);
-            
-//             let i = 0;
-//             for (let row = 0; row < 4; row++) {
-//                 for (let col = 0; col < 4; col++) {
-//                     const sizeTitle = new Vector2(0, 30);
-//                     const margin = Vector2.full(10);
-//                     const orderSlot = new Vector2(col, row);
-//                     const sizeSlot = Vector2.full(50);
-//                     const positionSlot = positionWorldInScreen.add(sizeTitle).add(margin).add(orderSlot.multiplyEach(sizeSlot.add(margin)));
-                    
-
-//                     context.fillStyle = 'grey';
-//                     context.fillRect(...positionSlot.toList(), ...sizeSlot.toList());
-//                     context.strokeStyle = 'black';
-//                     context.lineWidth = 1;
-//                     context.strokeRect(...positionSlot.toList(), ...sizeSlot.toList());
-
-
-//                     if (itemNames[i]) {
-//                         const spritePosition = positionSlot.add(Vector2.full(50).multiplyEach(new Vector2(0.5, 0.9)));
-
-//                         let sprite = null;
-//                         if (itemNames[i] === 'stone') {
-//                             sprite = new Sprite(spriteSheetStone);
-//                             sprite.anchor = new Vector2(0.5, 0.9);
-//                         }
-//                         else if (itemNames[i] === 'tree') {
-//                             sprite = new Sprite(spriteSheetTree);
-//                             sprite.cropInOriginalImage = new Area(0, 0, 1 / 4, 1);
-//                             sprite.anchor = new Vector2(0.5, 0.9);
-//                         }
-
-//                         sprite?.draw(context, spritePosition);
-
-//                         context.font = '12px serif';
-//                         context.fillStyle = 'black';
-//                         context.textAlign = 'left';
-//                         context.textBaseline = 'top';
-//                         context.fillText(itemNames[i], ...positionSlot.toList());
-
-//                         context.textAlign = 'right';
-//                         context.textBaseline = 'bottom';
-
-//                         const positionItemCount = positionSlot.add(sizeSlot).subtract(new Vector2(2, 0));
-                        
-//                         context.fillText(this.items[itemNames[i]], ...positionItemCount.toList());
-//                     }
-
-//                     i++;
-//                 }
-//             }
-
-//             context.restore();
-//         }
-//     }
-
-//     addItems(...items) {
-//         items.forEach(item => {
-//             if (!(item.name in this.items)) {
-//                 this.items[item.name] = 0;
-//             }
-
-//             this.items[item.name] += item.count;
-//         });
-//     }
-
-//     removeItems(...items) {
-//         items.forEach(item => {
-//             if (!item.name in this.items) {
-//                 this.items[item.name] = 0;
-//             }
-
-//             this.items[item.name] -= item.count;
-//         });
-//     }
-// }
 
 export class Movement extends Component {
     constructor(name) {
@@ -464,228 +326,5 @@ export class Gathering extends Component {
         this.targetObject = null;
         this.isGathering = false;
         this.progress = 0;
-    }
-}
-
-export class StateContext extends Component {
-    constructor(name) {
-        super(name);
-
-        this.states = {};
-
-        this.state = null;
-    }
-
-    onInitialize() {
-        console.assert(Object.keys(this.states).length !== 0);
-
-        Object.values(this.states).forEach(state => state.onInitialize());
-
-        if (!this.state) {
-            this.state = Object.values(this.states)[0];
-        }
-
-        this.state?.onEnter();
-    }
-
-    onDispose() {
-        this.state?.onExit();
-
-        this.state = null;
-
-        this.states.forEach(state => state.onDispose());
-    }
-
-    onUpdate(timeDelta) {
-        this.state?.onUpdate(timeDelta);
-    }
-
-    onDraw(context) {
-        this.state?.onDraw(context);
-    }
-
-    addState(state) {
-        this.states[state.name] = state;
-
-        state.owner = this;
-        state.onAdded();
-    }
-
-    removeState(stateId) {
-        const state = this.states[stateId];
-
-        delete this.states[stateId];
-
-        if (this.state.id === stateId) {
-            this.state = null;
-        }
-
-        state.owner = null;
-        state.onRemoved();
-    }
-
-    transit(stateId, exitArgs, enterArgs) {
-        this.state?.onExit(...(exitArgs ?? []));
-
-        this.state = this.states[stateId];
-
-        this.state?.onEnter(...(enterArgs ?? []));
-    }
-}
-
-export class State extends Component {
-    constructor(id) {
-        super(id);
-
-        this.owner = null;
-    }
-
-    onEnter() {}
-    onExit() {}
-
-    transit(stateId, exitArgs, enterArgs) {
-        this.owner.transit(stateId, exitArgs, enterArgs);
-    }
-}
-
-export class PlayerState extends StateContext {
-    constructor(name) {
-        super(name);
-
-        const states = [
-            new IdleState('idle'),
-            new MoveState('move'),
-            new GatherState('gather'),
-        ];
-
-        states.forEach(state => {
-            this.addState(state);
-        });
-    }
-}
-
-class IdleState extends State {
-    onInitialize() {
-        const stateContext = this.owner;
-        const object = stateContext.owner;
-
-        this.player = object.findComponents('Player')[0];
-        this.animator = object.findComponents('Animator')[0];
-    }
-
-    onEnter() {
-        if (this.player.direction === 'up') {
-            this.animator.animation = aniCharacterIdleUp;
-        }
-        else if (this.player.direction === 'down') {
-            this.animator.animation = aniCharacterIdleDown;
-        }
-        else if (this.player.direction === 'right') {
-            this.animator.animation = aniCharacterIdleRight;
-        }
-        else if (this.player.direction === 'left') {
-            this.animator.animation = aniCharacterIdleLeft;
-        }
-    }
-}
-
-class MoveState extends State {
-    onInitialize() {
-        const stateContext = this.owner;
-        const object = stateContext.owner;
-
-        this.player = object.findComponents('Player')[0];
-        this.animator = object.findComponents('Animator')[0];
-        this.movement = object.findComponents('Movement')[0];
-    }
-
-    onUpdate(timeDelta) {
-        if (this.player.direction === 'up') {
-            this.animator.animation = aniCharacterMoveUp;
-        }
-        else if (this.player.direction === 'down') {
-            this.animator.animation = aniCharacterMoveDown;
-        }
-        else if (this.player.direction === 'right') {
-            this.animator.animation = aniCharacterMoveRight;
-        }
-        else if (this.player.direction === 'left') {
-            this.animator.animation = aniCharacterMoveLeft;
-        }
-
-        if (this.movement.isArrived) {
-            this.transit('idle');
-        }
-    }
-}
-
-class GatherState extends State {
-    constructor(id) {
-        super(id);
-
-        this.isGathering = false;
-    }
-
-    onInitialize() {
-        const stateContext = this.owner;
-        const object = stateContext.owner;
-
-        this.movement = object.findComponents('Movement')[0];
-        this.gathering = object.findComponents('Gathering')[0];
-        this.player = object.findComponents('Player')[0];
-        this.animator = object.findComponents('Animator')[0];
-    }
-
-    onEnter(targetObject) {
-        this.targetObject = targetObject;
-
-        this.isGathering = false;
-
-        this.movement.range = this.gathering.range;
-        this.movement.moveTo(targetObject.area.getPosition());
-    }
-
-    onUpdate(timeDelta) {
-        if (this.isGathering) {
-            if (this.player.direction === 'up') {
-                this.animator.animation = aniCharacterAttackUp;
-            }
-            else if (this.player.direction === 'down') {
-                this.animator.animation = aniCharacterAttackDown;
-            }
-            else if (this.player.direction === 'right') {
-                this.animator.animation = aniCharacterAttackRight;
-            }
-            else if (this.player.direction === 'left') {
-                this.animator.animation = aniCharacterAttackLeft;
-            }
-
-            if (!this.gathering.isGathering) {
-                this.transit('idle');
-            }
-        }
-        else {
-            if (this.movement.isArrived) {
-                this.gathering.gather(this.targetObject);
-
-                this.isGathering = true;
-            }
-            else {
-                this.movement.moveTo(this.targetObject.area.getPosition());
-
-                if (this.player.direction === 'up') {
-                    this.animator.animation = aniCharacterMoveUp;
-                }
-                else if (this.player.direction === 'down') {
-                    this.animator.animation = aniCharacterMoveDown;
-                }
-                else if (this.player.direction === 'right') {
-                    this.animator.animation = aniCharacterMoveRight;
-                }
-                else if (this.player.direction === 'left') {
-                    this.animator.animation = aniCharacterMoveLeft;
-                }
-            }
-        }
     }
 }

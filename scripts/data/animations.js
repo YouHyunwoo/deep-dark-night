@@ -1,24 +1,31 @@
-import { Area } from '../engine/math/geometry/area.js';
 import { Vector2 } from '../engine/math/geometry/vector.js';
-import { Sprite, SpriteAnimation, SpriteAnimationFrame } from "../engine/graphic/sprite.js";
+import { Area } from '../engine/math/geometry/area.js';
+import { Sprite, SpriteAnimation, SpriteAnimationFrame } from '../engine/graphic/sprite.js';
 import { character } from './sprites.js';
 
 
-
-export const aniCharacterIdleUp = generateAnimation(character, 8, 4, 'right', 4, [1], characterSpriteCallback);
-export const aniCharacterIdleDown = generateAnimation(character, 8, 4, 'right', 5, [1], characterSpriteCallback);
-export const aniCharacterIdleRight = generateAnimation(character, 8, 4, 'right', 6, [1], characterSpriteCallback);
-export const aniCharacterIdleLeft = generateAnimation(character, 8, 4, 'right', 7, [1], characterSpriteCallback);
-
-export const aniCharacterMoveUp = generateAnimation(character, 8, 4, 'right', 4, [0.2, 0.2, 0.2, 0.2], characterSpriteCallback);
-export const aniCharacterMoveDown = generateAnimation(character, 8, 4, 'right', 5, [0.2, 0.2, 0.2, 0.2], characterSpriteCallback);
-export const aniCharacterMoveRight = generateAnimation(character, 8, 4, 'right', 6, [0.2, 0.2, 0.2, 0.2], characterSpriteCallback);
-export const aniCharacterMoveLeft = generateAnimation(character, 8, 4, 'right', 7, [0.2, 0.2, 0.2, 0.2], characterSpriteCallback);
-
-export const aniCharacterAttackUp = generateAnimation(character, 8, 4, 'right', 0, [0.1, 0.4], characterSpriteCallback);
-export const aniCharacterAttackDown = generateAnimation(character, 8, 4, 'right', 1, [0.1, 0.4], characterSpriteCallback);
-export const aniCharacterAttackRight = generateAnimation(character, 8, 4, 'right', 2, [0.1, 0.4], characterSpriteCallback);
-export const aniCharacterAttackLeft = generateAnimation(character, 8, 4, 'right', 3, [0.1, 0.4], characterSpriteCallback);
+export const animations = {
+    character: {
+        idle: {
+            up: generateAnimation(character, 8, 4, 'right', 4, [1], characterSpriteCallback),
+            down: generateAnimation(character, 8, 4, 'right', 5, [1], characterSpriteCallback),
+            right: generateAnimation(character, 8, 4, 'right', 6, [1], characterSpriteCallback),
+            left: generateAnimation(character, 8, 4, 'right', 7, [1], characterSpriteCallback),
+        },
+        move: {
+            up: generateAnimation(character, 8, 4, 'right', 4, [0.2, 0.2, 0.2, 0.2], characterSpriteCallback),
+            down: generateAnimation(character, 8, 4, 'right', 5, [0.2, 0.2, 0.2, 0.2], characterSpriteCallback),
+            right: generateAnimation(character, 8, 4, 'right', 6, [0.2, 0.2, 0.2, 0.2], characterSpriteCallback),
+            left: generateAnimation(character, 8, 4, 'right', 7, [0.2, 0.2, 0.2, 0.2], characterSpriteCallback),
+        },
+        attack: {
+            up: generateAnimation(character, 8, 4, 'right', 0, [0.1, 0.4], characterSpriteCallback),
+            down: generateAnimation(character, 8, 4, 'right', 1, [0.1, 0.4], characterSpriteCallback),
+            right: generateAnimation(character, 8, 4, 'right', 2, [0.1, 0.4], characterSpriteCallback),
+            left: generateAnimation(character, 8, 4, 'right', 3, [0.1, 0.4], characterSpriteCallback),
+        }
+    }
+};
 
 function characterSpriteCallback(sprite) {
     sprite.scale = Vector2.full(2);

@@ -17,6 +17,7 @@ export class GameObject {
         this.owner = null;
         
         this.name = name;
+        this.enable = true;
         this.components = [];
         this.tags = [];
 
@@ -136,7 +137,7 @@ export class GameObject {
     }
 
     update(timeDelta) {
-        if (this.#initialized && !this.#disposed) {
+        if (this.#initialized && !this.#disposed && this.enable) {
             this.onUpdate(timeDelta);
 
             this.components.forEach(component => {
@@ -148,7 +149,7 @@ export class GameObject {
     }
 
     draw(context) {
-        if (this.#initialized && !this.#disposed) {
+        if (this.#initialized && !this.#disposed && this.enable) {
             context.save();
 
             context.translate(...this.area.getPosition().toList());

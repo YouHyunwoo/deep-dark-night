@@ -6,17 +6,21 @@ import { World } from '../data/components/world.js';
 import { Map } from '../data/components/map.js';
 import { ObjectSort } from '../data/components/objectSort.js';
 import { ObjectGenerator } from '../data/components/objectGenerator.js';
-import { Gathering, Movement, Player, PlayerState } from '../data/components/player.js';
-import { Inventory } from '../data/components/character/inventory.js';
+import { Player, Movement, Gathering } from '../data/components/player.js';
 import { Stone, Tree } from '../data/objects.js';
 import { SpriteRenderer } from '../data/components/spriteRenderer.js';
 import { Animator } from '../data/components/animator.js';
-import { aniCharacterIdleDown } from '../data/animations.js';
+import { Inventory } from '../data/components/character/inventory.js';
+import { StateContext } from '../data/components/state.js';
+import { IdleState } from '../data/components/player/state/idle.js';
+import { MoveState } from '../data/components/player/state/move.js';
+import { GatherState } from '../data/components/player/state/gather.js';
 import { Vector2 } from '../engine/math/geometry/vector.js';
 import { Area } from '../engine/math/geometry/area.js';
 import { TimeSystem } from '../data/components/timeSystem.js';
-import { UISystem } from '../data/components/uiSystem.js';
 import { InventoryWindow } from '../data/components/ui/inventory.js';
+import { animations } from '../data/animations.js';
+
 
 
 
@@ -60,8 +64,8 @@ class GameScene extends Scene {
                 const componentObjectGenerator = new ObjectGenerator('ObjectGenerator');
 
                 map.addComponents(componentObjectGenerator);
-
-
+            }
+            {
                 const layerGround = new GameObject('ground');
 
                 {
@@ -87,14 +91,9 @@ class GameScene extends Scene {
 
                         const animator = new Animator('Animator');
 
-                        animator.animation = aniCharacterIdleDown;
+                        animator.animation = animations.character.idle.down;
 
                         player.addComponents(animator);
-                    
-
-                        const playerState = new PlayerState('State');
-
-                        player.addComponents(playerState);
 
 
                         const movement = new Movement('Movement');
@@ -111,28 +110,70 @@ class GameScene extends Scene {
 
                         player.addComponents(inventory);
                     }
+                    {
+                        const state = new GameObject('state');
+
+                        {
+                            const stateContext = new StateContext('StateContext');
+
+                            state.addComponents(stateContext);
+                        }
+                        {
+                            const idle = new GameObject('idle');
+
+                            {
+                                const stateIdle = new IdleState('State');
+
+                                idle.addComponents(stateIdle);
+                            }
+
+                            state.addGameObjects(idle);
+
+                            const move = new GameObject('move');
+
+                            {
+                                const stateMove = new MoveState('State');
+
+                                move.addComponents(stateMove);
+                            }
+
+                            state.addGameObjects(move);
+
+                            const gather = new GameObject('gather');
+
+                            {
+                                const stateGather = new GatherState('State');
+
+                                gather.addComponents(stateGather);
+                            }
+
+                            state.addGameObjects(gather);
+                        }
+
+                        player.addGameObjects(state);
+                    }
 
                     layerGround.addGameObjects(player);
 
 
-                    // const stoneCount = ~~(Math.random() * 10);
+                    const stoneCount = ~~(Math.random() * 10);
 
-                    // for (let i = 0; i < stoneCount; i++) {
-                    //     const object = new Stone('stone');
+                    for (let i = 0; i < stoneCount; i++) {
+                        const object = new Stone('stone');
             
-                    //     object.addTags('@ground');
+                        object.addTags('@ground');
             
-                    //     object.area.x = Math.random() * canvas.width;
-                    //     object.area.y = Math.random() * canvas.height;
+                        object.area.x = Math.random() * canvas.width;
+                        object.area.y = Math.random() * canvas.height;
             
-                    //     object.init();
+                        object.init();
             
-                    //     const scale = Math.random() * 0.5 + 0.5;
+                        const scale = Math.random() * 0.5 + 0.5;
             
-                    //     object.findComponents('SpriteRenderer')[0].sprite.scale = Vector2.full(scale);
+                        object.findComponents('SpriteRenderer')[0].sprite.scale = Vector2.full(scale);
             
-                    //     layerGround.addGameObjects(object);
-                    // }
+                        layerGround.addGameObjects(object);
+                    }
 
 
                     const treeCount = ~~(Math.random() * 5);
@@ -154,6 +195,7 @@ class GameScene extends Scene {
                 }
 
                 map.addGameObjects(layerGround);
+
 
                 const layerSky = new GameObject('sky');
 
@@ -186,10 +228,6 @@ class GameScene extends Scene {
         this.uiSystem = new GameObject('uiSystem');
 
         {
-            const componentUISystem = new UISystem('UISystem');
-
-            this.uiSystem.addComponents(componentUISystem);
-
             const componentInventoryWindow = new InventoryWindow('InventoryWindow');
 
             this.uiSystem.addComponents(componentInventoryWindow);

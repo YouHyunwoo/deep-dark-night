@@ -1,5 +1,6 @@
-import { Area } from "../math/geometry/area.js";
-import { Vector2 } from "../math/geometry/vector.js";
+import { Vector2 } from '../math/geometry/vector.js';
+import { Area } from '../math/geometry/area.js';
+
 
 
 
