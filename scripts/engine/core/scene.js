@@ -11,7 +11,7 @@ export class Scene {
         this.scenes.unshift(scene);
 
         scene.game = this.game;
-        scene.onInitialize();
+        scene.init();
     }
 
     pop() {
@@ -19,7 +19,7 @@ export class Scene {
 
         if (scene) {
             scene.game = null;
-            scene.onDispose();
+            scene.dispose();
         }
         
         
@@ -32,10 +32,10 @@ export class Scene {
     }
 
     update(timeDelta) {
-        this.scenes[0].onUpdate(timeDelta);
+        this.scenes[0].update(timeDelta);
     }
 
     draw(context) {
-        this.scenes[0].onDraw(context);
+        this.scenes[0].draw(context);
     }
 }
