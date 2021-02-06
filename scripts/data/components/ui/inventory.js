@@ -3,17 +3,21 @@ import { Area } from '../../../engine/math/geometry/area.js';
 import { Vector2 } from '../../../engine/math/geometry/vector.js';
 import { Sprite } from '../../../engine/graphic/sprite.js';
 import { stone as spriteSheetStone, tree as spriteSheetTree } from '../../sprites.js';
+import { Window } from '../../../engine/game/ui/window.js';
 
 
 
-export class InventoryWindow extends Component {
+export class InventoryWindow extends Window {
     constructor(name) {
         super(name);
 
+        this.area = new Area(400, 100, 250, 300);
+        
+        this.backgroundColor = 'white';
+
+
         this.inventory = null;
 
-        this.areaWindow = new Area(400, 100, 250, 300);
-        
         this.isShowing = false;
     }
 
@@ -30,12 +34,7 @@ export class InventoryWindow extends Component {
 
     onUpdate(timeDelta) {
         for (const event of this.game.engine.events) {
-            if (event.type === 'keyup') {
-                if (event.key === 'i') {
-                    this.isShowing = !this.isShowing;
-                }
-            }
-            // else if (event.type === 'mousedown') {
+            // if (event.type === 'mousedown') {
             //     const mousePosition = event.position;
             // }
             // else if (event.type === 'mousemove') {
@@ -46,6 +45,8 @@ export class InventoryWindow extends Component {
 
     onDraw(context) {
         if (this.isShowing) {
+            super.onDraw(context);
+
             this.#drawInventoryWindow(context);
 
             if (this.#existsInventory()) {
@@ -55,30 +56,27 @@ export class InventoryWindow extends Component {
     }
 
     #drawInventoryWindow(context) {
-        this.#drawWindow(context);
+        this.#drawTitle(context);
         this.#drawFrames(context);
     }
 
-    #drawWindow(context) {
-        const positionWindow = this.areaWindow.getPosition();
-        const sizeWindow = this.areaWindow.getSize();
-        const offsetTitle = new Vector2(10, 24);
+    #drawTitle(context) {
+        const positionWindow = this.area.getPosition();
+        const offsetTitle = new Vector2(10, 10);
         const positionTitle = positionWindow.add(offsetTitle);
         
         context.save();
 
-        context.fillStyle = 'white';
-        context.fillRect(...positionWindow.toList(), ...sizeWindow.toList());
-
-        context.font = '24px serif';
+        context.font = '20px 굴림체';
+        context.textBaseline = 'top';
         context.fillStyle = 'Black';
-        context.fillText('Inventory', ...positionTitle.toList());
+        context.fillText('인벤토리', ...positionTitle.toList());
 
         context.restore();
     }
 
     #drawFrames(context) {
-        const positionWindow = this.areaWindow.getPosition();
+        const positionWindow = this.area.getPosition();
         const sizeTitle = new Vector2(0, 30);
         const margin = Vector2.full(10);
         const sizeSlot = Vector2.full(50);
@@ -106,7 +104,7 @@ export class InventoryWindow extends Component {
     }
 
     #drawInventoryItems(context) {
-        const positionWindow = this.areaWindow.getPosition();
+        const positionWindow = this.area.getPosition();
         const sizeTitle = new Vector2(0, 30);
         const margin = Vector2.full(10);
         const sizeSlot = Vector2.full(50);
@@ -161,5 +159,9 @@ export class InventoryWindow extends Component {
         }
 
         context.restore();
+    }
+
+    toggle() {
+        this.isShowing = !this.isShowing;
     }
 }
