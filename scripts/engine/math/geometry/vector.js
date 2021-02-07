@@ -44,6 +44,10 @@ export class Vector2 {
         return Math.sqrt(this.getSquareMagnitude());
     }
 
+    negate() {
+        return new Vector2(-this.x, -this.y);
+    }
+
     normalize() {
         const magnitude = this.getMagnitude();
         
