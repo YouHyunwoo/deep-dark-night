@@ -47,9 +47,9 @@ export class Sprite {
         this.anchor = Vector2.zeros();
     }
 
-    draw(context, position) {
+    draw(context, position, size) {
         if (this.isDrawable()) {
-            this.#drawSprite(context, position);
+            this.#drawSprite(context, position, size);
         }
     }
 
@@ -57,12 +57,16 @@ export class Sprite {
         return this.#spriteSheet?.isLoaded();
     }
 
-    #drawSprite(context, position) {
+    #drawSprite(context, position, size) {
         const sourceArea = this.#getSourceArea();
-        const sourceSize = sourceArea.getSize();
-        const destinationArea = this.#getDestinationArea(sourceSize);
 
-        destinationArea.moveBy(position);
+        const scaledSourceSize = sourceArea.getSize().multiplyEach(this.scale);
+        const destinationSize = size ?? scaledSourceSize;
+        const destinationArea = this.#getDestinationArea(destinationSize);
+
+        if (position) {
+            destinationArea.moveBy(position);
+        }
         
         this.#spriteSheet.draw(context, ...sourceArea.toList(), ...destinationArea.toList());
     }
@@ -79,21 +83,33 @@ export class Sprite {
         return Area.combine(sourcePosition, sourceSize);
     }
 
-    #getDestinationArea(sourceSize) {
-        const scaledSize = sourceSize.multiplyEach(this.scale);
-        const destinationPosition = scaledSize.multiplyEach(this.anchor).multiply(-1);
+    #getDestinationArea(destinationSize) {
+        const destinationPosition = destinationSize.multiplyEach(this.anchor).multiply(-1);
 
-        return Area.combine(destinationPosition, scaledSize);
+        return Area.combine(destinationPosition, destinationSize);
     }
 
     getSpriteArea(position) {
         const sourceArea = this.#getSourceArea();
-        const sourceSize = sourceArea.getSize();
-        const destinationArea = this.#getDestinationArea(sourceSize);
+        const scaledSourceSize = sourceArea.getSize().multiplyEach(this.scale);
+        const destinationSize = scaledSourceSize;
+        const destinationArea = this.#getDestinationArea(destinationSize);
 
-        destinationArea.moveBy(position);
+        if (position) {
+            destinationArea.moveBy(position);
+        }
 
         return destinationArea;
+    }
+
+    copy() {
+        const sprite = new Sprite(this.#spriteSheet);
+
+        sprite.cropInOriginalImage = this.cropInOriginalImage.copy();
+        sprite.scale = this.scale.copy();
+        sprite.anchor = this.anchor.copy();
+
+        return sprite;
     }
 }
 

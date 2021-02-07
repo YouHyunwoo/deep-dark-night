@@ -43,6 +43,6 @@ export class SpriteRenderer extends Component {
     }
 
     getSpriteArea() {
-        return this.sprite?.getSpriteArea(this.basePosition) ?? Area.zeros();
+        return this.sprite?.getSpriteArea() ?? Area.zeros();
     }
 }
