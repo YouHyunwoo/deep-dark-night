@@ -32,7 +32,7 @@ export class ObjectGenerator extends Component {
 
     generateStone(count) {
         for (let i = 0; i < count; i++) {
-            const object = new Stone('돌');
+            const object = new Stone();
 
             object.addTags('@ground');
 
@@ -49,7 +49,7 @@ export class ObjectGenerator extends Component {
 
     generateTree(count) {
         for (let i = 0; i < count; i++) {
-            const object = new Tree('나무');
+            const object = new Tree();
 
             object.addTags('@ground');
 
