@@ -31,6 +31,10 @@ export class Scene {
         this.push(scene);
     }
 
+    event(events) {
+        this.scenes[0].event(events);
+    }
+
     update(timeDelta) {
         this.scenes[0].update(timeDelta);
     }

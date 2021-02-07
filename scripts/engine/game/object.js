@@ -4,13 +4,9 @@ import { Component } from './component.js';
 
 
 export class GameObject {
-    
-    #initialized;
-    #disposed;
-
     constructor(name='') {
-        this.#initialized = false;
-        this.#disposed = false;
+        this.initialized = false;
+        this.disposed = false;
 
         this.scene = null;
 
@@ -27,7 +23,7 @@ export class GameObject {
     }
 
     init() {
-        if (!this.#initialized) {
+        if (!this.initialized) {
             this.onInitialize();
 
             this.components.forEach(component => {
@@ -38,12 +34,12 @@ export class GameObject {
                 object.init();
             });
     
-            this.#initialized = true;
+            this.initialized = true;
         }
     }
 
     dispose() {
-        if (this.#initialized && !this.#disposed) {
+        if (this.initialized && !this.disposed) {
             this.objects.forEach(object => {
                 object.dispose();
             });
@@ -53,19 +49,21 @@ export class GameObject {
             this.components.forEach(component => {
                 component.onDispose();
             });
+
+            this.scene = null;
     
-            this.#disposed = true;
+            this.disposed = true;
         }
     }
 
     addComponents(...components) {
-        if (!this.#disposed) {
+        if (!this.disposed) {
             this.components = this.components.concat(components);
             components.forEach(component => {
                 component.owner = this;
                 component.onAdded();
 
-                if (this.#initialized) {
+                if (this.initialized) {
                     component.onInitialize();
                 }
             });
@@ -103,7 +101,7 @@ export class GameObject {
     }
 
     addTags(...tags) {
-        if (!this.#disposed) {
+        if (!this.disposed) {
             this.tags = this.tags.concat(tags);
         }
     }
@@ -117,13 +115,14 @@ export class GameObject {
     }
 
     addGameObjects(...objects) {
-        if (!this.#disposed) {
+        if (!this.disposed) {
             this.objects = this.objects.concat(objects);
             objects.forEach(obj => {
+                obj.scene = this.scene;
                 obj.owner = this;
                 obj.onAdded();
 
-                if (this.#initialized) {
+                if (this.initialized) {
                     obj.init();
                 }
             });
@@ -133,6 +132,7 @@ export class GameObject {
     removeGameObjects(...objects) {
         this.objects = this.objects.filter(obj => !objects.includes(obj));
         objects.forEach(obj => {
+            obj.scene = null;
             obj.owner = null;
             obj.onRemoved();
         });
@@ -160,20 +160,36 @@ export class GameObject {
         this.dispose();
     }
 
+    event(events) {
+        if (this.initialized && !this.disposed && this.enable) {
+            this.onEvent(events);
+
+            this.components.forEach(component => {
+                component.onEvent(events);
+            });
+
+            this.objects.slice().reverse().forEach(object => {
+                object.event(events);
+            });
+        }
+    }
+
     update(timeDelta) {
-        if (this.#initialized && !this.#disposed && this.enable) {
+        if (this.initialized && !this.disposed && this.enable) {
             this.onUpdate(timeDelta);
 
             this.components.forEach(component => {
                 component.onUpdate(timeDelta);
             });
 
-            this.objects.forEach(obj => obj.update(timeDelta));
+            this.objects.forEach(object => {
+                object.update(timeDelta);
+            });
         }
     }
 
     draw(context) {
-        if (this.#initialized && !this.#disposed && this.enable) {
+        if (this.initialized && !this.disposed && this.enable) {
             context.save();
 
             context.translate(...this.area.getPosition().toList());
@@ -184,7 +200,9 @@ export class GameObject {
                 component.onDraw(context);
             });
 
-            this.objects.forEach(obj => obj.draw(context));
+            this.objects.forEach(object => {
+                object.draw(context);
+            });
 
             context.restore();
         }
@@ -203,13 +221,14 @@ export class GameObject {
     }
 
     isDisposed() {
-        return this.#disposed;
+        return this.disposed;
     }
 
     onInitialize() {}
     onDispose() {}
     onAdded() {}
     onRemoved() {}
+    onEvent(events) {}
     onUpdate(timeDelta) {}
     onDraw(context) {}
 }

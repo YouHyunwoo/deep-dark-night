@@ -101,6 +101,7 @@ export class Engine {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.context.save();
 
+        this.game.event(this.events);
         this.game.update(timeDelta);
         this.game.draw(this.context);
 

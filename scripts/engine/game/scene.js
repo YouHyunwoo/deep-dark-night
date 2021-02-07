@@ -21,6 +21,14 @@ export class Scene {
         this.onDispose();
     }
 
+    event(events) {
+        this.onEvent(events);
+
+        this.objects.slice().reverse().forEach(object => {
+            object.event(events);
+        });
+    }
+
     update(timeDelta) {
         this.onUpdate(timeDelta);
 
@@ -88,6 +96,7 @@ export class Scene {
 
     onInitialize() {}
     onDispose() {}
+    onEvent(events) {}
     onUpdate(timeDelta) {}
     onDraw(context) {}
 }

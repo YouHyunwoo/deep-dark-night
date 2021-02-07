@@ -16,6 +16,10 @@ export class Game {
 
     dispose() {}
 
+    event(events) {
+        this.scene.event(events);
+    }
+
     update(timeDelta) {
         this.scene.update(timeDelta);
     }

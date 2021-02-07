@@ -9,6 +9,7 @@ export class Component {
     onDispose() {}
     onAdded() {}
     onRemoved() {}
+    onEvent(events) {}
     onUpdate(timeDelta) {}
     onDraw(context) {}
 }
