@@ -22,6 +22,9 @@ export class Player extends Component {
         this.game = game;
         this.map = map.findComponent('Map');
         
+        this.inventoryWindow = scene.findGameObject('uiSystem').findGameObject('InventoryWindow');
+        this.mixWindow = scene.findGameObject('uiSystem').findComponent('MixWindow');
+
         this.movement = goPlayer.findComponent('Movement');
         this.gathering = goPlayer.findComponent('Gathering');
 
@@ -34,6 +37,13 @@ export class Player extends Component {
         for (const event of this.game.engine.events) {
             if (event.type === 'keyup') {
                 // console.log(event.key);
+
+                if (event.key === 'i') {
+                    this.inventoryWindow.toggle();
+                }
+                if (event.key === 'm') {
+                    this.mixWindow.toggle();
+                }
 
                 if (event.key === 'a') {
                     this.game.camera.position.x -= 10;
@@ -59,12 +69,11 @@ export class Player extends Component {
                     this.clickGroundInMap(mousePosition);
                 }
             }
-            else if (event.type === 'mousemove') {
-                const mousePosition = event.position;
-
-                this.pointed = this.findGameObjectPointingByMouseInMap(mousePosition);
-            }
         }
+
+        const mousePosition = this.game.engine.mouse;
+
+        this.pointed = this.findGameObjectPointingByMouseInMap(mousePosition);
 
         if (this.selected?.isDisposed()) {
             this.selected = null;

@@ -9,6 +9,8 @@ export class Engine {
 
         this.events = [];
 
+        this.mouse = new Vector2(0, 0);
+
         this.game = null;
     }
 
@@ -33,35 +35,43 @@ export class Engine {
         canvas.addEventListener('pointerdown', (e) => {
             this.events.push({
                 type: 'mousedown',
-                position: new Vector2(e.offsetX, e.offsetY)
+                position: new Vector2(e.offsetX, e.offsetY),
+                bubble: true
             });
         });
 
         canvas.addEventListener('pointermove', (e) => {
             this.events.push({
                 type: 'mousemove',
-                position: new Vector2(e.offsetX, e.offsetY)
+                position: new Vector2(e.offsetX, e.offsetY),
+                bubble: true
             });
+
+            this.mouse.x = e.offsetX;
+            this.mouse.y = e.offsetY;
         });
 
         canvas.addEventListener('pointerup', (e) => {
             this.events.push({
                 type: 'mouseup',
-                position: new Vector2(e.offsetX, e.offsetY)
+                position: new Vector2(e.offsetX, e.offsetY),
+                bubble: true
             })
         });
 
         window.addEventListener('keydown', (e) => {
             this.events.push({
                 type: 'keydown',
-                key: e.key
+                key: e.key,
+                bubble: true
             })
         });
 
         window.addEventListener('keyup', (e) => {
             this.events.push({
                 type: 'keyup',
-                key: e.key
+                key: e.key,
+                bubble: true
             })
         });
 
