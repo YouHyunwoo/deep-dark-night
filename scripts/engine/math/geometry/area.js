@@ -75,6 +75,10 @@ export class Area {
         return new Vector2(this.x, this.y);
     }
 
+    getCenter() {
+        return new Vector2(this.x + this.width / 2, this.y + this.height / 2);
+    }
+
     getSize() {
         return new Vector2(this.width, this.height);
     }
@@ -85,6 +89,14 @@ export class Area {
 
     static combine(position, size) {
         return new Area(position.x, position.y, size.x, size.y);
+    }
+
+    static zeroPosition(area) {
+        return new Area(0, 0, area.width, area.height);
+    }
+
+    static zeroSize(area) {
+        return new Area(area.x, area.y, 0, 0);
     }
 
     static zeros() {
