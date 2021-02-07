@@ -21,7 +21,10 @@ import { GatherState } from '../data/components/player/state/gather.js';
 import { Vector2 } from '../engine/math/geometry/vector.js';
 import { Area } from '../engine/math/geometry/area.js';
 import { TimeSystem } from '../data/components/timeSystem.js';
-import { InventoryWindow } from '../data/components/ui/inventory.js';
+import { UISystem } from '../engine/game/ui/system.js';
+import { MixWindow } from './asset/objects/ui/mix.js';
+import { InventoryWindow } from './asset/objects/ui/inventory.js';
+
 
 
 
@@ -162,7 +165,7 @@ class GameScene extends Scene {
                     const stoneCount = ~~(Math.random() * 10);
 
                     for (let i = 0; i < stoneCount; i++) {
-                        const object = new Stone('stone');
+                        const object = new Stone('돌');
             
                         object.addTags('@ground');
             
@@ -182,7 +185,7 @@ class GameScene extends Scene {
                     const treeCount = ~~(Math.random() * 5);
 
                     for (let i = 0; i < treeCount; i++) {
-                        const object = new Tree('tree');
+                        const object = new Tree('나무');
             
                         object.addTags('@ground');
             
@@ -209,36 +212,40 @@ class GameScene extends Scene {
         }
 
         this.addGameObject(this.world);
-
-        this.world.init();
     }
 
     #addTimeSystemToScene() {
         this.timeSystem = new GameObject('timeSystem');
+
+        this.addGameObject(this.timeSystem);
 
         {
             const componentTimeSystem = new TimeSystem('TimeSystem');
 
             this.timeSystem.addComponents(componentTimeSystem);
         }
-
-        this.addGameObject(this.timeSystem);
-
-        this.timeSystem.init();
     }
 
     #addUISystemToScene() {
-        this.uiSystem = new GameObject('uiSystem');
-
-        {
-            const componentInventoryWindow = new InventoryWindow('InventoryWindow');
-
-            this.uiSystem.addComponents(componentInventoryWindow);
-        }
+        this.uiSystem = new UISystem('uiSystem');
 
         this.addGameObject(this.uiSystem);
 
-        this.uiSystem.init();
+        {
+            const goInventoryWindow = new InventoryWindow();
+
+            goInventoryWindow.area = new Area(600, 100, 250, 400);
+            goInventoryWindow.visible = false;
+
+            this.uiSystem.addGameObjects(goInventoryWindow);
+            
+            const goMixWindow = new MixWindow();
+
+            goMixWindow.area = new Area(100, 100, 250, 300);
+            goMixWindow.visible = false;
+
+            this.uiSystem.addGameObjects(goMixWindow);
+        }
     }
 }
 
