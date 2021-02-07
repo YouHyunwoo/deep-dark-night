@@ -32,7 +32,7 @@ export class ObjectGenerator extends Component {
 
     generateStone(count) {
         for (let i = 0; i < count; i++) {
-            const object = new Stone('stone');
+            const object = new Stone('돌');
 
             object.addTags('@ground');
 
@@ -44,14 +44,12 @@ export class ObjectGenerator extends Component {
             const scale = Math.random() * 0.5 + 0.5;
 
             object.findComponent('SpriteRenderer').sprite.scale = Vector2.full(scale);
-            
-            console.log(`stone: ${i+1}/${count}`);
         }
     }
 
     generateTree(count) {
         for (let i = 0; i < count; i++) {
-            const object = new Tree('tree');
+            const object = new Tree('나무');
 
             object.addTags('@ground');
 
