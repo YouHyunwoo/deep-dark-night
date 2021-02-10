@@ -7,7 +7,9 @@ import { ObjectSort } from './objectSort.js';
 
 
 export class Map extends GameObject {
-    onInitialize() {
+    constructor(name) {
+        super(name);
+        
         const componentObjectGenerator = new ObjectGenerator('ObjectGenerator');
 
         this.addComponents(componentObjectGenerator);
@@ -23,5 +25,14 @@ export class Map extends GameObject {
         const componentMapRenderer = new MapRenderer('MapRenderer');
 
         this.addComponents(componentMapRenderer);
+
+
+        const layerGround = new GameObject('ground');
+
+        this.addGameObjects(layerGround);
+
+        const layerSky = new GameObject('sky');
+
+        this.addGameObjects(layerSky);
     }
 }

@@ -36,13 +36,12 @@ class DeepDarkNight extends Game {
 class GameScene extends Scene {
     onInitialize() {
         this.#addWorldToScene();
+        this.#addPlayerToScene();
         this.#addTimeSystemToScene();
         this.#addUISystemToScene();
     }
 
     #addWorldToScene() {
-        const canvas = this.game.engine.canvas;
-
         this.world = new GameObject('world');
 
         this.addGameObject(this.world);
@@ -52,146 +51,142 @@ class GameScene extends Scene {
             // this.world.addComponents(componentWorld);
 
 
-            const map = new Map('map');
+            const map = this.map = new Map('map');
 
             this.world.addGameObjects(map);
 
             map.area = new Area(0, 0, 800, 800);
+        }
+    }
+
+    #addPlayerToScene() {
+        const canvas = this.game.engine.canvas;
+        const map = this.world.findGameObject('map');
+        const layerGround = map.findGameObject('ground');
+
+        const player = this.player = new GameObject('player');
+
+        layerGround.addGameObjects(player);
+
+        player.area = new Area(100, 100, 20, 16);
+
+        player.addTags('@ground');
+
+        {
+            const componentPlayer = new Player('Player', this.game);
+
+            componentPlayer.map = map;
+
+            player.addComponents(componentPlayer);
+
+
+            const spriteRenderer = new SpriteRenderer('SpriteRenderer');
+
+            player.addComponents(spriteRenderer);
+
+
+            const animator = new Animator('Animator');
+
+            player.addComponents(animator);
+
+
+            const direction = new Direction('Direction');
+
+            player.addComponents(direction);
+
+
+            const movement = new Movement('Movement');
+
+            player.addComponents(movement);
+
+
+            const gathering = new Gathering('Gathering');
+
+            player.addComponents(gathering);
+
+
+            const inventory = new Inventory('Inventory');
+
+            player.addComponents(inventory);
+        }
+        {
+            const state = new GameObject('state');
+
             {
-                const layerGround = new GameObject('ground');
+                const stateContext = new StateContext('StateContext');
 
-                map.addGameObjects(layerGround);
+                state.addComponents(stateContext);
+            }
+            {
+                const idle = new GameObject('idle');
+
                 {
-                    const player = this.player = new GameObject('player');
+                    const stateIdle = new IdleState('State');
 
-                    layerGround.addGameObjects(player);
-
-                    player.area = new Area(100, 100, 20, 16);
-
-                    player.addTags('@ground');
-
-                    {
-                        const componentPlayer = new Player('Player', this.game);
-
-                        componentPlayer.map = map;
-
-                        player.addComponents(componentPlayer);
-
-
-                        const spriteRenderer = new SpriteRenderer('SpriteRenderer');
-
-                        player.addComponents(spriteRenderer);
-
-
-                        const animator = new Animator('Animator');
-
-                        player.addComponents(animator);
-
-
-                        const direction = new Direction('Direction');
-
-                        player.addComponents(direction);
-
-
-                        const movement = new Movement('Movement');
-
-                        player.addComponents(movement);
-
-
-                        const gathering = new Gathering('Gathering');
-
-                        player.addComponents(gathering);
-
-
-                        const inventory = new Inventory('Inventory');
-
-                        player.addComponents(inventory);
-                    }
-                    {
-                        const state = new GameObject('state');
-
-                        {
-                            const stateContext = new StateContext('StateContext');
-
-                            state.addComponents(stateContext);
-                        }
-                        {
-                            const idle = new GameObject('idle');
-
-                            {
-                                const stateIdle = new IdleState('State');
-
-                                idle.addComponents(stateIdle);
-                            }
-
-                            state.addGameObjects(idle);
-
-                            const move = new GameObject('move');
-
-                            {
-                                const stateMove = new MoveState('State');
-
-                                move.addComponents(stateMove);
-                            }
-
-                            state.addGameObjects(move);
-
-                            const gather = new GameObject('gather');
-
-                            {
-                                const stateGather = new GatherState('State');
-
-                                gather.addComponents(stateGather);
-                            }
-
-                            state.addGameObjects(gather);
-                        }
-
-                        player.addGameObjects(state);
-                    }
-
-                    const stoneCount = ~~(Math.random() * 10);
-
-                    for (let i = 0; i < stoneCount; i++) {
-                        const object = new Stone('돌');
-            
-                        object.addTags('@ground');
-            
-                        object.area.x = Math.random() * canvas.width;
-                        object.area.y = Math.random() * canvas.height;
-            
-                        object.init();
-            
-                        const scale = Math.random() * 0.5 + 0.5;
-            
-                        object.findComponent('SpriteRenderer').sprite.scale = Vector2.full(scale);
-            
-                        layerGround.addGameObjects(object);
-                    }
-
-
-                    const treeCount = ~~(Math.random() * 5);
-
-                    for (let i = 0; i < treeCount; i++) {
-                        const object = new Tree('나무');
-            
-                        object.addTags('@ground');
-            
-                        object.area.x = Math.random() * canvas.width;
-                        object.area.y = Math.random() * canvas.height;
-            
-                        object.init();
-            
-                        object.findComponent('SpriteRenderer').sprite.scale = Vector2.full(3);
-            
-                        layerGround.addGameObjects(object);
-                    }
+                    idle.addComponents(stateIdle);
                 }
 
-                const layerSky = new GameObject('sky');
+                state.addGameObjects(idle);
 
-                map.addGameObjects(layerSky);
+                const move = new GameObject('move');
+
+                {
+                    const stateMove = new MoveState('State');
+
+                    move.addComponents(stateMove);
+                }
+
+                state.addGameObjects(move);
+
+                const gather = new GameObject('gather');
+
+                {
+                    const stateGather = new GatherState('State');
+
+                    gather.addComponents(stateGather);
+                }
+
+                state.addGameObjects(gather);
             }
+
+            player.addGameObjects(state);
+        }
+
+        const stoneCount = ~~(Math.random() * 10);
+
+        for (let i = 0; i < stoneCount; i++) {
+            const object = new Stone('돌');
+
+            object.addTags('@ground');
+
+            object.area.x = Math.random() * canvas.width;
+            object.area.y = Math.random() * canvas.height;
+
+            object.init();
+
+            const scale = Math.random() * 0.5 + 0.5;
+
+            object.findComponent('SpriteRenderer').sprite.scale = Vector2.full(scale);
+
+            layerGround.addGameObjects(object);
+        }
+
+
+        const treeCount = ~~(Math.random() * 5);
+
+        for (let i = 0; i < treeCount; i++) {
+            const object = new Tree('나무');
+
+            object.addTags('@ground');
+
+            object.area.x = Math.random() * canvas.width;
+            object.area.y = Math.random() * canvas.height;
+
+            object.init();
+
+            object.findComponent('SpriteRenderer').sprite.scale = Vector2.full(3);
+
+            layerGround.addGameObjects(object);
         }
     }
 
