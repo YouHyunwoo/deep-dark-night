@@ -47,6 +47,7 @@ class GameScene extends Scene {
 
         this.world = new GameObject('world');
 
+        this.addGameObject(this.world);
         {
             // const componentWorld = new World('World');
 
@@ -54,6 +55,8 @@ class GameScene extends Scene {
 
 
             const map = new GameObject('map');
+
+            this.world.addGameObjects(map);
 
             map.area = new Area(0, 0, 800, 800);
 
@@ -73,8 +76,11 @@ class GameScene extends Scene {
             {
                 const layerGround = new GameObject('ground');
 
+                map.addGameObjects(layerGround);
                 {
                     const player = this.player = new GameObject('player');
+
+                    layerGround.addGameObjects(player);
 
                     player.area = new Area(100, 100, 20, 16);
 
@@ -160,9 +166,6 @@ class GameScene extends Scene {
                         player.addGameObjects(state);
                     }
 
-                    layerGround.addGameObjects(player);
-
-
                     const stoneCount = ~~(Math.random() * 10);
 
                     for (let i = 0; i < stoneCount; i++) {
@@ -201,18 +204,11 @@ class GameScene extends Scene {
                     }
                 }
 
-                map.addGameObjects(layerGround);
-
-
                 const layerSky = new GameObject('sky');
 
                 map.addGameObjects(layerSky);
             }
-            
-            this.world.addGameObjects(map);
         }
-
-        this.addGameObject(this.world);
     }
 
     #addTimeSystemToScene() {
