@@ -4,18 +4,18 @@ import { Scene } from '../engine/game/scene.js';
 import { GameObject } from '../engine/game/object.js';
 import { World } from './asset/world/world.js';
 import { Map } from './asset/map/map.js';
-import { Player } from './asset/player/player.js';
-import { Movement } from './asset/character/movement.js';
-import { Direction } from './asset/character/direction.js';
-import { Gathering } from './asset/character/gathering.js';
-import { Inventory } from './asset/character/inventory.js';
+import { Player, PlayerComponent } from './asset/player/player.js';
+// import { Movement } from './asset/character/movement.js';
+// import { Direction } from './asset/character/direction.js';
+// import { Gathering } from './asset/character/gathering.js';
+// import { Inventory } from './asset/character/inventory.js';
 import { Stone, Tree } from './asset/data/objects.js';
-import { SpriteRenderer } from '../engine/graphic/components/spriteRenderer.js';
-import { Animator } from '../engine/graphic/components/animator.js';
-import { StateContext } from '../engine/util/components/state.js';
-import { IdleState } from './asset/player/state/idle.js';
-import { MoveState } from './asset/player/state/move.js';
-import { GatherState } from './asset/player/state/gather.js';
+// import { SpriteRenderer } from '../engine/graphic/components/spriteRenderer.js';
+// import { Animator } from '../engine/graphic/components/animator.js';
+// import { StateContext } from '../engine/util/components/state.js';
+// import { IdleState } from './asset/player/state/idle.js';
+// import { MoveState } from './asset/player/state/move.js';
+// import { GatherState } from './asset/player/state/gather.js';
 import { Vector2 } from '../engine/math/geometry/vector.js';
 import { Area } from '../engine/math/geometry/area.js';
 import { TimeSystem } from './asset/system/timeSystem.js';
@@ -37,6 +37,8 @@ class GameScene extends Scene {
     onInitialize() {
         this.#addWorldToScene();
         this.#addPlayerToScene();
+        this.#addStoneInWorld();
+        this.#addTreeInWorld();
         this.#addTimeSystemToScene();
         this.#addUISystemToScene();
     }
@@ -60,97 +62,21 @@ class GameScene extends Scene {
     }
 
     #addPlayerToScene() {
-        const canvas = this.game.engine.canvas;
         const map = this.world.findGameObject('map');
         const layerGround = map.findGameObject('ground');
 
-        const player = this.player = new GameObject('player');
+        const player = this.player = new Player('player');
 
         layerGround.addGameObjects(player);
 
         player.area = new Area(100, 100, 20, 16);
 
         player.addTags('@ground');
+    }
 
-        {
-            const componentPlayer = new Player('Player', this.game);
-
-            componentPlayer.map = map;
-
-            player.addComponents(componentPlayer);
-
-
-            const spriteRenderer = new SpriteRenderer('SpriteRenderer');
-
-            player.addComponents(spriteRenderer);
-
-
-            const animator = new Animator('Animator');
-
-            player.addComponents(animator);
-
-
-            const direction = new Direction('Direction');
-
-            player.addComponents(direction);
-
-
-            const movement = new Movement('Movement');
-
-            player.addComponents(movement);
-
-
-            const gathering = new Gathering('Gathering');
-
-            player.addComponents(gathering);
-
-
-            const inventory = new Inventory('Inventory');
-
-            player.addComponents(inventory);
-        }
-        {
-            const state = new GameObject('state');
-
-            {
-                const stateContext = new StateContext('StateContext');
-
-                state.addComponents(stateContext);
-            }
-            {
-                const idle = new GameObject('idle');
-
-                {
-                    const stateIdle = new IdleState('State');
-
-                    idle.addComponents(stateIdle);
-                }
-
-                state.addGameObjects(idle);
-
-                const move = new GameObject('move');
-
-                {
-                    const stateMove = new MoveState('State');
-
-                    move.addComponents(stateMove);
-                }
-
-                state.addGameObjects(move);
-
-                const gather = new GameObject('gather');
-
-                {
-                    const stateGather = new GatherState('State');
-
-                    gather.addComponents(stateGather);
-                }
-
-                state.addGameObjects(gather);
-            }
-
-            player.addGameObjects(state);
-        }
+    #addStoneInWorld() {
+        const map = this.world.findGameObject('map');
+        const layerGround = map.findGameObject('ground');
 
         const stoneCount = ~~(Math.random() * 10);
 
@@ -159,8 +85,8 @@ class GameScene extends Scene {
 
             object.addTags('@ground');
 
-            object.area.x = Math.random() * canvas.width;
-            object.area.y = Math.random() * canvas.height;
+            object.area.x = Math.random() * map.area.width;
+            object.area.y = Math.random() * map.area.height;
 
             object.init();
 
@@ -170,7 +96,11 @@ class GameScene extends Scene {
 
             layerGround.addGameObjects(object);
         }
+    }
 
+    #addTreeInWorld() {
+        const map = this.world.findGameObject('map');
+        const layerGround = map.findGameObject('ground');
 
         const treeCount = ~~(Math.random() * 5);
 
@@ -179,8 +109,8 @@ class GameScene extends Scene {
 
             object.addTags('@ground');
 
-            object.area.x = Math.random() * canvas.width;
-            object.area.y = Math.random() * canvas.height;
+            object.area.x = Math.random() * map.area.width;
+            object.area.y = Math.random() * map.area.height;
 
             object.init();
 
