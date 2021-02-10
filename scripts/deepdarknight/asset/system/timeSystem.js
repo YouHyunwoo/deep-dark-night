@@ -3,11 +3,33 @@ import { Component } from "../../../engine/game/component.js";
 
 
 export class TimeSystem extends Component {
+
+    #time;
+    #speed;
+
     constructor(name) {
         super(name);
 
-        this.time = 0;
-        this.speed = 3600;
+        this.#time = 0;
+
+        Object.defineProperty(this, 'time', {
+            get() {
+                return this.#time;
+            }
+        });
+
+        this.#speed = 3600;
+
+        Object.defineProperty(this, 'speed', {
+            get() {
+                return this.#speed;
+            },
+            set(value) {
+                const clamped = max(0, min(value, 3600 * 24));
+
+                this.#speed = clamped;
+            }
+        });
     }
 
     onInitialize() {
@@ -17,7 +39,7 @@ export class TimeSystem extends Component {
     }
 
     onUpdate(timeDelta) {
-        this.time += this.speed * timeDelta;
+        this.#time += this.#speed * timeDelta;
     }
 
     onDraw(context) {
@@ -28,19 +50,19 @@ export class TimeSystem extends Component {
     }
 
     getSeconds() {
-        return Math.floor(this.time % 60);
+        return Math.floor(this.#time % 60);
     }
 
     getMinutes() {
-        return Math.floor(this.time / 60 % 60);
+        return Math.floor(this.#time / 60 % 60);
     }
 
     getHours() {
-        return Math.floor(this.time / 3600 % 24);
+        return Math.floor(this.#time / 3600 % 24);
     }
 
     getDate() {
-        return Math.floor(this.time / 24 / 3600);
+        return Math.floor(this.#time / 24 / 3600);
     }
 
     isDay() {
