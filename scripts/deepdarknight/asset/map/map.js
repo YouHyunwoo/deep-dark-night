@@ -1,63 +1,27 @@
-import { Component } from '../../../engine/game/component.js';
-import { Area } from '../../../engine/math/geometry/area.js';
+import { GameObject } from '../../../engine/game/object.js';
+import { MapRenderer } from './mapRenderer.js';
+import { ObjectGenerator } from './objectGenerator.js';
+import { ObjectPointer } from './ObjectPointer.js';
+import { ObjectSort } from './objectSort.js';
 
 
 
-export class Map extends Component {
-    constructor(name) {
-        super(name);
-
-        this.backgroundColor = 'saddlebrown';
-    }
-
+export class Map extends GameObject {
     onInitialize() {
-        const object = this.owner;
-        const world = object.owner;
-        const scene = world.scene;
-        const game = scene.game;
+        const componentObjectGenerator = new ObjectGenerator('ObjectGenerator');
 
-        this.object = object;
-        this.game = game;
+        this.addComponents(componentObjectGenerator);
 
-        this.layers = object.objects;
-    }
+        const componentObjectPointer = new ObjectPointer('ObjectPointer');
 
-    onDraw(context) {
-        context.save();
+        this.addComponents(componentObjectPointer);
 
-        context.fillStyle = this.backgroundColor;
-        context.fillRect(...this.object.area.toList());
+        const componentObjectSort = new ObjectSort('ObjectSort');
 
-        context.restore();
-    }
+        this.addComponents(componentObjectSort);
 
-    findGameObjectPointingByMouse(mousePosition, exceptionObjects) {
-        const camera = this.game.camera;
-        const mouseInWorld = camera.screenToWorld(mousePosition);
+        const componentMapRenderer = new MapRenderer('MapRenderer');
 
-        const reverseLayers = this.layers.slice().reverse();
-
-        for (const layer of reverseLayers) {
-            const reverseObjects = layer.objects.slice().reverse();
-
-            for (const object of reverseObjects) {
-                if (exceptionObjects.includes(object)) {
-                    continue;
-                }
-    
-                const spriteRenderer = object.findComponent('SpriteRenderer');
-                const area = spriteRenderer.getSpriteArea();
-                const areaPosition = area.getPosition();
-                const areaSize = area.getSize();
-                const areaPositionInWorld = object.localToGlobal(areaPosition);
-                const areaInWorld = Area.combine(areaPositionInWorld, areaSize);
-                
-                if (areaInWorld.containsVector(mouseInWorld)) {
-                    return object;
-                }
-            }
-        }
-
-        return null;
+        this.addComponents(componentMapRenderer);
     }
 }

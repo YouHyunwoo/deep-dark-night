@@ -4,8 +4,6 @@ import { Scene } from '../engine/game/scene.js';
 import { GameObject } from '../engine/game/object.js';
 import { World } from './asset/world/world.js';
 import { Map } from './asset/map/map.js';
-import { ObjectSort } from './asset/map/objectSort.js';
-import { ObjectGenerator } from './asset/map/objectGenerator.js';
 import { Player } from './asset/player/player.js';
 import { Movement } from './asset/character/movement.js';
 import { Direction } from './asset/character/direction.js';
@@ -54,25 +52,11 @@ class GameScene extends Scene {
             // this.world.addComponents(componentWorld);
 
 
-            const map = new GameObject('map');
+            const map = new Map('map');
 
             this.world.addGameObjects(map);
 
             map.area = new Area(0, 0, 800, 800);
-
-            {
-                const componentMap = new Map('Map');
-
-                map.addComponents(componentMap);
-
-                const componentObjectSort = new ObjectSort('ObjectSort');
-
-                map.addComponents(componentObjectSort);
-
-                const componentObjectGenerator = new ObjectGenerator('ObjectGenerator');
-
-                map.addComponents(componentObjectGenerator);
-            }
             {
                 const layerGround = new GameObject('ground');
 

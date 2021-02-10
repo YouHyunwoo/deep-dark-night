@@ -20,7 +20,7 @@ export class Player extends Component {
         const game = scene.game;
 
         this.game = game;
-        this.map = map.findComponent('Map');
+        this.map = map.findComponent('ObjectPointer');
         
         this.inventoryWindow = scene.findGameObject('uiSystem').findGameObject('InventoryWindow');
         this.mixWindow = scene.findGameObject('uiSystem').findGameObject('MixWindow');
