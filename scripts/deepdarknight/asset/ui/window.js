@@ -1,8 +1,8 @@
-import { UIObject } from '../../../../engine/game/ui/object.js';
+import { UIObject } from '../../../engine/game/ui/object.js';
 
 
 
-export class Window extends UIObject {
+export class UIWindow extends UIObject {
     constructor(name='Window') {
         super(name);
 

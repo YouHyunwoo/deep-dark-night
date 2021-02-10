@@ -1,5 +1,5 @@
-import { Component } from '../../engine/game/component.js';
-import { Area } from '../../engine/math/geometry/area.js';
+import { Component } from '../../../engine/game/component.js';
+import { Area } from '../../../engine/math/geometry/area.js';
 
 
 

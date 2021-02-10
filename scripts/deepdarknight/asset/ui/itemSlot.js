@@ -1,10 +1,7 @@
-import { UIImage } from '../../../../engine/game/ui/image.js';
-import { UILabel } from '../../../../engine/game/ui/label.js';
-import { UIObject } from '../../../../engine/game/ui/object.js';
-import { Sprite } from '../../../../engine/graphic/sprite.js';
-import { Area } from '../../../../engine/math/geometry/area.js';
-import { Vector2 } from '../../../../engine/math/geometry/vector.js';
-import { tree as spriteSheetTree } from '../../../../data/sprites.js';
+import { UIImage } from '../../../engine/game/ui/image.js';
+import { UILabel } from '../../../engine/game/ui/label.js';
+import { UIObject } from '../../../engine/game/ui/object.js';
+import { Area } from '../../../engine/math/geometry/area.js';
 
 
 
@@ -24,6 +21,7 @@ export class UIItemSlot extends UIObject {
         this.itemName = null;
         this.itemCount = null;
 
+        this.pointable = true;
         this.pointed = false;
 
         this.isDisabled = false;
@@ -31,11 +29,6 @@ export class UIItemSlot extends UIObject {
 
     onInitialize() {
         {
-            // const sprite = new Sprite();
-
-            // sprite.cropInOriginalImage = new Area(3 / 4, 0, 1 / 4, 1);
-            // sprite.scale = new Vector2(0.7, 0.7);
-            
             const image = this.imageItemSprite = new UIImage('itemSprite', this.itemSprite);
 
             image.area = new Area(0, 0, this.area.width, this.area.height);
@@ -146,7 +139,9 @@ export class UIItemSlot extends UIObject {
     }
 
     onMouseIn(event) {
-        this.pointed = true;
+        if (this.pointable) {
+            this.pointed = true;
+        }
     }
 
     onMouseOut(event) {
@@ -154,6 +149,6 @@ export class UIItemSlot extends UIObject {
     }
 
     onClick(event) {
-        this.isDisabled = !this.isDisabled;
+        // this.isDisabled = !this.isDisabled;
     }
 }

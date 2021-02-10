@@ -1,14 +1,15 @@
-import { Window } from './window.js';
-import { Area } from '../../../../engine/math/geometry/area.js';
+import { UIWindow } from './window.js';
 import { UIItemSlot } from './itemSlot.js';
-import { UILabel } from '../../../../engine/game/ui/label.js';
-import { Vector2 } from '../../../../engine/math/geometry/vector.js';
-import { items } from '../../../../data/items.js';
-import { UIObject } from '../../../../engine/game/ui/object.js';
+import { UIObject } from '../../../engine/game/ui/object.js';
+import { UILabel } from '../../../engine/game/ui/label.js';
+import { Vector2 } from '../../../engine/math/geometry/vector.js';
+import { Area } from '../../../engine/math/geometry/area.js';
+import { items } from '../data/items.js';
 
 
 
-export class MixWindow extends Window {
+
+export class MixWindow extends UIWindow {
     constructor() {
         super('MixWindow');
 
@@ -59,7 +60,7 @@ export class MixWindow extends Window {
             const item = items[itemId];
 
             if (item.mix) {
-                const uiMix = new Window(`${item.name}`);
+                const uiMix = new UIWindow(`${item.name}`);
 
                 uiMix.borderColor = 'green';
                 uiMix.area = Area.combine(positionCurrentMix, sizeMix);

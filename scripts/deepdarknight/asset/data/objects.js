@@ -1,11 +1,11 @@
-import { GameObject } from '../engine/game/object.js';
-import { Sprite } from '../engine/graphic/sprite.js';
-import { Vector2 } from '../engine/math/geometry/vector.js';
-import { Area } from '../engine/math/geometry/area.js';
-import { SpriteRenderer } from './components/spriteRenderer.js';
+import { GameObject } from '../../../engine/game/object.js';
+import { Sprite } from '../../../engine/graphic/sprite.js';
+import { Vector2 } from '../../../engine/math/geometry/vector.js';
+import { Area } from '../../../engine/math/geometry/area.js';
+import { SpriteRenderer } from '../../../engine/graphic/components/spriteRenderer.js';
 
 import { stone as spriteSheetStone, tree as spriteSheetTree } from './sprites.js';
-import { Inventory } from './components/character/inventory.js';
+import { Inventory } from '../character/inventory.js';
 
 
 

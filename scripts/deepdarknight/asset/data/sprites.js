@@ -1,19 +1,19 @@
-import { Sprite, SpriteSheet } from '../engine/graphic/sprite.js';
-import { Area } from '../engine/math/geometry/area.js';
-import { Vector2 } from '../engine/math/geometry/vector.js';
+import { Sprite, SpriteSheet } from '../../../engine/graphic/sprite.js';
+import { Area } from '../../../engine/math/geometry/area.js';
+import { Vector2 } from '../../../engine/math/geometry/vector.js';
 
 
 
-export const character = new SpriteSheet('images/character.png');
+export const character = new SpriteSheet('scripts/deepdarknight/asset/images/character.png');
 
 
-export const stone = new SpriteSheet('images/stone.png');
+export const stone = new SpriteSheet('scripts/deepdarknight/asset/images/stone.png');
 
 export const spriteStone = new Sprite(stone);
 spriteStone.anchor = new Vector2(0.5, 0.9);
 
 
-export const tree = new SpriteSheet('images/tree.png');
+export const tree = new SpriteSheet('scripts/deepdarknight/asset/images/tree.png');
 
 export const spriteTree1 = new Sprite(tree);
 spriteTree1.cropInOriginalImage = new Area(0 / 4, 0, 1 / 4, 1);

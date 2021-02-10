@@ -1,6 +1,6 @@
-import { Component } from '../../engine/game/component.js';
-import { Vector2 } from '../../engine/math/geometry/vector.js';
-import { Stone, Tree } from '../objects.js';
+import { Component } from '../../../engine/game/component.js';
+import { Vector2 } from '../../../engine/math/geometry/vector.js';
+import { Stone, Tree } from '../data/objects.js';
 
 
 

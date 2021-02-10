@@ -1,4 +1,4 @@
-import { Item } from '../deepdarknight/game/item.js';
+import { Item } from '../../game/item.js';
 import { spriteStone, spriteTree1 } from './sprites.js';
 
 

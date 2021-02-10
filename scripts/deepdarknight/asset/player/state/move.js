@@ -1,5 +1,5 @@
-import { State } from '../../state.js';
-import { animations } from '../../../animations.js';
+import { State } from '../../../../engine/util/components/state.js';
+import { animations } from '../../data/animations.js';
 
 
 

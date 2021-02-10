@@ -2,28 +2,29 @@ import { Engine } from '../engine/core/engine.js';
 import { Game } from '../engine/core/game.js';
 import { Scene } from '../engine/game/scene.js';
 import { GameObject } from '../engine/game/object.js';
-import { World } from '../data/components/world.js';
-import { Map } from '../data/components/map.js';
-import { ObjectSort } from '../data/components/objectSort.js';
-import { ObjectGenerator } from '../data/components/objectGenerator.js';
-import { Player } from '../data/components/player/player.js';
-import { Movement } from '../data/components/character/movement.js';
-import { Direction } from '../data/components/character/direction.js';
-import { Gathering } from '../data/components/character/gathering.js';
-import { Stone, Tree } from '../data/objects.js';
-import { SpriteRenderer } from '../data/components/spriteRenderer.js';
-import { Animator } from '../data/components/animator.js';
-import { Inventory } from '../data/components/character/inventory.js';
-import { StateContext } from '../data/components/state.js';
-import { IdleState } from '../data/components/player/state/idle.js';
-import { MoveState } from '../data/components/player/state/move.js';
-import { GatherState } from '../data/components/player/state/gather.js';
+import { World } from './asset/world/world.js';
+import { Map } from './asset/map/map.js';
+import { ObjectSort } from './asset/map/objectSort.js';
+import { ObjectGenerator } from './asset/map/objectGenerator.js';
+import { Player } from './asset/player/player.js';
+import { Movement } from './asset/character/movement.js';
+import { Direction } from './asset/character/direction.js';
+import { Gathering } from './asset/character/gathering.js';
+import { Inventory } from './asset/character/inventory.js';
+import { Stone, Tree } from './asset/data/objects.js';
+import { SpriteRenderer } from '../engine/graphic/components/spriteRenderer.js';
+import { Animator } from '../engine/graphic/components/animator.js';
+import { StateContext } from '../engine/util/components/state.js';
+import { IdleState } from './asset/player/state/idle.js';
+import { MoveState } from './asset/player/state/move.js';
+import { GatherState } from './asset/player/state/gather.js';
 import { Vector2 } from '../engine/math/geometry/vector.js';
 import { Area } from '../engine/math/geometry/area.js';
-import { TimeSystem } from '../data/components/timeSystem.js';
+import { TimeSystem } from './asset/system/timeSystem.js';
 import { UISystem } from '../engine/game/ui/system.js';
-import { MixWindow } from './asset/objects/ui/mix.js';
-import { InventoryWindow } from './asset/objects/ui/inventory.js';
+import { InventoryWindow } from './asset/ui/inventory.js';
+import { MixWindow } from './asset/ui/mix.js';
+
 
 
 
@@ -232,19 +233,19 @@ class GameScene extends Scene {
         this.addGameObject(this.uiSystem);
 
         {
-            const goInventoryWindow = new InventoryWindow();
+            const inventoryWindow = new InventoryWindow();
 
-            goInventoryWindow.area = new Area(600, 100, 250, 400);
-            goInventoryWindow.visible = false;
+            inventoryWindow.area = new Area(600, 100, 250, 400);
+            inventoryWindow.visible = false;
 
-            this.uiSystem.addGameObjects(goInventoryWindow);
+            this.uiSystem.addGameObjects(inventoryWindow);
             
-            const goMixWindow = new MixWindow();
+            const mixWindow = new MixWindow();
 
-            goMixWindow.area = new Area(100, 100, 250, 300);
-            goMixWindow.visible = false;
+            mixWindow.area = new Area(100, 100, 250, 300);
+            mixWindow.visible = false;
 
-            this.uiSystem.addGameObjects(goMixWindow);
+            this.uiSystem.addGameObjects(mixWindow);
         }
     }
 }

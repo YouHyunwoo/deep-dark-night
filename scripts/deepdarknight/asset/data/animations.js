@@ -1,6 +1,6 @@
-import { Vector2 } from '../engine/math/geometry/vector.js';
-import { Area } from '../engine/math/geometry/area.js';
-import { Sprite, SpriteAnimation, SpriteAnimationFrame } from '../engine/graphic/sprite.js';
+import { Vector2 } from '../../../engine/math/geometry/vector.js';
+import { Area } from '../../../engine/math/geometry/area.js';
+import { Sprite, SpriteAnimation, SpriteAnimationFrame } from '../../../engine/graphic/sprite.js';
 import { character } from './sprites.js';
 
 

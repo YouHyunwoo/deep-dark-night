@@ -1,13 +1,13 @@
-import { Window } from './window.js';
-import { Area } from '../../../../engine/math/geometry/area.js';
+import { UIWindow } from './window.js';
 import { UIItemSlot } from './itemSlot.js';
-import { UILabel } from '../../../../engine/game/ui/label.js';
-import { Vector2 } from '../../../../engine/math/geometry/vector.js';
-import { items } from '../../../../data/items.js';
+import { UILabel } from '../../../engine/game/ui/label.js';
+import { Vector2 } from '../../../engine/math/geometry/vector.js';
+import { Area } from '../../../engine/math/geometry/area.js';
+import { items } from '../data/items.js';
 
 
 
-export class InventoryWindow extends Window {
+export class InventoryWindow extends UIWindow {
     constructor() {
         super('InventoryWindow');
 
@@ -54,6 +54,7 @@ export class InventoryWindow extends Window {
                     const itemSlot = new UIItemSlot(`${index}`);
 
                     itemSlot.area = new Area(10 + position.x, 40 + position.y, ...sizeSlot.toList());
+                    itemSlot.pointable = false;
 
                     const itemName = itemNames[index];
 
