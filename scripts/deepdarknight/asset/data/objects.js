@@ -10,20 +10,20 @@ import { Inventory } from '../character/inventory.js';
 
 
 export class Stone extends GameObject {
-    constructor() {
-        super('돌');
-    }
+    constructor(name) {
+        super(name ?? '돌');
 
-    onInitialize() {
         const spriteRenderer = new SpriteRenderer('SpriteRenderer');
+
+        this.addComponents(spriteRenderer);
 
         spriteRenderer.sprite = new Sprite(spriteSheetStone);
         spriteRenderer.sprite.anchor = new Vector2(0.5, 0.9);
 
-        this.addComponents(spriteRenderer);
-        
 
         const inventory = new Inventory('Inventory');
+
+        this.addComponents(inventory);
 
         {
             const name = '돌';
@@ -33,27 +33,25 @@ export class Stone extends GameObject {
 
             inventory.addItems(inventoryItem);
         }
-
-        this.addComponents(inventory);
     }
 }
 
 export class Tree extends GameObject {
-    constructor() {
-        super('나무');
-    }
+    constructor(name) {
+        super(name ?? '나무');
 
-    onInitialize() {
         const spriteRenderer = new SpriteRenderer('SpriteRenderer');
+
+        this.addComponents(spriteRenderer);
 
         spriteRenderer.sprite = new Sprite(spriteSheetTree);
         spriteRenderer.sprite.cropInOriginalImage = new Area(0, 0, 1 / 4, 1);
         spriteRenderer.sprite.anchor = new Vector2(0.5, 0.9);
 
-        this.addComponents(spriteRenderer);
-
-
+        
         const inventory = new Inventory('Inventory');
+
+        this.addComponents(inventory);
 
         {
             const name = '나무';
@@ -63,7 +61,5 @@ export class Tree extends GameObject {
 
             inventory.addItems(inventoryItem);
         }
-
-        this.addComponents(inventory);
     }
 }

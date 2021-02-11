@@ -36,13 +36,13 @@ export class ObjectGenerator extends Component {
 
             object.addTags('@ground');
 
+            this.addGameObjects(object);
+
             object.area.x = Math.random() * this.canvas.width;
             object.area.y = Math.random() * this.canvas.height;
 
-            this.addGameObjects(object);
-
             const scale = Math.random() * 0.5 + 0.5;
-
+            
             object.findComponent('SpriteRenderer').sprite.scale = Vector2.full(scale);
         }
     }
@@ -52,15 +52,13 @@ export class ObjectGenerator extends Component {
             const object = new Tree();
 
             object.addTags('@ground');
+            
+            this.addGameObjects(object);
 
             object.area.x = Math.random() * this.canvas.width;
             object.area.y = Math.random() * this.canvas.height;
 
-            object.init();
-
             object.findComponent('SpriteRenderer').sprite.scale = Vector2.full(3);
-
-            this.addGameObjects(object);
         }
     }
 

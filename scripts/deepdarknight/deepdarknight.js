@@ -4,26 +4,14 @@ import { Scene } from '../engine/game/scene.js';
 import { GameObject } from '../engine/game/object.js';
 import { World } from './asset/world/world.js';
 import { Map } from './asset/map/map.js';
-import { Player, PlayerComponent } from './asset/player/player.js';
-// import { Movement } from './asset/character/movement.js';
-// import { Direction } from './asset/character/direction.js';
-// import { Gathering } from './asset/character/gathering.js';
-// import { Inventory } from './asset/character/inventory.js';
+import { Player } from './asset/player/player.js';
 import { Stone, Tree } from './asset/data/objects.js';
-// import { SpriteRenderer } from '../engine/graphic/components/spriteRenderer.js';
-// import { Animator } from '../engine/graphic/components/animator.js';
-// import { StateContext } from '../engine/util/components/state.js';
-// import { IdleState } from './asset/player/state/idle.js';
-// import { MoveState } from './asset/player/state/move.js';
-// import { GatherState } from './asset/player/state/gather.js';
 import { Vector2 } from '../engine/math/geometry/vector.js';
 import { Area } from '../engine/math/geometry/area.js';
 import { TimeSystem } from './asset/system/timeSystem.js';
 import { UISystem } from '../engine/game/ui/system.js';
 import { InventoryWindow } from './asset/ui/inventory.js';
 import { MixWindow } from './asset/ui/mix.js';
-
-
 
 
 
@@ -81,7 +69,7 @@ class GameScene extends Scene {
         const stoneCount = ~~(Math.random() * 10);
 
         for (let i = 0; i < stoneCount; i++) {
-            const object = new Stone('돌');
+            const object = new Stone();
 
             object.addTags('@ground');
 
@@ -105,7 +93,7 @@ class GameScene extends Scene {
         const treeCount = ~~(Math.random() * 5);
 
         for (let i = 0; i < treeCount; i++) {
-            const object = new Tree('나무');
+            const object = new Tree();
 
             object.addTags('@ground');
 
