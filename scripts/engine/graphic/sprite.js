@@ -5,42 +5,34 @@ import { Area } from '../math/geometry/area.js';
 
 
 export class SpriteSheet {
-    
-    #image;
-    #imageSize;
-    #imageLoaded;
-
     constructor(imageSource) {
-        this.#imageSize = Vector2.zeros();
-        this.#imageLoaded = false;
+        this.imageSize = Vector2.zeros();
+        this.imageLoaded = false;
         
-        this.#image = new Image();
-        this.#image.onload = () => {
-            this.#imageSize = new Vector2(this.#image.width, this.#image.height);
-            this.#imageLoaded = true;
+        this.image = new Image();
+        this.image.onload = () => {
+            this.imageSize = new Vector2(this.image.width, this.image.height);
+            this.imageLoaded = true;
         }
-        this.#image.src = imageSource;
+        this.image.src = imageSource;
     }
 
     draw(context, ...args) {
-        context.drawImage(this.#image, ...args);
+        context.drawImage(this.image, ...args);
     }
 
     getImageSize() {
-        return this.#imageSize;
+        return this.imageSize;
     }
 
     isLoaded() {
-        return this.#imageLoaded;
+        return this.imageLoaded;
     }
 }
 
 export class Sprite {
-
-    #spriteSheet;
-
     constructor(spriteSheet) {
-        this.#spriteSheet = spriteSheet;
+        this.spriteSheet = spriteSheet;
         
         this.cropInOriginalImage = new Area(0, 0, 1, 1);
         this.scale = Vector2.ones();
@@ -49,30 +41,30 @@ export class Sprite {
 
     draw(context, position, size) {
         if (this.isDrawable()) {
-            this.#drawSprite(context, position, size);
+            this.drawSprite(context, position, size);
         }
     }
 
     isDrawable() {
-        return this.#spriteSheet?.isLoaded();
+        return this.spriteSheet?.isLoaded();
     }
 
-    #drawSprite(context, position, size) {
-        const sourceArea = this.#getSourceArea();
+    drawSprite(context, position, size) {
+        const sourceArea = this.getSourceArea();
 
         const scaledSourceSize = sourceArea.getSize().multiplyEach(this.scale);
         const destinationSize = size ?? scaledSourceSize;
-        const destinationArea = this.#getDestinationArea(destinationSize);
+        const destinationArea = this.getDestinationArea(destinationSize);
 
         if (position) {
             destinationArea.moveBy(position);
         }
         
-        this.#spriteSheet.draw(context, ...sourceArea.toList(), ...destinationArea.toList());
+        this.spriteSheet.draw(context, ...sourceArea.toList(), ...destinationArea.toList());
     }
     
-    #getSourceArea() {
-        const imageSize = this.#spriteSheet.getImageSize();
+    getSourceArea() {
+        const imageSize = this.spriteSheet.getImageSize();
 
         const cropPosition = this.cropInOriginalImage.getPosition();
         const cropSize = this.cropInOriginalImage.getSize();
@@ -83,17 +75,17 @@ export class Sprite {
         return Area.combine(sourcePosition, sourceSize);
     }
 
-    #getDestinationArea(destinationSize) {
+    getDestinationArea(destinationSize) {
         const destinationPosition = destinationSize.multiplyEach(this.anchor).multiply(-1);
 
         return Area.combine(destinationPosition, destinationSize);
     }
 
     getSpriteArea(position) {
-        const sourceArea = this.#getSourceArea();
+        const sourceArea = this.getSourceArea();
         const scaledSourceSize = sourceArea.getSize().multiplyEach(this.scale);
         const destinationSize = scaledSourceSize;
-        const destinationArea = this.#getDestinationArea(destinationSize);
+        const destinationArea = this.getDestinationArea(destinationSize);
 
         if (position) {
             destinationArea.moveBy(position);
@@ -103,7 +95,7 @@ export class Sprite {
     }
 
     copy() {
-        const sprite = new Sprite(this.#spriteSheet);
+        const sprite = new Sprite(this.spriteSheet);
 
         sprite.cropInOriginalImage = this.cropInOriginalImage.copy();
         sprite.scale = this.scale.copy();

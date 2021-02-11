@@ -4,15 +4,11 @@ import { Area } from '../../math/geometry/area.js';
 
 
 export class UISystem extends GameObject {
-
-    #stateMouse;
-    #mouseDown;
-
     constructor(name='UISystem') {
         super(name);
 
-        this.#stateMouse = null;
-        this.#mouseDown = null;
+        this.stateMouse = null;
+        this.mouseDown = null;
 
         this.engine = null;
 
@@ -85,11 +81,11 @@ export class UISystem extends GameObject {
 
         for (const event of events) {
             if (event.type === 'mousedown') {
-                if (!this.#stateMouse) {
+                if (!this.stateMouse) {
                     const positionMouse = event.position;
 
                     if (this.area.containsVector(positionMouse)) {
-                        this.#mouseDown = true;
+                        this.mouseDown = true;
 
                         this.mouseIn(event);
                         this.mouseDown(event);
@@ -97,8 +93,8 @@ export class UISystem extends GameObject {
                         usedEvents.push(event);
                     }
                 }
-                else if (this.#stateMouse === 'mousemove') {
-                    this.#mouseDown = true;
+                else if (this.stateMouse === 'mousemove') {
+                    this.mouseDown = true;
 
                     this.mouseDown(event);
 
@@ -109,8 +105,8 @@ export class UISystem extends GameObject {
                 const positionMouse = this.globalToLocal(event.position);
 
                 if (Area.zeroPosition(this.area).containsVector(positionMouse)) {
-                    if (this.#stateMouse === 'mouseout' || !this.#stateMouse) {
-                        this.#stateMouse = 'mousemove';
+                    if (this.stateMouse === 'mouseout' || !this.stateMouse) {
+                        this.stateMouse = 'mousemove';
 
                         this.mouseIn(event);
                         this.mouseMove(event);
@@ -124,8 +120,8 @@ export class UISystem extends GameObject {
                     }
                 }
                 else {
-                    if (this.#stateMouse === 'mousemove' || !this.#stateMouse) {
-                        this.#stateMouse = 'mouseout';
+                    if (this.stateMouse === 'mousemove' || !this.stateMouse) {
+                        this.stateMouse = 'mouseout';
 
                         this.mouseOut(event);
 
@@ -134,7 +130,7 @@ export class UISystem extends GameObject {
                 }
             }
             else if (event.type === 'mouseup') {
-                if (!this.#stateMouse) {
+                if (!this.stateMouse) {
                     const positionMouse = event.position;
 
                     if (Area.zeroPosition(this.area).containsVector(positionMouse)) {
@@ -144,17 +140,17 @@ export class UISystem extends GameObject {
                         usedEvents.push(event);
                     }
                 }
-                else if (this.#stateMouse === 'mousemove') {
+                else if (this.stateMouse === 'mousemove') {
                     this.mouseUp(event);
 
-                    if (this.#mouseDown) {
+                    if (this.mouseDown) {
                         this.onClick(event);
                     }
 
                     usedEvents.push(event);
                 }
 
-                this.#mouseDown = false;
+                this.mouseDown = false;
             }
 
             if (event.bubble) {

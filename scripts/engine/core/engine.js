@@ -89,16 +89,16 @@ export class Engine {
     }
 
     start() {
-        this.#initializeGame();
+        this.initializeGame();
 
-        this.#startGameLoop();
+        this.startGameLoop();
     }
 
-    #initializeGame() {
+    initializeGame() {
         this.game.init();
     }
 
-    #startGameLoop() {
+    startGameLoop() {
         const timeNow = Date.now();
 
         window.requestAFrame(() => this.gameLoop(timeNow));

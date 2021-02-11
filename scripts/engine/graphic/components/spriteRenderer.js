@@ -17,15 +17,15 @@ export class SpriteRenderer extends Component {
         if (this.sprite) {
             context.save();
 
-            // this.#drawBlackRectangle(context);
+            // this.drawBlackRectangle(context);
 
-            this.#drawSprite(context);
+            this.drawSprite(context);
     
             context.restore();
         }
     }
 
-    #drawBlackRectangle(context) {
+    drawBlackRectangle(context) {
         const obj = this.owner;
 
         const area = new Area(-obj.width / 2, -obj.height / 2, obj.width, obj.height);
@@ -38,7 +38,7 @@ export class SpriteRenderer extends Component {
         context.restore();
     }
 
-    #drawSprite(context) {
+    drawSprite(context) {
         this.sprite?.draw(context, this.basePosition);
     }
 

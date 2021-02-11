@@ -23,15 +23,15 @@ class DeepDarkNight extends Game {
 
 class GameScene extends Scene {
     onInitialize() {
-        this.#addWorldToScene();
-        this.#addPlayerToScene();
-        this.#addStoneInWorld();
-        this.#addTreeInWorld();
-        this.#addTimeSystemToScene();
-        this.#addUISystemToScene();
+        this.addWorldToScene();
+        this.addPlayerToScene();
+        this.addStoneInWorld();
+        this.addTreeInWorld();
+        this.addTimeSystemToScene();
+        this.addUISystemToScene();
     }
 
-    #addWorldToScene() {
+    addWorldToScene() {
         this.world = new GameObject('world');
 
         this.addGameObject(this.world);
@@ -49,7 +49,7 @@ class GameScene extends Scene {
         }
     }
 
-    #addPlayerToScene() {
+    addPlayerToScene() {
         const map = this.world.findGameObject('map');
         const layerGround = map.findGameObject('ground');
 
@@ -62,7 +62,7 @@ class GameScene extends Scene {
         player.addTags('@ground');
     }
 
-    #addStoneInWorld() {
+    addStoneInWorld() {
         const map = this.world.findGameObject('map');
         const layerGround = map.findGameObject('ground');
 
@@ -86,7 +86,7 @@ class GameScene extends Scene {
         }
     }
 
-    #addTreeInWorld() {
+    addTreeInWorld() {
         const map = this.world.findGameObject('map');
         const layerGround = map.findGameObject('ground');
 
@@ -108,7 +108,7 @@ class GameScene extends Scene {
         }
     }
 
-    #addTimeSystemToScene() {
+    addTimeSystemToScene() {
         this.timeSystem = new GameObject('timeSystem');
 
         this.addGameObject(this.timeSystem);
@@ -120,7 +120,7 @@ class GameScene extends Scene {
         }
     }
 
-    #addUISystemToScene() {
+    addUISystemToScene() {
         this.uiSystem = new UISystem('uiSystem');
 
         this.addGameObject(this.uiSystem);

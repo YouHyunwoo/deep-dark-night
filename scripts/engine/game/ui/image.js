@@ -20,19 +20,19 @@ export class UIImage extends UIObject {
 
     onDraw(context) {
         if (this.area.width !== 0 && this.area.height !== 0) {
-            const sizeContent = this.#getContentSize(context);
+            const sizeContent = this.getContentSize(context);
             
-            this.#beginClipping(context, sizeContent);
+            this.beginClipping(context, sizeContent);
 
-            this.#drawBackground(context, sizeContent);
-            this.#drawSprite(context, sizeContent);
-            this.#drawBorder(context, sizeContent);
+            this.drawBackground(context, sizeContent);
+            this.drawSprite(context, sizeContent);
+            this.drawBorder(context, sizeContent);
 
-            this.#endClipping(context);
+            this.endClipping(context);
         }
     }
 
-    #getContentSize(context) {
+    getContentSize(context) {
         const sizeContent = this.area.getSize();
 
         if (sizeContent.x < 0 || sizeContent.y < 0) {
@@ -50,7 +50,7 @@ export class UIImage extends UIObject {
         return sizeContent;
     }
 
-    #beginClipping(context, sizeContent) {
+    beginClipping(context, sizeContent) {
         context.save();
 
         context.beginPath();
@@ -58,17 +58,17 @@ export class UIImage extends UIObject {
         context.clip();
     }
 
-    #drawBackground(context, sizeContent) {
+    drawBackground(context, sizeContent) {
         if (this.backgroundColor) {
             context.fillStyle = this.backgroundColor;
             context.fillRect(0, 0, ...sizeContent.toList());
         }
     }
 
-    #drawSprite(context, sizeContent) {
+    drawSprite(context, sizeContent) {
         if (this.sprite?.isDrawable()) {
             if (this.drawType === 'original') {
-                const positionImage = this.#getImagePosition(sizeContent);
+                const positionImage = this.getImagePosition(sizeContent);
 
                 this.sprite.draw(context, positionImage);
             }
@@ -78,7 +78,7 @@ export class UIImage extends UIObject {
         }
     }
 
-    #getImagePosition(sizeContent) {
+    getImagePosition(sizeContent) {
         const areaSprite = this.sprite.getSpriteArea();
 
         const horizontal = {
@@ -101,14 +101,14 @@ export class UIImage extends UIObject {
         return position;
     }
 
-    #drawBorder(context, sizeContent) {
+    drawBorder(context, sizeContent) {
         if (this.borderColor) {
             context.strokeStyle = this.borderColor;
             context.strokeRect(0, 0, ...sizeContent.toList());
         }
     }
 
-    #endClipping(context) {
+    endClipping(context) {
         context.restore();
     }
 }

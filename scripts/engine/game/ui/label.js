@@ -5,66 +5,66 @@ import { Vector2 } from '../../math/geometry/vector.js';
 
 export class UILabel extends UIObject {
 
-    #text;
-    #font;
-    #fitContentHorizontal;
-    #fitContentVertical;
+    // _text;
+    // _font;
+    // _fitContentHorizontal;
+    // _fitContentVertical;
 
     constructor(name='Label') {
         super(name);
 
-        this.#text = null;
-        this.#font = '12px 굴림체';
-        this.#fitContentHorizontal = false;
-        this.#fitContentVertical = false;
+        this._text = null;
+        this._font = '12px 굴림체';
+        this._fitContentHorizontal = false;
+        this._fitContentVertical = false;
 
         Object.defineProperties(this, {
             text: {
                 get() {
-                    return this.#text;
+                    return this._text;
                 },
                 set(value) {
-                    this.#text = value ?? '';
+                    this._text = value ?? '';
 
-                    this.#refreshSize();
+                    this._refreshSize();
                 }
             },
             font: {
                 get() {
-                    return this.#font;
+                    return this._font;
                 },
                 set(value) {
-                    this.#font = value ?? '';
+                    this._font = value ?? '';
 
-                    this.#refreshSize();
+                    this._refreshSize();
                 }
             },
             fitContentHorizontal: {
                 get() {
-                    return this.#fitContentHorizontal;
+                    return this._fitContentHorizontal;
                 },
                 set(value) {
-                    this.#fitContentHorizontal = value ?? false;
+                    this._fitContentHorizontal = value ?? false;
 
-                    this.#refreshSize();
+                    this._refreshSize();
                 }
             },
             fitContentVertical: {
                 get() {
-                    return this.#fitContentVertical;
+                    return this._fitContentVertical;
                 },
                 set(value) {
-                    this.#fitContentVertical = value ?? false;
+                    this._fitContentVertical = value ?? false;
 
-                    this.#refreshSize();
+                    this._refreshSize();
                 }
             },
             fitContent: {
                 set(value) {
-                    this.#fitContentHorizontal = value.horizontal;
-                    this.#fitContentVertical = value.vertical;
+                    this._fitContentHorizontal = value.horizontal;
+                    this._fitContentVertical = value.vertical;
 
-                    this.#refreshSize();
+                    this._refreshSize();
                 }
             }
         });
@@ -77,7 +77,7 @@ export class UILabel extends UIObject {
         this.textBaseline = 'top';
     }
 
-    #refreshSize() {
+    _refreshSize() {
         if (this.context) {
             const context = this.context;
 
@@ -87,7 +87,7 @@ export class UILabel extends UIObject {
             context.textAlign = this.textAlign;
             context.textBaseline = this.textBaseline;
             
-            this.#getContentSize(context);
+            this._getContentSize(context);
     
             context.restore();
         }
@@ -100,40 +100,40 @@ export class UILabel extends UIObject {
 
         this.context = context;
 
-        this.#refreshSize(context);
+        this._refreshSize(context);
     }
 
     onDraw(context) {
         if (this.area.width >= 0 && this.area.height >= 0) {
-            this.#setFont(context);
+            this._setFont(context);
             
-            this.#beginClipping(context);
+            this._beginClipping(context);
 
-            this.#drawBackground(context);
-            this.#drawText(context);
-            this.#drawBorder(context);
+            this._drawBackground(context);
+            this._drawText(context);
+            this._drawBorder(context);
 
-            this.#endClipping(context);
+            this._endClipping(context);
         }
     }
 
-    #setFont(context) {
+    _setFont(context) {
         console.assert(this.font);
 
         context.font = this.font;
     }
 
-    #getContentSize(context) {
+    _getContentSize(context) {
         const sizeContent = this.area.getSize();
 
-        if (this.#fitContentHorizontal || this.#fitContentVertical) {
+        if (this._fitContentHorizontal || this._fitContentVertical) {
             const measured = context.measureText(this.text ?? '');
 
-            if (this.#fitContentHorizontal) {
+            if (this._fitContentHorizontal) {
                 sizeContent.x = measured.width;
             }
 
-            if (this.#fitContentVertical) {
+            if (this._fitContentVertical) {
                 sizeContent.y = measured.actualBoundingBoxAscent + measured.actualBoundingBoxDescent;
             }
         }
@@ -141,7 +141,7 @@ export class UILabel extends UIObject {
         this.area.resizeTo(sizeContent);
     }
 
-    #beginClipping(context) {
+    _beginClipping(context) {
         context.save();
 
         context.beginPath();
@@ -149,16 +149,16 @@ export class UILabel extends UIObject {
         context.clip();
     }
 
-    #drawBackground(context) {
+    _drawBackground(context) {
         if (this.backgroundColor) {
             context.fillStyle = this.backgroundColor;
             context.fillRect(0, 0, ...this.area.getSize().toList());
         }
     }
 
-    #drawText(context) {
+    _drawText(context) {
         if (this.text) {
-            const positionText = this.#getTextPosition(this.area.getSize());
+            const positionText = this._getTextPosition(this.area.getSize());
 
             context.font = this.font;
             context.textAlign = this.textAlign;
@@ -168,7 +168,7 @@ export class UILabel extends UIObject {
         }
     }
 
-    #getTextPosition(sizeContent) {
+    _getTextPosition(sizeContent) {
         const horizontal = {
             left: 0,
             center: sizeContent.x / 2,
@@ -189,14 +189,14 @@ export class UILabel extends UIObject {
         return position;
     }
 
-    #drawBorder(context) {
+    _drawBorder(context) {
         if (this.borderColor) {
             context.strokeStyle = this.borderColor;
             context.strokeRect(0, 0, ...this.area.getSize().toList());
         }
     }
 
-    #endClipping(context) {
+    _endClipping(context) {
         context.restore();
     }
 }
