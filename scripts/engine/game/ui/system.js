@@ -1,59 +1,12 @@
 import { GameObject } from '../object.js';
 import { Area } from '../../math/geometry/area.js';
+import { UIObject } from './object.js';
 
 
 
-export class UISystem extends GameObject {
+export class UISystem extends UIObject {
     constructor(name='UISystem') {
         super(name);
-
-        this.stateMouse = null;
-        this.mouseDown = null;
-
-        this.engine = null;
-
-        this.visible = true;
-    }
-
-    init() {
-        if (!this.initialized) {
-            const scene = this.scene;
-            const game = scene.game;
-            const engine = game.engine;
-            
-            this.engine = engine;
-            
-            this.onInitialize();
-
-            this.components.forEach(component => {
-                component.onInitialize();
-            });
-
-            this.objects.forEach(object => {
-                object.init();
-            });
-    
-            this.initialized = true;
-        }
-    }
-
-    dispose() {
-        if (this.initialized && !this.disposed) {
-            this.objects.forEach(object => {
-                object.dispose();
-            });
-
-            this.onDispose();
-
-            this.components.forEach(component => {
-                component.onDispose();
-            });
-
-            this.scene = null;
-            this.engine = null;
-    
-            this.disposed = true;
-        }
     }
 
     event(events) {
@@ -76,16 +29,36 @@ export class UISystem extends GameObject {
         }
     }
 
+    draw(context) {
+        if (this.initialized && !this.disposed && this.enable) {
+            context.save();
+
+            context.translate(...this.area.getPosition().toList());
+
+            this.onDraw(context);
+
+            this.components.forEach(component => {
+                component.draw(context);
+            });
+
+            this.objects.forEach(object => {
+                object.draw(context);
+            });
+
+            context.restore();
+        }
+    }
+
     mouseEvent(events) {
         let usedEvents = [];
 
         for (const event of events) {
             if (event.type === 'mousedown') {
-                if (!this.stateMouse) {
+                if (!this._stateMouse) {
                     const positionMouse = event.position;
 
                     if (this.area.containsVector(positionMouse)) {
-                        this.mouseDown = true;
+                        this._mouseDown = true;
 
                         this.mouseIn(event);
                         this.mouseDown(event);
@@ -93,8 +66,8 @@ export class UISystem extends GameObject {
                         usedEvents.push(event);
                     }
                 }
-                else if (this.stateMouse === 'mousemove') {
-                    this.mouseDown = true;
+                else if (this._stateMouse === 'mousemove') {
+                    this._mouseDown = true;
 
                     this.mouseDown(event);
 
@@ -105,8 +78,8 @@ export class UISystem extends GameObject {
                 const positionMouse = this.globalToLocal(event.position);
 
                 if (Area.zeroPosition(this.area).containsVector(positionMouse)) {
-                    if (this.stateMouse === 'mouseout' || !this.stateMouse) {
-                        this.stateMouse = 'mousemove';
+                    if (this._stateMouse === 'mouseout' || !this._stateMouse) {
+                        this._stateMouse = 'mousemove';
 
                         this.mouseIn(event);
                         this.mouseMove(event);
@@ -120,8 +93,8 @@ export class UISystem extends GameObject {
                     }
                 }
                 else {
-                    if (this.stateMouse === 'mousemove' || !this.stateMouse) {
-                        this.stateMouse = 'mouseout';
+                    if (this._stateMouse === 'mousemove' || !this._stateMouse) {
+                        this._stateMouse = 'mouseout';
 
                         this.mouseOut(event);
 
@@ -130,7 +103,7 @@ export class UISystem extends GameObject {
                 }
             }
             else if (event.type === 'mouseup') {
-                if (!this.stateMouse) {
+                if (!this._stateMouse) {
                     const positionMouse = event.position;
 
                     if (Area.zeroPosition(this.area).containsVector(positionMouse)) {
@@ -140,17 +113,17 @@ export class UISystem extends GameObject {
                         usedEvents.push(event);
                     }
                 }
-                else if (this.stateMouse === 'mousemove') {
+                else if (this._stateMouse === 'mousemove') {
                     this.mouseUp(event);
 
-                    if (this.mouseDown) {
+                    if (this._mouseDown) {
                         this.onClick(event);
                     }
 
                     usedEvents.push(event);
                 }
 
-                this.mouseDown = false;
+                this._mouseDown = false;
             }
 
             if (event.bubble) {
@@ -165,35 +138,35 @@ export class UISystem extends GameObject {
         return usedEvents;
     }
 
-    mouseIn(event) {
-        if (this.initialized && !this.disposed && this.enable) {
-            this.onMouseIn(event);
-        }
-    }
+    // mouseIn(event) {
+    //     if (this.initialized && !this.disposed && this.enable) {
+    //         this.onMouseIn(event);
+    //     }
+    // }
 
-    mouseMove(event) {
-        if (this.initialized && !this.disposed && this.enable) {
-            this.onMouseMove(event);
-        }
-    }
+    // mouseMove(event) {
+    //     if (this.initialized && !this.disposed && this.enable) {
+    //         this.onMouseMove(event);
+    //     }
+    // }
 
-    mouseOut(event) {
-        if (this.initialized && !this.disposed && this.enable) {
-            this.onMouseOut(event);
-        }
-    }
+    // mouseOut(event) {
+    //     if (this.initialized && !this.disposed && this.enable) {
+    //         this.onMouseOut(event);
+    //     }
+    // }
 
-    mouseDown(event) {
-        if (this.initialized && !this.disposed && this.enable) {
-            this.onMouseDown(event);
-        }
-    }
+    // mouseDown(event) {
+    //     if (this.initialized && !this.disposed && this.enable) {
+    //         this.onMouseDown(event);
+    //     }
+    // }
 
-    mouseUp(event) {
-        if (this.initialized && !this.disposed && this.enable) {
-            this.onMouseUp(event);
-        }
-    }
+    // mouseUp(event) {
+    //     if (this.initialized && !this.disposed && this.enable) {
+    //         this.onMouseUp(event);
+    //     }
+    // }
 
     onMouseIn(event) {}
     onMouseMove(event) {}
