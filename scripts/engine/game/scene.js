@@ -1,38 +1,54 @@
 export class Scene {
     constructor() {
+        this._state = 'created';
+
         this.game = null;
 
         this.objects = [];
     }
 
     init() {
-        this.onInitialize();
+        if (this._state === 'created') {
+            this.onInitialize();
 
-        this.objects.forEach(object => {
-            object.init();
-        });
+            this.objects.forEach(object => {
+                object.init();
+            });
+
+            this._state = 'initialized';
+        }
     }
 
     dispose() {
-        this.objects.forEach(object => {
-            object.dispose();
-        });
+        if (this._state === 'initialized') {
+            this.objects.forEach(object => {
+                object.dispose();
+            });
+    
+            this.onDispose();
 
-        this.onDispose();
+            this._state = 'disposed';
+        }
     }
 
     event(events) {
-        this.onEvent(events);
+        if (this._state === 'initialized') {
+            this.onEvent(events);
 
-        this.objects.slice().reverse().forEach(object => {
-            object.event(events);
-        });
+            this.objects.slice().reverse().forEach(object => {
+                object.event(events);
+            });
+        }
     }
 
     update(timeDelta) {
-        this.onUpdate(timeDelta);
+        if (this._state === 'initialized') {
+            this.onUpdate(timeDelta);
 
-        this.objects.forEach(obj => obj.update(timeDelta));
+            this.objects.forEach(object => {
+                object.update(timeDelta);
+            });
+        }
     }
 
     draw(context) {
@@ -93,6 +109,112 @@ export class Scene {
 
         return null;
     }
+
+    async deserializeObject(serializedGameObject) {
+		let serializedModule = serializedGameObject.module;
+		let serializedType = serializedGameObject.type;
+
+		if (!serializedModule || !serializedType) {
+			serializedModule = '/scripts/engine/game/object.js';
+			serializedType = 'GameObject';
+		}
+
+		const module = await import(serializedModule);
+		const type = module[serializedType];
+
+		const serializedName = serializedGameObject.name ?? '';
+		const serializedEnable = serializedGameObject.enable ?? true;
+		const serializedObjects = serializedGameObject.objects ?? [];
+		const serializedComponents = serializedGameObject.components ?? [];
+		const serializedTags = serializedGameObject.tags ?? [];
+		const onSerialized = serializedGameObject.onSerialized;
+
+		const gameObject = new type();
+
+		gameObject.name = serializedName;
+		gameObject.enable = serializedEnable;
+
+		const objects = await Promise.all(
+			serializedObjects.map(async object => await this.deserializeObject(object))
+		);
+
+		gameObject.addGameObjects(...objects);
+		
+		const components = await Promise.all(
+			serializedComponents.map(async component => await this.deserializeComponent(component))
+		);
+
+		gameObject.addComponents(...components);
+
+		gameObject.addTags(...serializedTags);
+
+		delete serializedGameObject['type'];
+		delete serializedGameObject['name'];
+		delete serializedGameObject['enable'];
+		delete serializedGameObject['objects'];
+		delete serializedGameObject['components'];
+		delete serializedGameObject['tags'];
+		delete serializedGameObject['onSerialized'];
+
+		for (const propertyName in serializedGameObject) {
+			const propertyValue = serializedGameObject[propertyName];
+			
+			gameObject[propertyName] = propertyValue;
+		}
+
+		if (onSerialized) {
+			onSerialized(gameObject);
+		}
+	
+		return gameObject;
+	}
+
+	async deserializeComponent(serializedComponent) {
+		let serializedModule = serializedComponent.module;
+		let serializedType = serializedComponent.type;
+
+		const module = await import(serializedModule);
+		const type = module[serializedType];
+
+		const serializedEnable = serializedComponent.enable ?? true;
+		const onSerialized = serializedComponent.onSerialized;
+
+		const component = new type();
+
+		component.enable = serializedEnable;
+
+		delete serializedComponent['type'];
+		delete serializedComponent['enable'];
+		delete serializedComponent['onSerialized'];
+
+		for (const propertyName in serializedComponent) {
+			const propertyValue = serializedComponent[propertyName];
+			
+			component[propertyName] = propertyValue;
+		}
+
+		if (onSerialized) {
+			onSerialized(component);
+		}
+
+		return component;
+	}
+
+	static deserialize(serializedScene) {
+		const scene = new Scene();
+
+		return (async () => {
+			for (const object of serializedScene.objects) {
+				const gameObject = await scene.deserializeObject(object);
+
+				scene.addGameObject(gameObject);
+			}
+
+			scene.state = 'loaded';
+
+            return scene;
+		})();
+	}
 
     onInitialize() {}
     onDispose() {}
