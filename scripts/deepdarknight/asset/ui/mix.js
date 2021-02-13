@@ -1,44 +1,28 @@
-import { UIWindow } from './window.js';
+import { UIContainer } from './container.js';
 import { UIItemSlot } from './itemSlot.js';
 import { UIObject } from '../../../engine/game/ui/object.js';
 import { UILabel } from '../../../engine/game/ui/label.js';
 import { Vector2 } from '../../../engine/math/geometry/vector.js';
 import { Area } from '../../../engine/math/geometry/area.js';
 import { items } from '../data/items.js';
+import { Inventory } from '../character/inventory.js';
 
 
 
 
-export class MixWindow extends UIWindow {
-    constructor() {
-        super('MixWindow');
-
-        this.slots = [];
+export class MixWindow extends UIContainer {
+    constructor(name='MixWindow') {
+        super(name);
 
         this.inventory = null;
-
-        this.backgroundColor = 'white';
     }
 
     onInitialize() {
-        super.onInitialize();
-
         const scene = this.scene;
         const player = scene.player;
 
-        this.inventory = player.findComponent('Inventory');
+        this.inventory = player.findComponent(Inventory);
 
-        {
-            const label = new UILabel('title');
-
-            label.area = new Area(10, 10, null, 20);
-            label.fitContentHorizontal = true;
-            label.font = '20px 굴림체';
-            label.text = '조합';
-            label.backgroundColor = null;
-    
-            this.addGameObjects(label);
-        }
 
         const sizeSlot = Vector2.full(50);
 
@@ -60,7 +44,7 @@ export class MixWindow extends UIWindow {
             const item = items[itemId];
 
             if (item.mix) {
-                const uiMix = new UIWindow(`${item.name}`);
+                const uiMix = new UIContainer(`${item.name}`);
 
                 uiMix.borderColor = 'green';
                 uiMix.area = Area.combine(positionCurrentMix, sizeMix);

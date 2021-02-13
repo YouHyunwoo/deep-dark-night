@@ -1,42 +1,27 @@
-import { UIWindow } from './window.js';
+import { UIContainer } from './container.js';
 import { UIItemSlot } from './itemSlot.js';
 import { UILabel } from '../../../engine/game/ui/label.js';
 import { Vector2 } from '../../../engine/math/geometry/vector.js';
 import { Area } from '../../../engine/math/geometry/area.js';
 import { items } from '../data/items.js';
+import { Inventory } from '../character/inventory.js';
 
 
 
-export class InventoryWindow extends UIWindow {
-    constructor() {
-        super('InventoryWindow');
+export class InventoryWindow extends UIContainer {
+    constructor(name='InventoryWindow') {
+        super(name);
 
         this.slots = [];
 
         this.inventory = null;
-
-        this.backgroundColor = 'white';
     }
 
     onInitialize() {
-        super.onInitialize();
-
         const scene = this.scene;
         const player = scene.player;
 
-        this.inventory = player.findComponent('Inventory');
-
-        {
-            const label = new UILabel('title');
-
-            label.area = new Area(10, 10, null, 20);
-            label.fitContentHorizontal = true;
-            label.font = '20px 굴림체';
-            label.text = '인벤토리';
-            label.backgroundColor = null;
-    
-            this.addGameObjects(label);
-        }
+        this.inventory = player.findComponent(Inventory);
 
         {
             const itemNames = Object.keys(this.inventory.items);

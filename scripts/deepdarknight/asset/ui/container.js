@@ -2,8 +2,8 @@ import { UIObject } from '../../../engine/game/ui/object.js';
 
 
 
-export class UIWindow extends UIObject {
-    constructor(name='Window') {
+export class UIContainer extends UIObject {
+    constructor(name='UIContainer') {
         super(name);
 
         this.backgroundColor = null;
