@@ -22,7 +22,6 @@ export class Scene {
             scene.dispose();
         }
         
-        
         return scene;
     }
 
@@ -32,14 +31,14 @@ export class Scene {
     }
 
     event(events) {
-        this.scenes[0].event(events);
+        this.scenes[0]?.event(events);
     }
 
     update(timeDelta) {
-        this.scenes[0].update(timeDelta);
+        this.scenes[0]?.update(timeDelta);
     }
 
     draw(context) {
-        this.scenes[0].draw(context);
+        this.scenes[0]?.draw(context);
     }
 }
