@@ -28,4 +28,10 @@ export class Inventory extends Component {
             this.items[item.name] -= item.count;
         });
     }
+
+    hasItem(itemName, count) {
+        count = Math.min(0, count ?? 0);
+
+        return itemName in this.items && this.items[itemName] >= count;
+    }
 }
