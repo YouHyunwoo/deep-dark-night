@@ -8,58 +8,59 @@ export class StateContext extends Component {
 
         this.states = {};
 
-        this.object = null;
         this.state = null;
     }
 
     onInitialize() {
         const object = this.owner;
-        const gameObjects = object.objects;
+        const components = object.components;
 
-        console.assert(gameObjects.length !== 0);
+        components.forEach(component => {
+            if (component instanceof State) {
+                const state = component;
 
-        gameObjects.forEach(gameObject => {
-            const states = gameObject.findComponents('State');
+                state.enable = false;
+                state.context = this;
+                state.init();
 
-            gameObject.init();
-
-            if (states.length !== 0) {
-                gameObject.enable = false;
-                this.states[gameObject.name] = [gameObject, states[0]];
-                states[0].context = this;
+                this.states[state.constructor.name] = state;
             }
         });
 
         if (!this.state) {
-            [this.object, this.state] = Object.values(this.states)[0];
-            this.object.enable = true;
+            this.state = Object.values(this.states)[0];
+            this.state.enable = true;
+            this.state.enter();
         }
-
-        this.state?.onEnter();
     }
 
     onDispose() {
-        this.object.enable = false;
-        this.state?.onExit();
+        this.state.exit();
+        this.state.enable = false;
 
-        this.object = null;
         this.state = null;
 
-        for (const gameObjectName in this.states) {
-            const [gameObject, state] = this.states[gameObjectName];
+        Object.values(this.states).forEach(state => {
+            state.enable = false;
+            state.context = null;
+            state.dispose();
+        });
 
-            gameObject.dispose();
-        }
+        this.states = null;
     }
 
-    transit(stateId, exitArgs, enterArgs) {
-        this.state?.onExit(...(exitArgs ?? []));
-        this.object.enable = false;
+    transit(stateType, exitArgs, enterArgs) {
+        this.state?.exit(...(exitArgs ?? []));
+        if (this.state) {
+            this.state.enable = false;
+        }
 
-        [this.object, this.state] = this.states[stateId];
+        this.state = this.states[stateType.name];
 
-        this.object.enable = true;
-        this.state?.onEnter(...(enterArgs ?? []));
+        if (this.state) {
+            this.state.enable = true;
+        }
+        this.state?.enter(...(enterArgs ?? []));
     }
 }
 
@@ -70,18 +71,22 @@ export class State extends Component {
         this.context = null;
     }
 
-    onInitialize() {
-        const object = this.owner;
-        const parent = object.owner;
-        const context = parent.findComponent('StateContext');
+    enter(...args) {
+        if (this._state === 'initialized' && this.enable) {
+            this.onEnter(...args);
+        }
+    }
 
-        this.context = context;
+    exit(...args) {
+        if (this._state === 'initialized' && this.enable) {
+            this.onExit(...args);
+        }
     }
 
     onEnter() {}
     onExit() {}
 
-    transit(stateId, exitArgs, enterArgs) {
-        this.context.transit(stateId, exitArgs, enterArgs);
+    transit(stateType, exitArgs, enterArgs) {
+        this.context.transit(stateType, exitArgs, enterArgs);
     }
 }
