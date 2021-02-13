@@ -1,5 +1,6 @@
 import { BoxCollider } from '../../../engine/game/collider.js';
 import { Component } from '../../../engine/game/component.js';
+import { SpriteRenderer } from '../../../engine/graphic/components/spriteRenderer.js';
 import { Area } from '../../../engine/math/geometry/area.js';
 import { StateContext } from '../../../engine/util/components/state.js';
 import { Gathering } from '../character/gathering.js';
@@ -103,7 +104,7 @@ export class PlayerInput extends Component {
                 area = boxCollider.area;
             }
             else {
-                const spriteRenderer = this.selected.findComponent('SpriteRenderer');
+                const spriteRenderer = this.selected.findComponent(SpriteRenderer);
                 area = spriteRenderer.getSpriteArea();
             }
 
@@ -127,7 +128,7 @@ export class PlayerInput extends Component {
                 area = boxCollider.area;
             }
             else {
-                const spriteRenderer = this.pointed.findComponent('SpriteRenderer');
+                const spriteRenderer = this.pointed.findComponent(SpriteRenderer);
                 area = spriteRenderer.getSpriteArea();
             }
             // const boxCollider = this.pointed.findComponent(BoxCollider);

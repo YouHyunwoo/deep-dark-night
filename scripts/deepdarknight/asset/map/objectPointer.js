@@ -1,6 +1,7 @@
 import { BoxCollider } from '../../../engine/game/collider.js';
 import { Component } from '../../../engine/game/component.js';
 import { Area } from '../../../engine/math/geometry/area.js';
+import { SpriteRenderer } from '../../../engine/graphic/components/spriteRenderer.js';
 
 
 
@@ -35,19 +36,24 @@ export class ObjectPointer extends Component {
                     continue;
                 }
     
+                let area = null;
+
                 const boxCollider = object.findComponent(BoxCollider);
                 if (boxCollider) {
-                    const area = boxCollider.area;
-                    // const spriteRenderer = object.findComponent(SpriteRenderer);
-                    // const area = spriteRenderer.getSpriteArea();
-                    const areaPosition = area.getPosition();
-                    const areaSize = area.getSize();
-                    const areaPositionInWorld = object.localToGlobal(areaPosition);
-                    const areaInWorld = Area.combine(areaPositionInWorld, areaSize);
-                    
-                    if (areaInWorld.containsVector(mouseInWorld)) {
-                        return object;
-                    }
+                    area = boxCollider.area;
+                }
+                else {
+                    const spriteRenderer = object.findComponent(SpriteRenderer);
+                    area = spriteRenderer.getSpriteArea();
+                }
+                
+                const areaPosition = area.getPosition();
+                const areaSize = area.getSize();
+                const areaPositionInWorld = object.localToGlobal(areaPosition);
+                const areaInWorld = Area.combine(areaPositionInWorld, areaSize);
+                
+                if (areaInWorld.containsVector(mouseInWorld)) {
+                    return object;
                 }
             }
         }
