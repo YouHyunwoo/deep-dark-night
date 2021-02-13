@@ -1,4 +1,4 @@
-import { UIObject } from '../../../engine/game/ui/object.js';
+import { UIObject } from './object.js';
 
 
 
