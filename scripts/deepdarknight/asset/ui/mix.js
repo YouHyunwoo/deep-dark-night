@@ -1,7 +1,6 @@
-import { UIContainer } from './container.js';
+import { UIContainer } from '../../../engine/game/ui/container.js';
 import { UIItemSlot } from './itemSlot.js';
 import { UIObject } from '../../../engine/game/ui/object.js';
-import { UILabel } from '../../../engine/game/ui/label.js';
 import { Vector2 } from '../../../engine/math/geometry/vector.js';
 import { Area } from '../../../engine/math/geometry/area.js';
 import { items } from '../data/items.js';
@@ -75,6 +74,35 @@ export class MixWindow extends UIContainer {
                         slotProduct.setItemSprite(itemSprite);
                         slotProduct.setItemName(itemName);
                         slotProduct.setItemCount(1);
+
+                        slotProduct.onClick = () => {
+                            if (slotProduct.isDisabled) {
+                                console.log(`[ Log ] 재료가 부족합니다.`);
+                            }
+                            else {
+                                const product = {
+                                    name: itemName,
+                                    count: 1,
+                                };
+
+                                const hasAllMaterial = item.mix.every(material => this.inventory.hasItem(...material));
+
+                                if (hasAllMaterial) {
+                                    for (const material of item.mix) {
+                                        const itemMaterial = {
+                                            name: material[0],
+                                            count: material[1],
+                                        };
+
+                                        this.inventory.removeItems(itemMaterial);
+                                    }
+
+                                    this.inventory.addItems(product);
+
+                                    console.log(`[ Log ] ${itemName}을 ${1}개 조합했습니다.`);
+                                }
+                            }
+                        };
                     }
 
 
