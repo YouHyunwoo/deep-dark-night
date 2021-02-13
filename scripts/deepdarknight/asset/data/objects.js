@@ -6,6 +6,7 @@ import { SpriteRenderer } from '../../../engine/graphic/components/spriteRendere
 
 import { stone as spriteSheetStone, tree as spriteSheetTree } from './sprites.js';
 import { Inventory } from '../character/inventory.js';
+import { BoxCollider } from '../../../engine/game/collider.js';
 
 
 
@@ -13,7 +14,7 @@ export class Stone extends GameObject {
     constructor(name) {
         super(name ?? '돌');
 
-        const spriteRenderer = new SpriteRenderer('SpriteRenderer');
+        const spriteRenderer = new SpriteRenderer();
 
         this.addComponents(spriteRenderer);
 
@@ -21,7 +22,7 @@ export class Stone extends GameObject {
         spriteRenderer.sprite.anchor = new Vector2(0.5, 0.9);
 
 
-        const inventory = new Inventory('Inventory');
+        const inventory = new Inventory();
 
         this.addComponents(inventory);
 
@@ -40,7 +41,7 @@ export class Tree extends GameObject {
     constructor(name) {
         super(name ?? '나무');
 
-        const spriteRenderer = new SpriteRenderer('SpriteRenderer');
+        const spriteRenderer = new SpriteRenderer();
 
         this.addComponents(spriteRenderer);
 
@@ -48,8 +49,15 @@ export class Tree extends GameObject {
         spriteRenderer.sprite.cropInOriginalImage = new Area(0, 0, 1 / 4, 1);
         spriteRenderer.sprite.anchor = new Vector2(0.5, 0.9);
 
+
+        const boxCollider = new BoxCollider('BoxCollider');
+
+        this.addComponents(boxCollider);
+
+        boxCollider.area = new Area(-30, -60, 60, 80);
+
         
-        const inventory = new Inventory('Inventory');
+        const inventory = new Inventory();
 
         this.addComponents(inventory);
 
