@@ -1,4 +1,5 @@
 import { Component } from '../../game/component.js';
+import { SpriteRenderer } from './spriteRenderer.js';
 
 
 
@@ -10,7 +11,7 @@ export class Animator extends Component {
     }
 
     onInitialize() {
-        this.spriteRenderer = this.owner.findComponent('SpriteRenderer');
+        this.spriteRenderer = this.owner.findComponent(SpriteRenderer);
     }
 
     onUpdate(timeDelta) {

@@ -15,9 +15,8 @@ export class GameObject {
         this.name = name;
         this.enable = true;
         this.components = [];
-        this.tags = [];
-
         this.objects = [];
+        this.tags = [];
 
         this.area = Area.zeros();
     }
@@ -27,10 +26,11 @@ export class GameObject {
             this.onInitialize();
 
             this.components.forEach(component => {
-                component.onInitialize();
+                component.init();
             });
 
             this.objects.forEach(object => {
+                object.scene = this.scene;
                 object.init();
             });
     
@@ -42,12 +42,13 @@ export class GameObject {
         if (this.initialized && !this.disposed) {
             this.objects.forEach(object => {
                 object.dispose();
+                object.scene = null;
             });
 
             this.onDispose();
 
             this.components.forEach(component => {
-                component.onDispose();
+                component.dispose();
             });
 
             this.scene = null;
@@ -58,41 +59,43 @@ export class GameObject {
 
     addComponents(...components) {
         if (!this.disposed) {
-            this.components = this.components.concat(components);
-            components.forEach(component => {
+            for (const component of components) {
+                const componentType = component.constructor;
+
+                if (this.hasComponent(componentType)) {
+                    continue;
+                }
+
+                this.components.push(component);
+
                 component.owner = this;
                 component.onAdded();
 
                 if (this.initialized) {
                     component.onInitialize();
                 }
-            });
+            }
         }
     }
 
     removeComponents(...components) {
         this.components = this.components.filter(component => !components.includes(component));
+
         components.forEach(component => {
             component.owner = null;
             component.onRemoved();
         });
     }
 
-    hasComponent(componentName) {
-        return this.components.some(component => component.name === componentName);
+    hasComponent(componentType) {
+        return this.components.some(component => component.constructor.name === componentType.name);
     }
 
-    findComponents(componentName) {
-        console.assert(componentName);
-        
-        return this.components.filter(component => component.name === componentName);
-    }
-
-    findComponent(componentName) {
-        console.assert(componentName);
+    findComponent(componentType) {
+        console.assert(componentType);
 
         for (const component of this.components) {
-            if (component.name === componentName) {
+            if (component.constructor.name === componentType.name) {
                 return component;
             }
         }
@@ -165,7 +168,7 @@ export class GameObject {
             this.onEvent(events);
 
             this.components.forEach(component => {
-                component.onEvent(events);
+                component.event(events);
             });
 
             this.objects.slice().reverse().forEach(object => {
@@ -179,7 +182,7 @@ export class GameObject {
             this.onUpdate(timeDelta);
 
             this.components.forEach(component => {
-                component.onUpdate(timeDelta);
+                component.update(timeDelta);
             });
 
             this.objects.forEach(object => {
@@ -197,7 +200,7 @@ export class GameObject {
             this.onDraw(context);
 
             this.components.forEach(component => {
-                component.onDraw(context);
+                component.draw(context);
             });
 
             this.objects.forEach(object => {
@@ -232,114 +235,3 @@ export class GameObject {
     onUpdate(timeDelta) {}
     onDraw(context) {}
 }
-
-function testGameObject() {
-    testCreateGameObject();
-    testTags();
-    testComponents();
-}
-
-function testCreateGameObject() {
-    testCreateEmptyGameObject();
-}
-
-function testCreateEmptyGameObject() {
-    const gameObject = new GameObject('name');
-
-    console.assert(gameObject.name === 'name');
-    console.assert(gameObject.components.length === 0);
-    console.assert(gameObject.tags.length === 0);
-}
-
-function testTags() {
-    testAddTags();
-    testRemoveTags();
-    testhasTag();
-}
-
-function testAddTags() {
-    const gameObject = new GameObject('Stone');
-
-    gameObject.addTags('object', 'ground');
-    gameObject.addTags('hi', 'hello', 'okay');
-
-    console.assert(gameObject.tags.length === 5);
-}
-
-function testRemoveTags() {
-    const gameObject = new GameObject('Stone');
-
-    gameObject.addTags('object', 'ground');
-    gameObject.addTags('hi', 'hello', 'okay');
-
-    gameObject.removeTags('hi');
-    gameObject.removeTags('hello', 'okay');
-
-    console.assert(gameObject.tags.length === 2);
-}
-
-function testhasTag() {
-    const gameObject = new GameObject('Stone');
-
-    const tags = ['object', 'ground', 'hi', 'hello', 'okay'];
-
-    gameObject.addTags(...tags);
-
-    console.assert(!gameObject.hasTag('hey'));
-    console.assert(tags.every(tag => gameObject.hasTag(tag)));
-    console.assert(gameObject.tags.length === 5);
-}
-
-function testComponents() {
-    testAddComponents();
-    testRemoveComponents();
-    testhasComponent();
-}
-
-function testAddComponents() {
-    const gameObject = new GameObject('Stone');
-
-    const components = [
-        new Component('Transform'),
-        new Component('SpriteRenderer'),
-        new Component('Inventory')
-    ];
-
-    gameObject.addComponents(...components);
-
-    console.assert(gameObject.components.length === 3);
-}
-
-function testRemoveComponents() {
-    const gameObject = new GameObject('Stone');
-
-    const components = [
-        new Component('Transform'),
-        new Component('SpriteRenderer'),
-        new Component('Inventory')
-    ];
-
-    gameObject.addComponents(...components);
-
-    gameObject.removeComponents(components[0], components[1]);
-
-    console.assert(gameObject.components.length === 1);
-    console.assert(gameObject.components[0] === components[2]);
-}
-
-function testhasComponent() {
-    const gameObject = new GameObject('Stone');
-
-    const components = [
-        new Component('Transform'),
-        new Component('SpriteRenderer'),
-        new Component('Inventory')
-    ];
-
-    gameObject.addComponents(...components);
-
-    console.assert(components.every(component => gameObject.hasComponent(component.name)));
-    console.assert(gameObject.components.length === 3);
-}
-
-testGameObject();

@@ -1,5 +1,10 @@
 import { State } from '../../../../engine/util/components/state.js';
+import { Gathering } from '../../character/gathering.js';
+import { Direction } from '../../character/direction.js';
+import { Animator } from '../../../../engine/graphic/components/animator.js';
+import { Movement } from '../../character/movement.js';
 import { animations } from '../../data/animations.js';
+import { IdleState } from './idle.js';
 
 
 
@@ -11,16 +16,13 @@ export class GatherState extends State {
     }
 
     onInitialize() {
-        super.onInitialize();
-
-        const goState = this.owner;
-        const goContext = goState.owner;
+        const goContext = this.context.owner;
         const goPlayer = goContext.owner;
 
-        this.movement = goPlayer.findComponent('Movement');
-        this.gathering = goPlayer.findComponent('Gathering');
-        this.direction = goPlayer.findComponent('Direction');
-        this.animator = goPlayer.findComponent('Animator');
+        this.gathering = goPlayer.findComponent(Gathering);
+        this.direction = goPlayer.findComponent(Direction);
+        this.animator = goPlayer.findComponent(Animator);
+        this.movement = goPlayer.findComponent(Movement);
     }
 
     onEnter(targetObject) {
@@ -39,7 +41,7 @@ export class GatherState extends State {
             this.animator.animation = animations.character.attack[direction];
 
             if (!this.gathering.isGathering) {
-                this.transit('idle');
+                this.transit(IdleState);
             }
         }
         else {

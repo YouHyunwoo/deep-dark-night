@@ -1,4 +1,5 @@
 import { Component } from '../../../engine/game/component.js';
+import { SpriteRenderer } from '../../../engine/graphic/components/spriteRenderer.js';
 import { Vector2 } from '../../../engine/math/geometry/vector.js';
 import { Stone, Tree } from '../data/objects.js';
 
@@ -43,7 +44,7 @@ export class ObjectGenerator extends Component {
 
             const scale = Math.random() * 0.5 + 0.5;
             
-            object.findComponent('SpriteRenderer').sprite.scale = Vector2.full(scale);
+            object.findComponent(SpriteRenderer).sprite.scale = Vector2.full(scale);
         }
     }
 
@@ -58,7 +59,7 @@ export class ObjectGenerator extends Component {
             object.area.x = Math.random() * this.canvas.width;
             object.area.y = Math.random() * this.canvas.height;
 
-            object.findComponent('SpriteRenderer').sprite.scale = Vector2.full(3);
+            object.findComponent(SpriteRenderer).sprite.scale = Vector2.full(3);
         }
     }
 

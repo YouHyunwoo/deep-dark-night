@@ -1,5 +1,7 @@
 import { Component } from '../../../engine/game/component.js';
+import { SpriteRenderer } from '../../../engine/graphic/components/spriteRenderer.js';
 import { Area } from '../../../engine/math/geometry/area.js';
+import { Inventory } from './inventory.js';
 
 
 export class Gathering extends Component {
@@ -21,7 +23,7 @@ export class Gathering extends Component {
         const goCharacter = this.owner;
 
         this.object = goCharacter;
-        this.inventory = goCharacter.findComponent('Inventory');
+        this.inventory = goCharacter.findComponent(Inventory);
     }
 
     onUpdate(timeDelta) {
@@ -40,7 +42,7 @@ export class Gathering extends Component {
                 
                 if (this.targetObject) {
                     const itemName = this.targetObject.name;
-                    const itemCount = Math.floor(this.targetObject.findComponent('SpriteRenderer').sprite.scale.x + 1 + Math.random() * 3);
+                    const itemCount = Math.floor(this.targetObject.findComponent(SpriteRenderer).sprite.scale.x + 1 + Math.random() * 3);
 
                     this.inventory.addItems({
                         name: itemName,
@@ -80,7 +82,7 @@ export class Gathering extends Component {
         context.restore();
 
         if (this.isGathering) {
-            const spriteRenderer = this.owner.findComponent('SpriteRenderer');
+            const spriteRenderer = this.owner.findComponent(SpriteRenderer);
             const area = spriteRenderer.getSpriteArea();
             const areaBar = new Area(area.x, area.y + area.height, area.width, 10);
             const areaProgress = areaBar.copy();

@@ -1,5 +1,6 @@
 import { Component } from '../../../engine/game/component.js';
 import { Vector2 } from '../../../engine/math/geometry/vector.js';
+import { Direction } from './direction.js';
 
 
 
@@ -18,7 +19,7 @@ export class Movement extends Component {
         const goCharacter = this.owner;
 
         this.object = goCharacter;
-        this.direction = goCharacter.findComponent('Direction');
+        this.direction = goCharacter.findComponent(Direction);
     }
 
     onUpdate(timeDelta) {
