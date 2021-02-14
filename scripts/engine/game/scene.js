@@ -127,7 +127,7 @@ export class Scene {
 		const serializedObjects = serializedGameObject.objects ?? [];
 		const serializedComponents = serializedGameObject.components ?? [];
 		const serializedTags = serializedGameObject.tags ?? [];
-		const onSerialized = serializedGameObject.onSerialized;
+		const onDeserialized = serializedGameObject.onDeserialized;
 
 		const gameObject = new type();
 
@@ -154,7 +154,7 @@ export class Scene {
 		delete serializedGameObject['objects'];
 		delete serializedGameObject['components'];
 		delete serializedGameObject['tags'];
-		delete serializedGameObject['onSerialized'];
+		delete serializedGameObject['onDeserialized'];
 
 		for (const propertyName in serializedGameObject) {
 			const propertyValue = serializedGameObject[propertyName];
@@ -162,8 +162,8 @@ export class Scene {
 			gameObject[propertyName] = propertyValue;
 		}
 
-		if (onSerialized) {
-			onSerialized(gameObject);
+		if (onDeserialized) {
+			onDeserialized(gameObject);
 		}
 	
 		return gameObject;
@@ -177,7 +177,7 @@ export class Scene {
 		const type = module[serializedType];
 
 		const serializedEnable = serializedComponent.enable ?? true;
-		const onSerialized = serializedComponent.onSerialized;
+		const onDeserialized = serializedComponent.onDeserialized;
 
 		const component = new type();
 
@@ -185,7 +185,7 @@ export class Scene {
 
 		delete serializedComponent['type'];
 		delete serializedComponent['enable'];
-		delete serializedComponent['onSerialized'];
+		delete serializedComponent['onDeserialized'];
 
 		for (const propertyName in serializedComponent) {
 			const propertyValue = serializedComponent[propertyName];
@@ -193,8 +193,8 @@ export class Scene {
 			component[propertyName] = propertyValue;
 		}
 
-		if (onSerialized) {
-			onSerialized(component);
+		if (onDeserialized) {
+			onDeserialized(component);
 		}
 
 		return component;
