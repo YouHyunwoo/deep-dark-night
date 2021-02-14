@@ -4,6 +4,7 @@ import { Vector2 } from '../../../engine/math/geometry/vector.js';
 import { Area } from '../../../engine/math/geometry/area.js';
 import { items } from '../data/items.js';
 import { Inventory } from '../character/inventory.js';
+import { Equipment } from '../character/equipment.js';
 
 
 
@@ -14,6 +15,7 @@ export class InventoryWindow extends UIContainer {
         this.slots = [];
 
         this.inventory = null;
+        this.equipment = null;
     }
 
     onInitialize() {
@@ -21,6 +23,7 @@ export class InventoryWindow extends UIContainer {
         const player = scene.player;
 
         this.inventory = player.findComponent(Inventory);
+        this.equipment = player.findComponent(Equipment);
 
         {
             const itemNames = Object.keys(this.inventory.items);
@@ -51,7 +54,20 @@ export class InventoryWindow extends UIContainer {
                         itemSlot.setItemSprite(itemSprite);
                         itemSlot.setItemName(itemName);
                         itemSlot.setItemCount(itemCount);
+
+                        itemSlot.pointable = true;
                     }
+
+                    itemSlot.onClick = () => {
+                        if (!itemSlot.isDisabled && itemSlot.pointable) {
+                            const item = items[itemName];
+
+                            if (item.type === '장비') {
+                                this.equipment.equip(item);
+                                console.log(this.equipment);
+                            }
+                        }
+                    };
                     
                     this.slots.push(itemSlot);
 
@@ -63,14 +79,14 @@ export class InventoryWindow extends UIContainer {
 
     onUpdate(timeDelta) {
         if (this.inventory) {
+            // inventory onChange callback
             const itemNames = Object.keys(this.inventory.items);
             
             for (let i = 0; i < this.slots.length; i++) {
                 const itemName = itemNames[i];
+                const slot = this.findGameObject(`${i}`);
 
                 if (itemName) {
-                    const slot = this.findGameObject(`${i}`);
-
                     const itemCount = this.inventory.items[itemName];
                     const itemSprite = items[itemName].sprite.copy();
                     itemSprite.anchor = new Vector2(0, 0);
@@ -78,6 +94,25 @@ export class InventoryWindow extends UIContainer {
                     slot.setItemSprite(itemSprite);
                     slot.setItemName(itemName);
                     slot.setItemCount(itemCount);
+
+                    slot.pointable = true;
+
+                    slot.onClick = () => {
+                        if (!slot.isDisabled && slot.pointable) {
+                            const item = items[itemName];
+
+                            if (item.type === '장비') {
+                                this.equipment.equip(item);
+                            }
+                        }
+                    }
+                }
+                else if (slot.itemName) {
+                    slot.setItemSprite(null);
+                    slot.setItemName(null);
+                    slot.setItemCount(null);
+
+                    slot.pointable = false;
                 }
             }
         }

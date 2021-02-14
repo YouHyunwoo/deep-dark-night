@@ -55,6 +55,10 @@ export const sceneData = {
 											gatheringRange: 20,
 											gatheringSpeed: 1,
 										},
+										{
+											module: '/scripts/deepdarknight/asset/character/equipment.js',
+											type: 'Equipment',
+										},
 									],
 									objects: [
 										{
