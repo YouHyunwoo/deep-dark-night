@@ -35,6 +35,7 @@ export class PlayerInput extends Component {
 
         this.inventoryWindow = uiSystem.findGameObject('inventoryWindow');
         this.mixWindow = uiSystem.findGameObject('mixWindow');
+        this.equipmentWindow = uiSystem.findGameObject('equipmentWindow');
 
         this.movement = gameObjectPlayer.findComponent(Movement);
         this.gathering = gameObjectPlayer.findComponent(Gathering);
@@ -55,6 +56,9 @@ export class PlayerInput extends Component {
                 }
                 if (event.key === 'm') {
                     this.mixWindow.toggle();
+                }
+                if (event.key === 'e') {
+                    this.equipmentWindow.toggle();
                 }
 
                 if (event.key === 'a') {

@@ -59,6 +59,10 @@ export const sceneData = {
 											module: '/scripts/deepdarknight/asset/character/equipment.js',
 											type: 'Equipment',
 										},
+										{
+											module: '/scripts/deepdarknight/asset/character/equipmentController.js',
+											type: 'EquipmentController'
+										}
 									],
 									objects: [
 										{
@@ -163,6 +167,25 @@ export const sceneData = {
 							fitContentHorizontal: true,
 							font: '20px 굴림체',
 							text: '조합',
+							backgroundColor: null,
+						}
+					],
+					area: new Area(100, 100, 250, 300),
+					visible: false,
+					backgroundColor: 'white',
+				},
+				{
+					module: '/scripts/deepdarknight/asset/ui/equipment.js',
+					type: 'EquipmentWindow',
+					name: 'equipmentWindow',
+					objects: [
+						{
+							module: '/scripts/engine/game/ui/label.js',
+							type: 'UILabel',
+							area: new Area(10, 10, null, 20),
+							fitContentHorizontal: true,
+							font: '20px 굴림체',
+							text: '장비',
 							backgroundColor: null,
 						}
 					],
