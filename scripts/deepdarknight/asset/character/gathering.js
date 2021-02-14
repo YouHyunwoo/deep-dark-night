@@ -2,6 +2,7 @@ import { Component } from '../../../engine/game/component.js';
 import { SpriteRenderer } from '../../../engine/graphic/components/spriteRenderer.js';
 import { Area } from '../../../engine/math/geometry/area.js';
 import { Inventory } from './inventory.js';
+import { Statistics } from './statistics.js';
 
 
 export class Gathering extends Component {
@@ -15,15 +16,16 @@ export class Gathering extends Component {
         this.isGathering = false;
 
         this.progress = 0;
-        this.range = 20;
-        this.speed = 1;
+
+        this.stats = null;
     }
 
     onInitialize() {
-        const goCharacter = this.owner;
+        const gameObject = this.owner;
 
-        this.object = goCharacter;
-        this.inventory = goCharacter.findComponent(Inventory);
+        this.object = gameObject;
+        this.inventory = gameObject.findComponent(Inventory);
+        this.stats = gameObject.findComponent(Statistics);
     }
 
     onUpdate(timeDelta) {
@@ -34,7 +36,7 @@ export class Gathering extends Component {
         this.gatherings = this.gatherings.filter(gathering => gathering.progress < 1);
 
         if (this.isGathering) {
-            this.progress += this.speed * timeDelta;
+            this.progress += this.stats.gatheringSpeed * timeDelta;
 
             // console.log(`[ Log ] 플레이어의 수집 정도: ${this.progress}`);
             if (this.progress >= 1) {

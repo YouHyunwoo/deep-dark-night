@@ -1,6 +1,7 @@
 import { Component } from '../../../engine/game/component.js';
 import { Vector2 } from '../../../engine/math/geometry/vector.js';
 import { Direction } from './direction.js';
+import { Statistics } from './statistics.js';
 
 
 
@@ -8,25 +9,29 @@ export class Movement extends Component {
     constructor(name) {
         super(name);
 
+        this.stats = null;
+
         this.isArrived = true;
 
         this.destination = Vector2.zeros();
+
         this.range = 0;
-        this.speed = 200;
     }
 
     onInitialize() {
-        const goCharacter = this.owner;
+        const gameObject = this.owner;
 
-        this.object = goCharacter;
-        this.direction = goCharacter.findComponent(Direction);
+        this.object = gameObject;
+        this.direction = gameObject.findComponent(Direction);
+        this.stats = gameObject.findComponent(Statistics);
     }
 
     onUpdate(timeDelta) {
         if (!this.isArrived) {
             const range = this.range;
+            const speed = this.stats.movementSpeed;
 
-            const distance = this.speed * timeDelta;
+            const distance = speed * timeDelta;
     
             const source = this.object.area.getPosition();
             const destination = this.destination;

@@ -5,6 +5,7 @@ import { Area } from '../../../engine/math/geometry/area.js';
 import { StateContext } from '../../../engine/util/components/state.js';
 import { Gathering } from '../character/gathering.js';
 import { Movement } from '../character/movement.js';
+import { Statistics } from '../character/statistics.js';
 import { ObjectPointer } from '../map/ObjectPointer.js';
 import { GatherState } from './state/gather.js';
 import { MoveState } from './state/move.js';
@@ -37,6 +38,7 @@ export class PlayerInput extends Component {
 
         this.movement = gameObjectPlayer.findComponent(Movement);
         this.gathering = gameObjectPlayer.findComponent(Gathering);
+        this.stats = gameObjectPlayer.findComponent(Statistics);
 
         const gameObjectState = gameObjectPlayer.findGameObject('state');
         
@@ -163,6 +165,8 @@ export class PlayerInput extends Component {
         const camera = this.game.camera;
         const mouseInWorld = camera.screenToWorld(mousePosition);
 
+        this.movement.range = 0;
+        this.movement.speed = this.stats.movementSpeed;
         this.movement.moveTo(mouseInWorld);
 
         this.state.transit(MoveState);

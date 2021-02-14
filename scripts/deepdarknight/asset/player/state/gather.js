@@ -5,6 +5,7 @@ import { Animator } from '../../../../engine/graphic/components/animator.js';
 import { Movement } from '../../character/movement.js';
 import { animations } from '../../data/animations.js';
 import { IdleState } from './idle.js';
+import { Statistics } from '../../character/statistics.js';
 
 
 
@@ -23,6 +24,7 @@ export class GatherState extends State {
         this.direction = goPlayer.findComponent(Direction);
         this.animator = goPlayer.findComponent(Animator);
         this.movement = goPlayer.findComponent(Movement);
+        this.stats = goPlayer.findComponent(Statistics);
     }
 
     onEnter(targetObject) {
@@ -30,7 +32,7 @@ export class GatherState extends State {
 
         this.isGathering = false;
 
-        this.movement.range = this.gathering.range;
+        this.movement.range = this.stats.gatheringRange;
         this.movement.moveTo(targetObject.area.getPosition());
     }
 

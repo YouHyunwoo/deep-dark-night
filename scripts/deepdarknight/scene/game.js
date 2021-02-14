@@ -45,6 +45,16 @@ export const sceneData = {
 											module: '/scripts/deepdarknight/asset/character/inventory.js',
 											type: 'Inventory',
 										},
+										{
+											module: '/scripts/deepdarknight/asset/character/statistics.js',
+											type: 'Statistics',
+											hp: 10,
+											maxhp: 10,
+											strength: 3,
+											movementSpeed: 200,
+											gatheringRange: 20,
+											gatheringSpeed: 1,
+										},
 									],
 									objects: [
 										{
