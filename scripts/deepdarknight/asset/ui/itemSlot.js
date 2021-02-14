@@ -13,13 +13,39 @@ export class UIItemSlot extends UIObject {
         this.borderColor = 'black';
         this.color = 'black';
 
-        this.imageItemSprite = null;
-        this.labelItemName = null;
-        this.labelItemCount = null;
+        this.imageItemSprite = new UIImage('itemSprite', null);
+        this.labelItemName = new UILabel('itemName');
+        this.labelItemCount = new UILabel('itemCount');
 
-        this.itemSprite = null;
-        this.itemName = null;
-        this.itemCount = null;
+        Object.defineProperty(this, 'itemName', {
+            get() {
+                return this.labelItemName.text;
+            },
+
+            set(value) {
+                this.labelItemName.text = value;
+            }
+        });
+
+        Object.defineProperty(this, 'itemCount', {
+            get() {
+                return this.labelItemCount.text;
+            },
+
+            set(value) {
+                this.labelItemCount.text = value;
+            }
+        });
+
+        Object.defineProperty(this, 'itemSprite', {
+            get() {
+                return this.imageItemSprite.sprite;
+            },
+
+            set(value) {
+                this.imageItemSprite.sprite = value;
+            }
+        });
 
         this.pointable = true;
         this.pointed = false;
@@ -29,7 +55,7 @@ export class UIItemSlot extends UIObject {
 
     onInitialize() {
         {
-            const image = this.imageItemSprite = new UIImage('itemSprite', this.itemSprite);
+            const image = this.imageItemSprite;
 
             image.area = new Area(0, 0, this.area.width, this.area.height);
             image.imageAlign = 'center';
@@ -39,24 +65,22 @@ export class UIItemSlot extends UIObject {
         }
 
         {
-            const label = this.labelItemName = new UILabel('itemName');
+            const label = this.labelItemName;
 
             label.area = new Area(1, 2, null, null);
             label.fitContentHorizontal = true;
             label.fitContentVertical = true;
             label.backgroundColor = null;
-            label.text = this.itemName;
             label.color = this.color;
     
             this.addGameObjects(label);
         }
 
         {
-            const label = this.labelItemCount = new UILabel('itemCount');
+            const label = this.labelItemCount;
 
             label.area = new Area(0, 0, this.area.width-2, this.area.height);
             label.backgroundColor = null;
-            label.text = this.itemCount;
             label.color = 'black';
             label.textAlign = 'right';
             label.textBaseline = 'bottom';
@@ -65,28 +89,22 @@ export class UIItemSlot extends UIObject {
         }
     }
 
+    reset() {
+        this.itemSprite = null;
+        this.itemName = null;
+        this.itemCount = null;
+    }
+
     setItemName(itemName) {
         this.itemName = itemName;
-
-        if (this.labelItemName) {
-            this.labelItemName.text = itemName;
-        }
     }
 
     setItemCount(itemCount) {
         this.itemCount = itemCount;
-
-        if (this.labelItemCount) {
-            this.labelItemCount.text = itemCount;
-        }
     }
 
     setItemSprite(itemSprite) {
         this.itemSprite = itemSprite;
-
-        if (this.imageItemSprite) {
-            this.imageItemSprite.sprite = itemSprite;
-        }
     }
 
     draw(context) {
