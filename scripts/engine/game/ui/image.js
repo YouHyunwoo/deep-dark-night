@@ -19,9 +19,9 @@ export class UIImage extends UIObject {
     }
 
     onDraw(context) {
-        if (this.area.width !== 0 && this.area.height !== 0) {
+        if (this.area.width !== 0 && this.area.height !== 0 && this.sprite) {
             const sizeContent = this.getContentSize(context);
-            
+
             this.beginClipping(context, sizeContent);
 
             this.drawBackground(context, sizeContent);
@@ -32,18 +32,18 @@ export class UIImage extends UIObject {
         }
     }
 
-    getContentSize(context) {
+    getContentSize() {
         const sizeContent = this.area.getSize();
 
         if (sizeContent.x < 0 || sizeContent.y < 0) {
-            const measured = context.measureText(this.text ?? '');
+            const areaSprite = this.sprite.getSpriteArea();
 
             if (sizeContent.x < 0) {
-                sizeContent.x = measured.width;
+                sizeContent.x = areaSprite.width;
             }
 
             if (sizeContent.y < 0) {
-                sizeContent.y = measured.actualBoundingBoxAscent + measured.actualBoundingBoxDescent;
+                sizeContent.y = areaSprite.height;
             }
         }
 
