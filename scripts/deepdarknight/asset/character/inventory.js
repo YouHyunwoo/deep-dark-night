@@ -21,11 +21,13 @@ export class Inventory extends Component {
 
     removeItems(...items) {
         items.forEach(item => {
-            if (!item.name in this.items) {
-                this.items[item.name] = 0;
-            }
+            if (item.name in this.items) {
+                this.items[item.name] -= item.count;
 
-            this.items[item.name] -= item.count;
+                if (this.items[item.name] <= 0) {
+                    delete this.items[item.name];
+                }
+            }
         });
     }
 
