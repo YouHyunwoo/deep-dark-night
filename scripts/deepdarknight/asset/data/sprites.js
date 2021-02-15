@@ -30,3 +30,9 @@ spriteTree3.anchor = new Vector2(0.5, 0.9);
 export const spriteTree4 = new Sprite(tree);
 spriteTree4.cropInOriginalImage = new Area(3 / 4, 0, 1 / 4, 1);
 spriteTree4.anchor = new Vector2(0.5, 0.9);
+
+
+export const woodenShoes = new SpriteSheet('scripts/deepdarknight/asset/images/woodenShoes.png');
+
+export const spriteWoodenShoes = new Sprite(woodenShoes);
+spriteWoodenShoes.scale = new Vector2(0.03, 0.03);
