@@ -4,16 +4,16 @@ import { Vector2 } from '../../../engine/math/geometry/vector.js';
 
 
 
-export const character = new SpriteSheet('scripts/deepdarknight/asset/images/character.png');
+export const character = new SpriteSheet('scripts/deepdarknight/resources/images/character.png');
 
 
-export const stone = new SpriteSheet('scripts/deepdarknight/asset/images/stone.png');
+export const stone = new SpriteSheet('scripts/deepdarknight/resources/images/stone.png');
 
 export const spriteStone = new Sprite(stone);
 spriteStone.anchor = new Vector2(0.5, 0.9);
 
 
-export const tree = new SpriteSheet('scripts/deepdarknight/asset/images/tree.png');
+export const tree = new SpriteSheet('scripts/deepdarknight/resources/images/tree.png');
 
 export const spriteTree1 = new Sprite(tree);
 spriteTree1.cropInOriginalImage = new Area(0 / 4, 0, 1 / 4, 1);
@@ -32,7 +32,7 @@ spriteTree4.cropInOriginalImage = new Area(3 / 4, 0, 1 / 4, 1);
 spriteTree4.anchor = new Vector2(0.5, 0.9);
 
 
-export const woodenShoes = new SpriteSheet('scripts/deepdarknight/asset/images/woodenShoes.png');
+export const woodenShoes = new SpriteSheet('scripts/deepdarknight/resources/images/woodenShoes.png');
 
 export const spriteWoodenShoes = new Sprite(woodenShoes);
 spriteWoodenShoes.scale = new Vector2(0.03, 0.03);
