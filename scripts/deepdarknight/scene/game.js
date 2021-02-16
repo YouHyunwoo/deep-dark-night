@@ -112,6 +112,7 @@ export const sceneData = {
 						{
 							module: '/scripts/deepdarknight/asset/map/mapRenderer.js',
 							type: 'MapRenderer',
+							backgroundColor: 'saddlebrown',
 						},
 					],
 					tags: [],

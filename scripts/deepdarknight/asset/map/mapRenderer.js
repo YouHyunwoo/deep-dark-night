@@ -6,7 +6,7 @@ export class MapRenderer extends Component {
     constructor(name) {
         super(name);
 
-        this.backgroundColor = 'saddlebrown';
+        this.backgroundColor = 'white';
     }
 
     onInitialize() {
