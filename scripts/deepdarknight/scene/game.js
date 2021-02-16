@@ -199,7 +199,7 @@ export const sceneData = {
 							backgroundColor: null,
 						}
 					],
-					area: new Area(100, 100, 250, 300),
+					area: new Area(100, 100, 250, 350),
 					visible: false,
 					backgroundColor: 'white',
 				}

@@ -32,11 +32,38 @@ export class EquipmentWindow extends UIContainer {
 		}
 
 		{
+			this.slotBody = new UIItemSlot('BODY');
+
+			this.addGameObjects(this.slotBody);
+
+			this.slotBody.area = new Area(100, 130, 50, 50);
+			this.slotBody.pointable = false;
+		}
+
+		{
+			this.slotLeftHand = new UIItemSlot('LEFTHAND');
+
+			this.addGameObjects(this.slotLeftHand);
+
+			this.slotLeftHand.area = new Area(20, 170, 50, 50);
+			this.slotLeftHand.pointable = false;
+		}
+
+		{
+			this.slotRightHand = new UIItemSlot('RIGHTHAND');
+
+			this.addGameObjects(this.slotRightHand);
+
+			this.slotRightHand.area = new Area(180, 170, 50, 50);
+			this.slotRightHand.pointable = false;
+		}
+
+		{
 			this.slotFoot = new UIItemSlot('FOOT');
 
 			this.addGameObjects(this.slotFoot);
 
-			this.slotFoot.area = new Area(100, 200, 50, 50);
+			this.slotFoot.area = new Area(100, 270, 50, 50);
 			this.slotFoot.pointable = false;
 		}
 	}
