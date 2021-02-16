@@ -12,6 +12,15 @@ export const sceneData = {
 					name: 'map',
 					objects: [
 						{
+							name: 'tile',
+							components: [
+								{
+									module: '/scripts/deepdarknight/asset/map/tile.js',
+									type: 'Tile',
+								},
+							]
+						},
+						{
 							name: 'ground',
 							objects: [
 								{
