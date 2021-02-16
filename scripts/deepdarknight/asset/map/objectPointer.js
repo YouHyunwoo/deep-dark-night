@@ -16,7 +16,6 @@ export class ObjectPointer extends Component {
         const scene = world.scene;
         const game = scene.game;
 
-        this.object = object;
         this.game = game;
 
         this.layers = object.objects;
