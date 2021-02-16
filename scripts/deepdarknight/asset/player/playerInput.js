@@ -62,16 +62,16 @@ export class PlayerInput extends Component {
                 }
 
                 if (event.key === 'a') {
-                    this.game.camera.position.x -= 10;
+                    this.owner.scene.camera.position.x -= 10;
                 }
                 if (event.key === 'd') {
-                    this.game.camera.position.x += 10;
+                    this.owner.scene.camera.position.x += 10;
                 }
                 if (event.key === 'w') {
-                    this.game.camera.position.y -= 10;
+                    this.owner.scene.camera.position.y -= 10;
                 }
                 if (event.key === 's') {
-                    this.game.camera.position.y += 10;
+                    this.owner.scene.camera.position.y += 10;
                 }
             }
             else if (event.type === 'mousedown') {
@@ -166,7 +166,7 @@ export class PlayerInput extends Component {
     clickGroundInMap(mousePosition) {
         this.gathering.cancel();
 
-        const camera = this.game.camera;
+        const camera = this.owner.scene.camera;
         const mouseInWorld = camera.screenToWorld(mousePosition);
 
         this.movement.range = 0;

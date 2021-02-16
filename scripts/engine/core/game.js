@@ -1,4 +1,3 @@
-import { Camera } from '../game/camera.js';
 import { Scene } from './scene.js';
 
 
@@ -8,8 +7,6 @@ export class Game {
         this.engine = engine;
 
         this.scene = new Scene(this);
-
-        this.camera = new Camera();
     }
 
     init() {}
@@ -25,12 +22,6 @@ export class Game {
     }
 
     draw(context) {
-        context.save();
-
-        context.translate(-this.camera.position.x, -this.camera.position.y);
-
         this.scene.draw(context);
-
-        context.restore();
     }
 }

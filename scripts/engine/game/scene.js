@@ -1,8 +1,14 @@
+import { Camera } from './camera.js';
+
+
+
 export class Scene {
     constructor() {
         this._state = 'created';
 
         this.game = null;
+
+        this.camera = new Camera();
 
         this.objects = [];
     }
@@ -56,6 +62,8 @@ export class Scene {
 
         this.onDraw(context);
 
+        context.restore();
+
         this.objects
             .map((object, index) => [index, object])
             .sort((a, b) => {
@@ -74,10 +82,16 @@ export class Scene {
             })
             .map(element => element[1])
             .forEach(object => {
-                object.draw(context);
-            });
+                context.save();
+                
+                if (!object.hasTag('Screen')) {
+                    context.translate(-this.camera.position.x, -this.camera.position.y);
+                }
 
-        context.restore();
+                object.draw(context);
+
+                context.restore();
+            });
     }
 
     addGameObject(gameObject) {

@@ -22,7 +22,7 @@ export class ObjectPointer extends Component {
     }
 
     findGameObjectPointingByMouse(mousePosition, exceptionObjects) {
-        const camera = this.game.camera;
+        const camera = this.owner.scene.camera;
         const mouseInWorld = camera.screenToWorld(mousePosition);
 
         const reverseLayers = this.layers.slice().reverse();

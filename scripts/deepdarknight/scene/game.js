@@ -138,7 +138,8 @@ export const sceneData = {
 					module: '/scripts/deepdarknight/asset/system/timeSystem.js',
 					type: 'TimeSystem'
 				}
-			]
+			],
+			tags: ['Screen']
 		},
 		{
 			module: '/scripts/engine/game/ui/system.js',
@@ -203,7 +204,8 @@ export const sceneData = {
 					visible: false,
 					backgroundColor: 'white',
 				}
-			]
+			],
+			tags: ['Screen']
 		}
 	]
 };
