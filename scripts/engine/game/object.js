@@ -195,7 +195,12 @@ export class GameObject {
         if (this.initialized && !this.disposed && this.enable) {
             context.save();
 
-            context.translate(...this.area.getPosition().toList());
+            const position = this.area.getPosition();
+            
+            position.x = Math.floor(position.x);
+            position.y = Math.floor(position.y);
+
+            context.translate(...position.toList());
 
             this.onDraw(context);
 

@@ -8,13 +8,28 @@ export class Scene {
 
         this.game = null;
 
-        this.camera = new Camera();
+        this.camera = null;
 
         this.objects = [];
     }
 
     init() {
         if (this._state === 'created') {
+            for (const object of this.objects) {
+                if (object instanceof Camera) {
+                    this.camera = object;
+                    break;
+                }
+            }
+            
+            if (!this.camera) {
+                const camera = new Camera('camera');
+
+                this.addGameObject(camera);
+
+                this.camera = camera;
+            }
+
             this.onInitialize();
 
             this.objects.forEach(object => {
@@ -64,34 +79,38 @@ export class Scene {
 
         context.restore();
 
-        this.objects
-            .map((object, index) => [index, object])
-            .sort((a, b) => {
-                const aForScreen = a[1].hasTag('Screen');
-                const bForScreen = b[1].hasTag('Screen');
+        const camera = this.camera;
 
-                if (!aForScreen == !bForScreen) {
-                    return a[0] - b[0];
-                }
-                else if (aForScreen) {
-                    return 1;
-                }
-                else {
-                    return -1;
-                }
-            })
-            .map(element => element[1])
-            .forEach(object => {
-                context.save();
-                
-                if (!object.hasTag('Screen')) {
-                    context.translate(-this.camera.position.x, -this.camera.position.y);
-                }
+        if (camera) {
+            this.objects
+                .map((object, index) => [index, object])
+                .sort((a, b) => {
+                    const aForScreen = a[1].hasTag('Screen');
+                    const bForScreen = b[1].hasTag('Screen');
 
-                object.draw(context);
+                    if (!aForScreen == !bForScreen) {
+                        return a[0] - b[0];
+                    }
+                    else if (aForScreen) {
+                        return 1;
+                    }
+                    else {
+                        return -1;
+                    }
+                })
+                .map(element => element[1])
+                .forEach(object => {
+                    context.save();
+                    
+                    if (!object.hasTag('Screen')) {
+                        context.translate(-camera.area.x, -camera.area.y);
+                    }
 
-                context.restore();
-            });
+                    object.draw(context);
+
+                    context.restore();
+                });
+        }
     }
 
     addGameObject(gameObject) {

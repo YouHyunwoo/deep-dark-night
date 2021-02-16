@@ -71,7 +71,11 @@ export const sceneData = {
 										{
 											module: '/scripts/deepdarknight/asset/character/equipmentController.js',
 											type: 'EquipmentController'
-										}
+										},
+										{
+											module: '/scripts/deepdarknight/asset/player/playerCamera.js',
+											type: 'PlayerCamera',
+										},
 									],
 									objects: [
 										{
@@ -136,7 +140,9 @@ export const sceneData = {
 			components: [
 				{
 					module: '/scripts/deepdarknight/asset/system/timeSystem.js',
-					type: 'TimeSystem'
+					type: 'TimeSystem',
+					time: 3600 * 12,
+					speed: 0,
 				}
 			],
 			tags: ['Screen']

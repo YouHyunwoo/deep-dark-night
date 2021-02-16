@@ -60,19 +60,6 @@ export class PlayerInput extends Component {
                 if (event.key === 'e') {
                     this.equipmentWindow.toggle();
                 }
-
-                if (event.key === 'a') {
-                    this.owner.scene.camera.position.x -= 10;
-                }
-                if (event.key === 'd') {
-                    this.owner.scene.camera.position.x += 10;
-                }
-                if (event.key === 'w') {
-                    this.owner.scene.camera.position.y -= 10;
-                }
-                if (event.key === 's') {
-                    this.owner.scene.camera.position.y += 10;
-                }
             }
             else if (event.type === 'mousedown') {
                 const mousePosition = event.position;
