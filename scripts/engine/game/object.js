@@ -1,5 +1,4 @@
 import { Area } from '../math/geometry/area.js';
-import { Component } from './component.js';
 
 
 
@@ -217,7 +216,7 @@ export class GameObject {
     }
 
     localToGlobal(positionInLocal) {
-        const positionInOwner = positionInLocal.add(this.area.getPosition());
+        const positionInOwner = positionInLocal.add(this.area.getPosition().floor());
         
         return this.owner?.localToGlobal(positionInOwner) ?? positionInOwner;
     }
@@ -225,7 +224,7 @@ export class GameObject {
     globalToLocal(positionInGlobal) {
         const positionInOwner = this.owner?.globalToLocal(positionInGlobal) ?? positionInGlobal;
 
-        return positionInOwner.subtract(this.area.getPosition());
+        return positionInOwner.subtract(this.area.getPosition().floor());
     }
 
     isDisposed() {
