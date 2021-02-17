@@ -70,6 +70,8 @@ export class Tile extends Component {
 
         context.save();
 
+        let positionPointed = null;
+
         for (let row = 0; row < this.tiles.length; row++) {
             for (let col = 0; col < this.tiles[row].length; col++) {
                 const tile = this.tiles[row][col];
@@ -83,10 +85,14 @@ export class Tile extends Component {
                 context.fillRect(...positionTile.toList(), ...this.sizeTile.toList());
 
                 if (this.pointed === tile) {
-                    context.strokeStyle = 'orange';
-                    context.strokeRect(...positionTile.toList(), ...this.sizeTile.toList());
+                    positionPointed = positionTile;
                 }
             }
+        }
+
+        if (positionPointed) {
+            context.strokeStyle = 'orange';
+            context.strokeRect(...positionPointed.toList(), ...this.sizeTile.toList());
         }
 
         context.restore();
