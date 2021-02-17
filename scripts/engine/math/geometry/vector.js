@@ -48,6 +48,22 @@ export class Vector2 {
         return new Vector2(-this.x, -this.y);
     }
 
+    floor() {
+        return new Vector2(Math.floor(this.x), Math.floor(this.y));
+    }
+
+    round() {
+        return new Vector2(Math.round(this.x), Math.round(this.y));
+    }
+
+    ceil() {
+        return new Vector2(Math.ceil(this.x), Math.ceil(this.y));
+    }
+
+    absolute() {
+        return new Vector2(Math.abs(this.x), Math.abs(this.y));
+    }
+
     normalize() {
         const magnitude = this.getMagnitude();
         
