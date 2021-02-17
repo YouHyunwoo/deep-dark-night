@@ -1,3 +1,5 @@
+import { Area } from '../math/geometry/area.js';
+import { Vector2 } from '../math/geometry/vector.js';
 import { Camera } from './camera.js';
 
 
@@ -26,6 +28,9 @@ export class Scene {
                 const camera = new Camera('camera');
 
                 this.addGameObject(camera);
+
+                // camera.area = new Area(0, 0, this.game.engine.canvas.width, this.game.engine.canvas.height);
+                camera.area = new Area(0, 0, 400, 400);
 
                 this.camera = camera;
             }
@@ -82,6 +87,10 @@ export class Scene {
         const camera = this.camera;
 
         if (camera) {
+            const scale = camera.scale;
+            const positionCamera = camera.area.getPosition();
+            const sizeCamera = camera.area.getSize();
+
             this.objects
                 .map((object, index) => [index, object])
                 .sort((a, b) => {
@@ -103,7 +112,8 @@ export class Scene {
                     context.save();
                     
                     if (!object.hasTag('Screen')) {
-                        context.translate(-camera.area.x, -camera.area.y);
+                        context.scale(...scale.toList());
+                        context.translate(...positionCamera.negate().add(sizeCamera.divide(2).floor()).toList());
                     }
 
                     object.draw(context);
