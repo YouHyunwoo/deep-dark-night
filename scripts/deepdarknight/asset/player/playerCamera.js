@@ -27,21 +27,23 @@ export class PlayerCamera extends Component {
         const camera = this.scene.camera;
 
         if (camera) {
-            const sizeCanvas = new Vector2(this.canvas.width, this.canvas.height);
+            const sizeCamera = camera.area.getSize();
             const sizeMap = this.map.area.getSize();
 
-            if (sizeMap.x <= sizeCanvas.x) {
+            if (sizeMap.x <= sizeCamera.x) {
                 camera.area.x = Math.floor(sizeMap.x / 2);
             }
             else {
-                camera.area.x = Math.floor(this.player.area.x - Math.floor(this.canvas.width / 2));
+                camera.area.x = Math.floor(this.player.area.x);
+                camera.area.x = Math.max(Math.floor(sizeCamera.x / 2), Math.min(camera.area.x, sizeMap.x - Math.floor(sizeCamera.x / 2)));
             }
             
-            if (sizeMap.y <= sizeCanvas.y) {
+            if (sizeMap.y <= sizeCamera.y) {
                 camera.area.y = Math.floor(sizeMap.y / 2);
             }
             else {
-                camera.area.y = Math.floor(this.player.area.y - Math.floor(this.canvas.height / 2));
+                camera.area.y = Math.floor(this.player.area.y);
+                camera.area.y = Math.max(Math.floor(sizeCamera.y / 2), Math.min(camera.area.y, sizeMap.y - Math.floor(sizeCamera.y / 2)));
             }
         }
     }
