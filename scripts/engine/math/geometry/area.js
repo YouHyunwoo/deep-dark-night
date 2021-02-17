@@ -17,6 +17,10 @@ export class Area {
         this.height = height;
     }
 
+    floor() {
+        return new Area(Math.floor(this.x), Math.floor(this.y), Math.floor(this.width), Math.floor(this.height));
+    }
+
     containsVector(vector) {
         const horizontal = this.x <= vector.x && vector.x < this.x + this.width;
         const vertical = this.y <= vector.y && vector.y < this.y + this.height;
