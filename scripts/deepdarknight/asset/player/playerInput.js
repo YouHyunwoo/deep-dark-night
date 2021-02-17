@@ -124,10 +124,7 @@ export class PlayerInput extends Component {
                 const spriteRenderer = this.pointed.findComponent(SpriteRenderer);
                 area = spriteRenderer.getSpriteArea();
             }
-            // const boxCollider = this.pointed.findComponent(BoxCollider);
-            // const area = boxCollider.area;
-            // const spriteRenderer = this.pointed.findComponent('SpriteRenderer');
-            // const area = spriteRenderer.getSpriteArea();
+
             const areaPosition = area.getPosition();
             const areaSize = area.getSize();
             const areaPositionInWorld = this.pointed.localToGlobal(areaPosition);
@@ -135,7 +132,7 @@ export class PlayerInput extends Component {
             const areaInPlayer = Area.combine(areaPositionInPlayer, areaSize);
 
             context.lineWidth = 2;
-            context.strokeStyle = 'green';
+            context.strokeStyle = 'blue';
             context.strokeRect(...areaInPlayer.toList());
         }
     }
