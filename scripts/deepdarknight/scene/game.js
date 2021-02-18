@@ -31,6 +31,10 @@ export const sceneData = {
 											type: 'PlayerInput',
 										},
 										{
+											module: '/scripts/deepdarknight/asset/player/playerBuild.js',
+											type: 'PlayerBuild',
+										},
+										{
 											module: '/scripts/engine/graphic/components/spriteRenderer.js',
 											type: 'SpriteRenderer',
 										},

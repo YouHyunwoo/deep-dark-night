@@ -13,6 +13,7 @@ export class Tile extends Component {
         this.tiles = null;
 
         this.pointed = null;
+        this.pointedArea = null;
     }
 
     onInitialize() {
@@ -95,6 +96,17 @@ export class Tile extends Component {
             context.strokeRect(...positionPointed.toList(), ...this.sizeTile.toList());
         }
 
+        if (this.pointedArea) {
+            const position = this.pointedArea.getPosition();
+            const size = this.pointedArea.getSize();
+
+            context.fillStyle = 'rgba(60, 179, 113, 0.5)';
+            context.fillRect(...position.multiplyEach(this.sizeTile).toList(), ...size.multiplyEach(this.sizeTile).toList());
+
+            context.strokeStyle = 'rgba(60, 179, 113)';
+            context.fillRect(...position.multiplyEach(this.sizeTile).toList(), ...size.multiplyEach(this.sizeTile).toList());
+        }
+
         context.restore();
     }
 
@@ -118,5 +130,9 @@ export class Tile extends Component {
                 }
             }
         }
+    }
+
+    pointTiles(areaTile) {
+        this.pointedArea = areaTile;
     }
 }

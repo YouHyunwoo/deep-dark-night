@@ -1,4 +1,5 @@
 import { spriteStone, spriteTree1, spriteWoodenShoes } from './sprites.js';
+import { Tree } from './objects.js';
 
 
 
@@ -20,6 +21,16 @@ export const items = {
         part: null,
         mix: null,
         capability: null,
+    },
+    '묘목': {
+        name: '묘목',
+        description: '묘목',
+        sprite: spriteTree1,
+        type: '설치',
+        part: null,
+        mix: null,
+        capability: null,
+        class: Tree,
     },
     '돌도끼': {
         name: '돌도끼',
