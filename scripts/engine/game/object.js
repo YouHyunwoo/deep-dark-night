@@ -1,4 +1,5 @@
 import { Area } from '../math/geometry/area.js';
+import { Event } from '../util/event.js';
 
 
 
@@ -16,6 +17,8 @@ export class GameObject {
         this.components = [];
         this.objects = [];
         this.tags = [];
+
+        this.events = new Event();
 
         this.area = Area.zeros();
     }

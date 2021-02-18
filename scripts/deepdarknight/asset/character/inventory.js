@@ -16,6 +16,8 @@ export class Inventory extends Component {
             }
 
             this.items[item.name] += item.count;
+
+            this.events.notify('change', item.name, item.count, this);
         });
     }
 
@@ -23,6 +25,8 @@ export class Inventory extends Component {
         items.forEach(item => {
             if (item.name in this.items) {
                 this.items[item.name] -= item.count;
+
+                this.events.notify('change', item.name, -item.count, this);
 
                 if (this.items[item.name] <= 0) {
                     delete this.items[item.name];

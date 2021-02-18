@@ -23,6 +23,8 @@ export class InventoryWindow extends UIContainer {
         const player = scene.player;
 
         this.inventory = player.findComponent(Inventory);
+        this.inventory.events.addListener('change', this.onChangeInventory.bind(this));
+
         this.equipment = player.findComponent(Equipment);
 
         {
@@ -58,16 +60,7 @@ export class InventoryWindow extends UIContainer {
                         itemSlot.pointable = true;
                     }
 
-                    itemSlot.onClick = () => {
-                        if (!itemSlot.isDisabled && itemSlot.pointable) {
-                            const item = items[itemName];
-
-                            if (item.type === '장비') {
-                                this.equipment.equip(item);
-                                console.log(this.equipment);
-                            }
-                        }
-                    };
+                    itemSlot.events.addListener('click', this.onClickSlot.bind(this));
                     
                     this.slots.push(itemSlot);
 
@@ -77,48 +70,39 @@ export class InventoryWindow extends UIContainer {
         }
     }
 
-    onUpdate(timeDelta) {
-        if (this.inventory) {
-            // inventory onChange callback
-            const itemNames = Object.keys(this.inventory.items);
-            
-            for (let i = 0; i < this.slots.length; i++) {
-                const itemName = itemNames[i];
-                const slot = this.findGameObject(`${i}`);
+    toggle() {
+        this.visible = !this.visible;
+    }
 
-                if (itemName) {
-                    const itemCount = this.inventory.items[itemName];
-                    const itemSprite = items[itemName].sprite.copy();
-                    itemSprite.anchor = new Vector2(0, 0);
+    onChangeInventory(itemName, itemCount, inventory) {
+        const itemNames = Object.keys(inventory.items);
+        
+        for (let i = 0; i < this.slots.length; i++) {
+            const itemName = itemNames[i];
+            const slot = this.findGameObject(`${i}`);
 
-                    slot.setItemSprite(itemSprite);
-                    slot.setItemName(itemName);
-                    slot.setItemCount(itemCount);
+            if (itemName) {
+                const itemCount = this.inventory.items[itemName];
+                const itemSprite = items[itemName].sprite.copy();
+                itemSprite.anchor = new Vector2(0, 0);
 
-                    slot.pointable = true;
+                slot.setItemSprite(itemSprite);
+                slot.setItemName(itemName);
+                slot.setItemCount(itemCount);
 
-                    slot.onClick = () => {
-                        if (!slot.isDisabled && slot.pointable) {
-                            const item = items[itemName];
+                slot.pointable = true;
+            }
+            else if (slot.itemName) {
+                slot.setItemSprite(null);
+                slot.setItemName(null);
+                slot.setItemCount(null);
 
-                            if (item.type === '장비') {
-                                this.equipment.equip(item);
-                            }
-                        }
-                    }
-                }
-                else if (slot.itemName) {
-                    slot.setItemSprite(null);
-                    slot.setItemName(null);
-                    slot.setItemCount(null);
-
-                    slot.pointable = false;
-                }
+                slot.pointable = false;
             }
         }
     }
 
-    toggle() {
-        this.visible = !this.visible;
+    onClickSlot(event, slot) {
+        this.events.notify('clickItem', event, slot, this);
     }
 }

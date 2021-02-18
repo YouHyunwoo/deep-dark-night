@@ -1,3 +1,7 @@
+import { Event } from '../util/event.js';
+
+
+
 export class Component {
     constructor(name) {
         this.owner = null;
@@ -6,6 +10,7 @@ export class Component {
 
         this.name = name ?? this.constructor.name;
         this.enable = true;
+        this.events = new Event();
     }
 
     init() {

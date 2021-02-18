@@ -139,7 +139,7 @@ export class UIItemSlot extends UIObject {
                         context.fillRect(0, 0, ...sizeArea);
                     }
                     else {
-                        if (this.pointed) {
+                        if (this.pointable && this.pointed) {
                             context.fillStyle = 'rgba(255, 255, 255, 0.2)';
                             context.fillRect(0, 0, ...sizeArea);
                         }
@@ -168,5 +168,7 @@ export class UIItemSlot extends UIObject {
 
     onClick(event) {
         // this.isDisabled = !this.isDisabled;
+
+        this.events.notify('click', event, this);
     }
 }

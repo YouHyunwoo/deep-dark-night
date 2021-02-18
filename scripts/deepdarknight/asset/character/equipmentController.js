@@ -2,6 +2,7 @@ import { Component } from '../../../engine/game/component.js';
 import { Equipment } from './equipment.js';
 import { Inventory } from './inventory.js';
 import { Statistics } from './statistics.js';
+import { items } from '../data/items.js';
 
 
 
@@ -19,6 +20,9 @@ export class EquipmentController extends Component {
 		this.statistics = this.owner.findComponent(Statistics);
         this.equipment = this.owner.findComponent(Equipment);
 
+		this.inventoryWindow = this.owner.scene.findGameObject('uiSystem').findGameObject('inventoryWindow');
+		this.inventoryWindow.events.addListener('clickItem', this.onClickInventoryItem.bind(this));
+
 		console.assert(!!this.inventory, 'GameObject가 Inventory Component를 가지고 있지 않습니다.');
 		console.assert(!!this.statistics, 'GameObject가 Statistics Component를 가지고 있지 않습니다.');
 		console.assert(!!this.equipment, 'GameObject가 Equipment Component를 가지고 있지 않습니다.');
@@ -34,5 +38,18 @@ export class EquipmentController extends Component {
 	onUnequip(item, part, equipment) {
 		this.inventory.addItems({ name: item.name, count: 1 });
 		this.statistics.apply(item.capability, true);
+	}
+
+	onClickInventoryItem(event, slot, inventory) {
+		if (!slot.isDisabled && slot.pointable) {
+            const item = items[slot.itemName];
+
+            if (item.type === '장비') {
+                this.equipment.equip(item);
+
+                slot.reset();
+                slot.pointable = false;
+            }
+        }
 	}
 }
