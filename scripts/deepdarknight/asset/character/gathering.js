@@ -5,10 +5,12 @@ import { Inventory } from './inventory.js';
 import { Statistics } from './statistics.js';
 
 
+
 export class Gathering extends Component {
     constructor(name) {
         super(name);
 
+        this.gatheringQueue = [];
         this.gatherings = [];
         
         this.targetObject = null;
@@ -33,6 +35,12 @@ export class Gathering extends Component {
             gathering.progress += timeDelta;
         });
 
+        if (this.gatheringQueue.length > 0) {
+            if (this.gatherings.length == 0 || this.gatherings[this.gatherings.length-1].progress > 0.4) {
+                this.gatherings.push(this.gatheringQueue.shift());
+            }
+        }
+
         this.gatherings = this.gatherings.filter(gathering => gathering.progress < 1);
 
         if (this.isGathering) {
@@ -43,22 +51,25 @@ export class Gathering extends Component {
                 this.progress = 0;
                 
                 if (this.targetObject) {
-                    const itemName = this.targetObject.name;
-                    const itemCount = Math.floor(this.targetObject.findComponent(SpriteRenderer).sprite.scale.x + 1 + Math.random() * 3);
+                    const inventory = this.targetObject.findComponent(Inventory);
 
-                    this.inventory.addItems({
-                        name: itemName,
-                        count: itemCount,
+                    Object.keys(inventory.items).forEach(itemName => {
+                        const itemCount = inventory.items[itemName];
+
+                        this.inventory.addItems({
+                            name: itemName,
+                            count: itemCount,
+                        });
+        
+                        this.gatheringQueue.push({
+                            name: itemName,
+                            count: itemCount,
+                            progress: 0
+                        });
+
+                        console.log(`[ Log ] 플레이어가 ${itemName}을(를) ${itemCount}개 수집했다.`);
                     });
-    
-                    this.gatherings.push({
-                        name: itemName,
-                        count: itemCount,
-                        progress: 0
-                    });
-    
-                    console.log(`[ Log ] 플레이어가 ${itemName}을(를) ${itemCount}개 수집했다.`);
-    
+
                     this.targetObject.remove();
                     this.targetObject = null;
                 }
