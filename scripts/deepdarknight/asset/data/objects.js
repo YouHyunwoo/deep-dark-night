@@ -48,6 +48,7 @@ export class Tree extends GameObject {
         spriteRenderer.sprite = new Sprite(spriteSheetTree);
         spriteRenderer.sprite.cropInOriginalImage = new Area(0, 0, 1 / 4, 1);
         spriteRenderer.sprite.anchor = new Vector2(0.5, 0.9);
+        spriteRenderer.sprite.scale = Vector2.full(3);
 
 
         const boxCollider = new BoxCollider('BoxCollider');
@@ -64,6 +65,15 @@ export class Tree extends GameObject {
         {
             const name = '나무';
             const count = ~~(Math.random() * 5) + 5;
+    
+            const inventoryItem = { name, count };
+
+            inventory.addItems(inventoryItem);
+        }
+
+        {
+            const name = '묘목';
+            const count = ~~(Math.random() * 2) + 1;
     
             const inventoryItem = { name, count };
 
