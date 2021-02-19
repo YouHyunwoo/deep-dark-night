@@ -4,44 +4,49 @@ import { Event } from '../util/event.js';
 
 export class Component {
     constructor() {
-        this._state = 'created';
+        this._states = {
+            created: 0,
+            initialized: 1,
+            disposed: 2,
+        };
+        this._state = 0;
 
-        this.owner = null;
+        this.gameObject = null;
 
         this.enable = true;
         this.events = new Event();
     }
 
     init() {
-        if (this._state === 'created') {
+        if (this._state === this._states.created) {
             this.onInitialize();
 
-            this._state = 'initialized';
+            this._state = this._states.initialized;
         }
     }
 
     dispose() {
-        if (this._state === 'initialized') {
+        if (this._state === this._states.initialized) {
             this.onDispose();
 
-            this._state = 'disposed';
+            this._state = this._states.disposed;
         }
     }
 
     event(events) {
-        if (this._state === 'initialized' && this.enable) {
+        if (this._state === this._states.initialized && this.enable) {
             this.onEvent(events);
         }
     }
 
     update(timeDelta) {
-        if (this._state === 'initialized' && this.enable) {
+        if (this._state === this._states.initialized && this.enable) {
             this.onUpdate(timeDelta);
         }
     }
 
     draw(context) {
-        if (this._state === 'initialized' && this.enable) {
+        if (this._state === this._states.initialized && this.enable) {
             this.onDraw(context);
         }
     }

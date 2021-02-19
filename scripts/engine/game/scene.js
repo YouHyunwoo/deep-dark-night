@@ -6,7 +6,12 @@ import { Camera } from './camera.js';
 
 export class Scene {
     constructor() {
-        this._state = 'created';
+        this._states = {
+            created: 0,
+            initialized: 1,
+            disposed: 2,
+        };
+        this._state = 0;
 
         this.game = null;
 
@@ -16,7 +21,7 @@ export class Scene {
     }
 
     init() {
-        if (this._state === 'created') {
+        if (this._state === this._states.created) {
             for (const object of this.objects) {
                 if (object instanceof Camera) {
                     this.camera = object;
@@ -41,24 +46,24 @@ export class Scene {
                 object.init();
             });
 
-            this._state = 'initialized';
+            this._state = this._states.initialized;
         }
     }
 
     dispose() {
-        if (this._state === 'initialized') {
+        if (this._state === this._states.initialized) {
             this.objects.forEach(object => {
                 object.dispose();
             });
     
             this.onDispose();
 
-            this._state = 'disposed';
+            this._state = this._states.disposed;
         }
     }
 
     event(events) {
-        if (this._state === 'initialized') {
+        if (this._state === this._states.initialized) {
             this.onEvent(events);
 
             this.objects.slice().reverse().forEach(object => {
@@ -68,7 +73,7 @@ export class Scene {
     }
 
     update(timeDelta) {
-        if (this._state === 'initialized') {
+        if (this._state === this._states.initialized) {
             this.onUpdate(timeDelta);
 
             this.objects.forEach(object => {
@@ -78,48 +83,50 @@ export class Scene {
     }
 
     draw(context) {
-        context.save();
+        if (this._state === this._states.initialized) {
+            context.save();
 
-        this.onDraw(context);
-
-        context.restore();
-
-        const camera = this.camera;
-
-        if (camera) {
-            const scale = camera.scale;
-            const positionCamera = camera.area.getPosition();
-            const sizeCamera = camera.area.getSize();
-
-            this.objects
-                .map((object, index) => [index, object])
-                .sort((a, b) => {
-                    const aForScreen = a[1].hasTag('Screen');
-                    const bForScreen = b[1].hasTag('Screen');
-
-                    if (!aForScreen == !bForScreen) {
-                        return a[0] - b[0];
-                    }
-                    else if (aForScreen) {
-                        return 1;
-                    }
-                    else {
-                        return -1;
-                    }
-                })
-                .map(element => element[1])
-                .forEach(object => {
-                    context.save();
-                    
-                    if (!object.hasTag('Screen')) {
-                        context.scale(...scale.toList());
-                        context.translate(...positionCamera.negate().add(sizeCamera.divide(2).floor()).toList());
-                    }
-
-                    object.draw(context);
-
-                    context.restore();
-                });
+            this.onDraw(context);
+    
+            context.restore();
+    
+            const camera = this.camera;
+    
+            if (camera) {
+                const scale = camera.scale;
+                const positionCamera = camera.area.getPosition();
+                const sizeCamera = camera.area.getSize();
+    
+                this.objects
+                    .map((object, index) => [index, object])
+                    .sort((a, b) => {
+                        const aForScreen = a[1].hasTag('Screen');
+                        const bForScreen = b[1].hasTag('Screen');
+    
+                        if (!aForScreen == !bForScreen) {
+                            return a[0] - b[0];
+                        }
+                        else if (aForScreen) {
+                            return 1;
+                        }
+                        else {
+                            return -1;
+                        }
+                    })
+                    .map(element => element[1])
+                    .forEach(object => {
+                        context.save();
+                        
+                        if (!object.hasTag('Screen')) {
+                            context.scale(...scale.toList());
+                            context.translate(...positionCamera.negate().add(sizeCamera.divide(2).floor()).toList());
+                        }
+    
+                        object.draw(context);
+    
+                        context.restore();
+                    });
+            }
         }
     }
 

@@ -10,7 +10,7 @@ export class MapRenderer extends Component {
     }
 
     onInitialize() {
-        const object = this.owner;
+        const object = this.gameObject;
 
         this.object = object;
     }

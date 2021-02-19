@@ -23,7 +23,7 @@ export class Gathering extends Component {
     }
 
     onInitialize() {
-        const gameObject = this.owner;
+        const gameObject = this.gameObject;
 
         this.object = gameObject;
         this.inventory = gameObject.findComponent(Inventory);
@@ -95,7 +95,7 @@ export class Gathering extends Component {
         context.restore();
 
         if (this.isGathering) {
-            const spriteRenderer = this.owner.findComponent(SpriteRenderer);
+            const spriteRenderer = this.gameObject.findComponent(SpriteRenderer);
             const area = spriteRenderer.getSpriteArea();
             const areaBar = new Area(area.x, area.y + area.height, area.width, 10);
             const areaProgress = areaBar.copy();

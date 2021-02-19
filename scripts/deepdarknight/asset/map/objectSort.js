@@ -4,7 +4,7 @@ import { Component } from '../../../engine/game/component.js';
 
 export class ObjectSort extends Component {
     onInitialize() {
-        const object = this.owner;
+        const object = this.gameObject;
         const layers = object.objects;
 
         this.object = object;

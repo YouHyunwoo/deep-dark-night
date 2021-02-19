@@ -26,7 +26,7 @@ export class SpriteRenderer extends Component {
     }
 
     drawBlackRectangle(context) {
-        const obj = this.owner;
+        const obj = this.gameObject;
 
         const area = new Area(-obj.width / 2, -obj.height / 2, obj.width, obj.height);
 

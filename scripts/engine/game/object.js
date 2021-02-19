@@ -5,8 +5,12 @@ import { Event } from '../util/event.js';
 
 export class GameObject {
     constructor(name='') {
-        this.initialized = false;
-        this.disposed = false;
+        this._states = {
+            created: 0,
+            initialized: 1,
+            disposed: 2,
+        };
+        this._state = 0;
 
         this.scene = null;
 
@@ -24,7 +28,7 @@ export class GameObject {
     }
 
     init() {
-        if (!this.initialized) {
+        if (this._state === this._states.created) {
             this.onInitialize();
 
             this.components.forEach(component => {
@@ -35,13 +39,13 @@ export class GameObject {
                 object.scene = this.scene;
                 object.init();
             });
-    
-            this.initialized = true;
+
+            this._state = this._states.initialized;
         }
     }
 
     dispose() {
-        if (this.initialized && !this.disposed) {
+        if (this._state === this._states.initialized) {
             this.objects.forEach(object => {
                 object.dispose();
                 object.scene = null;
@@ -54,13 +58,13 @@ export class GameObject {
             });
 
             this.scene = null;
-    
-            this.disposed = true;
+
+            this._state = this._states.disposed;
         }
     }
 
     addComponents(...components) {
-        if (!this.disposed) {
+        if (this._state !== this._states.disposed) {
             for (const component of components) {
                 const componentType = component.constructor;
 
@@ -70,7 +74,7 @@ export class GameObject {
 
                 this.components.push(component);
 
-                component.owner = this;
+                component.gameObject = this;
                 component.onAdded();
 
                 if (this.initialized) {
@@ -84,7 +88,7 @@ export class GameObject {
         this.components = this.components.filter(component => !components.includes(component));
 
         components.forEach(component => {
-            component.owner = null;
+            component.gameObject = null;
             component.onRemoved();
         });
     }
@@ -106,7 +110,7 @@ export class GameObject {
     }
 
     addTags(...tags) {
-        if (!this.disposed) {
+        if (this._state !== this._states.disposed) {
             this.tags = this.tags.concat(tags);
         }
     }
@@ -120,14 +124,14 @@ export class GameObject {
     }
 
     addGameObjects(...objects) {
-        if (!this.disposed) {
+        if (this._state !== this._states.disposed) {
             this.objects = this.objects.concat(objects);
             objects.forEach(obj => {
                 obj.scene = this.scene;
                 obj.owner = this;
                 obj.onAdded();
 
-                if (this.initialized) {
+                if (this._state === this._states.initialized) {
                     obj.init();
                 }
             });
@@ -166,7 +170,7 @@ export class GameObject {
     }
 
     event(events) {
-        if (this.initialized && !this.disposed && this.enable) {
+        if (this._state === this._states.initialized && this.enable) {
             this.onEvent(events);
 
             this.components.forEach(component => {
@@ -180,7 +184,7 @@ export class GameObject {
     }
 
     update(timeDelta) {
-        if (this.initialized && !this.disposed && this.enable) {
+        if (this._state === this._states.initialized && this.enable) {
             this.onUpdate(timeDelta);
 
             this.components.forEach(component => {
@@ -194,7 +198,7 @@ export class GameObject {
     }
 
     draw(context) {
-        if (this.initialized && !this.disposed && this.enable) {
+        if (this._state === this._states.initialized && this.enable) {
             context.save();
 
             const position = this.area.getPosition();
@@ -231,7 +235,7 @@ export class GameObject {
     }
 
     isDisposed() {
-        return this.disposed;
+        return this._state === this._states.disposed;
     }
 
     onInitialize() {}

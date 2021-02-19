@@ -19,7 +19,7 @@ export class Movement extends Component {
     }
 
     onInitialize() {
-        const gameObject = this.owner;
+        const gameObject = this.gameObject;
 
         this.object = gameObject;
         this.direction = gameObject.findComponent(Direction);

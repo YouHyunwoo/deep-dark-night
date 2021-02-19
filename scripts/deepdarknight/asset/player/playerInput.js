@@ -21,7 +21,7 @@ export class PlayerInput extends Component {
     }
 
     onInitialize() {
-        const gameObjectPlayer = this.owner;
+        const gameObjectPlayer = this.gameObject;
         const layer = gameObjectPlayer.owner;
         const map = layer.owner;
         const world = map.owner;
@@ -104,7 +104,7 @@ export class PlayerInput extends Component {
             const areaPosition = area.getPosition();
             const areaSize = area.getSize();
             const areaPositionInWorld = this.selected.localToGlobal(areaPosition);
-            const areaPositionInPlayer = this.owner.globalToLocal(areaPositionInWorld);
+            const areaPositionInPlayer = this.gameObject.globalToLocal(areaPositionInWorld);
             const areaInPlayer = Area.combine(areaPositionInPlayer, areaSize);
 
             context.lineWidth = 3;
@@ -128,7 +128,7 @@ export class PlayerInput extends Component {
             const areaPosition = area.getPosition();
             const areaSize = area.getSize();
             const areaPositionInWorld = this.pointed.localToGlobal(areaPosition);
-            const areaPositionInPlayer = this.owner.globalToLocal(areaPositionInWorld);
+            const areaPositionInPlayer = this.gameObject.globalToLocal(areaPositionInWorld);
             const areaInPlayer = Area.combine(areaPositionInPlayer, areaSize);
 
             context.lineWidth = 2;
@@ -150,7 +150,7 @@ export class PlayerInput extends Component {
     clickGroundInMap(mousePosition) {
         this.gathering.cancel();
 
-        const camera = this.owner.scene.camera;
+        const camera = this.gameObject.scene.camera;
         const mouseInWorld = camera.screenToWorld(mousePosition);
 
         this.movement.range = 0;
@@ -161,7 +161,7 @@ export class PlayerInput extends Component {
     }
 
     findGameObjectPointingByMouseInMap(mousePosition) {
-        const gameObject = this.map.findGameObjectPointingByMouse(mousePosition, [this.owner]);
+        const gameObject = this.map.findGameObjectPointingByMouse(mousePosition, [this.gameObject]);
 
         return gameObject;
     }

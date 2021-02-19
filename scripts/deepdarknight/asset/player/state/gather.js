@@ -17,7 +17,7 @@ export class GatherState extends State {
     }
 
     onInitialize() {
-        const goContext = this.context.owner;
+        const goContext = this.context.gameObject;
         const goPlayer = goContext.owner;
 
         this.gathering = goPlayer.findComponent(Gathering);

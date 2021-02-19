@@ -7,7 +7,7 @@ import { Stone, Tree } from '../data/objects.js';
 
 export class ObjectGenerator extends Component {
     onInitialize() {
-        const object = this.owner;
+        const object = this.gameObject;
         const world = object.owner;
         const scene = world.scene;
         const game = scene.game;

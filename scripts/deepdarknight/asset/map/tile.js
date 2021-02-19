@@ -17,7 +17,7 @@ export class Tile extends Component {
     }
 
     onInitialize() {
-        const object = this.owner;
+        const object = this.gameObject;
 
         this.object = object;
 
@@ -111,7 +111,7 @@ export class Tile extends Component {
     }
 
     findTileByMousePosition(mousePosition) {
-        const camera = this.owner.scene.camera;
+        const camera = this.gameObject.scene.camera;
         const mouseInWorld = camera.screenToWorld(mousePosition);
 
         for (let row = 0; row < this.tiles.length; row++) {

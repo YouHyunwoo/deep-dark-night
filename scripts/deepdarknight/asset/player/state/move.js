@@ -9,7 +9,7 @@ import { IdleState } from './idle.js';
 
 export class MoveState extends State {
     onInitialize() {
-        const goContext = this.context.owner;
+        const goContext = this.context.gameObject;
         const goPlayer = goContext.owner;
 
         this.direction = goPlayer.findComponent(Direction);

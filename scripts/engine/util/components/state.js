@@ -12,7 +12,7 @@ export class StateContext extends Component {
     }
 
     onInitialize() {
-        const object = this.owner;
+        const object = this.gameObject;
         const components = object.components;
 
         components.forEach(component => {
@@ -72,13 +72,13 @@ export class State extends Component {
     }
 
     enter(...args) {
-        if (this._state === 'initialized' && this.enable) {
+        if (this._state === this._states.initialized && this.enable) {
             this.onEnter(...args);
         }
     }
 
     exit(...args) {
-        if (this._state === 'initialized' && this.enable) {
+        if (this._state === this._states.initialized && this.enable) {
             this.onExit(...args);
         }
     }

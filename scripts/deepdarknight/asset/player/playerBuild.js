@@ -16,15 +16,15 @@ export class PlayerBuild extends Component {
     }
 
     onInitialize() {
-        this.map = this.owner.owner.owner;
+        this.map = this.gameObject.owner.owner;
 
-        this.camera = this.owner.scene.camera;
+        this.camera = this.gameObject.scene.camera;
         
-        this.engine = this.owner.scene.game.engine;
+        this.engine = this.gameObject.scene.game.engine;
 
         this.tile = this.map.findGameObject('tile').findComponent(Tile);
         
-        this.inventory = this.owner.scene.findGameObject('uiSystem').findGameObject('inventoryWindow');
+        this.inventory = this.gameObject.scene.findGameObject('uiSystem').findGameObject('inventoryWindow');
         this.inventory.events.addListener('clickItem', this.onClickInventoryItem.bind(this));
     }
 

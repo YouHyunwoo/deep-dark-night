@@ -11,7 +11,7 @@ export class Animator extends Component {
     }
 
     onInitialize() {
-        this.spriteRenderer = this.owner.findComponent(SpriteRenderer);
+        this.spriteRenderer = this.gameObject.findComponent(SpriteRenderer);
     }
 
     onUpdate(timeDelta) {

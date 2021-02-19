@@ -16,11 +16,11 @@ export class EquipmentController extends Component {
 	}
 
 	onInitialize() {
-		this.inventory = this.owner.findComponent(Inventory);
-		this.statistics = this.owner.findComponent(Statistics);
-        this.equipment = this.owner.findComponent(Equipment);
+		this.inventory = this.gameObject.findComponent(Inventory);
+		this.statistics = this.gameObject.findComponent(Statistics);
+        this.equipment = this.gameObject.findComponent(Equipment);
 
-		this.inventoryWindow = this.owner.scene.findGameObject('uiSystem').findGameObject('inventoryWindow');
+		this.inventoryWindow = this.gameObject.scene.findGameObject('uiSystem').findGameObject('inventoryWindow');
 		this.inventoryWindow.events.addListener('clickItem', this.onClickInventoryItem.bind(this));
 
 		console.assert(!!this.inventory, 'GameObject가 Inventory Component를 가지고 있지 않습니다.');

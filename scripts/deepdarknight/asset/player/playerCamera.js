@@ -5,7 +5,7 @@ import { Vector2 } from '../../../engine/math/geometry/vector.js';
 
 export class PlayerCamera extends Component {
     onInitialize() {
-        const player = this.owner;
+        const player = this.gameObject;
 
         this.player = player;
 

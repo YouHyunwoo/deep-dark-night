@@ -7,7 +7,7 @@ import { SpriteRenderer } from '../../../engine/graphic/components/spriteRendere
 
 export class ObjectPointer extends Component {
     onInitialize() {
-        const object = this.owner;
+        const object = this.gameObject;
         const world = object.owner;
         const scene = world.scene;
         const game = scene.game;
@@ -18,7 +18,7 @@ export class ObjectPointer extends Component {
     }
 
     findGameObjectPointingByMouse(mousePosition, exceptionObjects) {
-        const camera = this.owner.scene.camera;
+        const camera = this.gameObject.scene.camera;
         const mouseInWorld = camera.screenToWorld(mousePosition);
 
         const reverseLayers = this.layers.slice().reverse();

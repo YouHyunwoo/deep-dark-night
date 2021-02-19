@@ -45,7 +45,7 @@ export class Equipment extends Component {
 	}
 
 	equip(item) {
-		if (this._state === 'initialized') {
+		if (this._state === this._states.initialized) {
 			this.notify('onRequestEquipment', item, this);
 
 			const parts = {
@@ -93,7 +93,7 @@ export class Equipment extends Component {
 	}
 
 	unequip(part) {
-		if (this._state === 'initialized') {
+		if (this._state === this._states.initialized) {
 			this.notify('onRequestUnequipment', part, this);
 
 			console.assert(part in this);

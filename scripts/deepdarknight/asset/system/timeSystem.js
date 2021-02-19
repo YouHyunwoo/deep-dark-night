@@ -11,7 +11,7 @@ export class TimeSystem extends Component {
     }
 
     onInitialize() {
-        const scene = this.owner.scene;
+        const scene = this.gameObject.scene;
 
         this.engine = scene.game.engine;
     }
