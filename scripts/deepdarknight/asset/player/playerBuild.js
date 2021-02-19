@@ -48,8 +48,6 @@ export class PlayerBuild extends Component {
                     this.tile.pointTiles(null);
 
                     this.isBuildMode = false;
-                    
-                    this.events.notify('mousedown', row, column);
                 }
                 else if (event.type === 'mousemove') {
                     const positionMouse = event.position;
@@ -60,8 +58,6 @@ export class PlayerBuild extends Component {
                     const column = positionIndex.x;
 
                     this.tile.pointTiles(new Area(column, row, 1, 1));
-
-                    this.events.notify('mousemove', row, column);
                 }
             }
         }
