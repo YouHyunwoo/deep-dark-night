@@ -10,7 +10,7 @@ import { Inventory } from '../character/inventory.js';
 
 
 export class MixWindow extends UIContainer {
-    constructor(name='MixWindow') {
+    constructor(name) {
         super(name);
 
         this.inventory = null;

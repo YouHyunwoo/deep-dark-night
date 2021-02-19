@@ -6,7 +6,7 @@ import { Area } from '../../../engine/math/geometry/area.js';
 
 
 export class UIItemSlot extends UIObject {
-    constructor(name='ItemSlot') {
+    constructor(name) {
         super(name);
 
         this.backgroundColor = 'grey';

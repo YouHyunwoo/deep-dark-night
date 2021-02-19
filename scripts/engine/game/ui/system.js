@@ -5,7 +5,7 @@ import { UIObject } from './object.js';
 
 
 export class UISystem extends UIObject {
-    constructor(name='UISystem') {
+    constructor(name) {
         super(name);
     }
 

@@ -4,13 +4,7 @@ import { Vector2 } from '../../math/geometry/vector.js';
 
 
 export class UILabel extends UIObject {
-
-    // _text;
-    // _font;
-    // _fitContentHorizontal;
-    // _fitContentVertical;
-
-    constructor(name='Label') {
+    constructor(name) {
         super(name);
 
         this._text = null;

@@ -9,7 +9,7 @@ import { Equipment } from '../character/equipment.js';
 
 
 export class InventoryWindow extends UIContainer {
-    constructor(name='InventoryWindow') {
+    constructor(name) {
         super(name);
 
         this.slots = [];

@@ -4,7 +4,7 @@ import { Vector2 } from '../../math/geometry/vector.js';
 
 
 export class UIImage extends UIObject {
-    constructor(name='UIImage', sprite) {
+    constructor(name, sprite) {
         super(name);
 
         this.drawType = 'original';

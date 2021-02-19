@@ -3,7 +3,7 @@ import { UIObject } from './object.js';
 
 
 export class UIContainer extends UIObject {
-    constructor(name='UIContainer') {
+    constructor(name) {
         super(name);
 
         this.backgroundColor = null;
