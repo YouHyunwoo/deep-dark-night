@@ -4,10 +4,10 @@ import { SpriteRenderer } from './spriteRenderer.js';
 
 
 export class Animator extends Component {
-    constructor(name, animation) {
-        super(name);
+    constructor() {
+        super();
 
-        this.animation = animation ?? null;
+        this.animation = null;
     }
 
     onInitialize() {

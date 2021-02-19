@@ -3,12 +3,11 @@ import { Event } from '../util/event.js';
 
 
 export class Component {
-    constructor(name) {
-        this.owner = null;
-
+    constructor() {
         this._state = 'created';
 
-        this.name = name ?? this.constructor.name;
+        this.owner = null;
+
         this.enable = true;
         this.events = new Event();
     }

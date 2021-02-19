@@ -6,10 +6,6 @@ import { SpriteRenderer } from '../../../engine/graphic/components/spriteRendere
 
 
 export class ObjectPointer extends Component {
-    constructor(name) {
-        super(name);
-    }
-
     onInitialize() {
         const object = this.owner;
         const world = object.owner;

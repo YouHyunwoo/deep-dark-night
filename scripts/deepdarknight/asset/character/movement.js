@@ -6,8 +6,8 @@ import { Statistics } from './statistics.js';
 
 
 export class Movement extends Component {
-    constructor(name) {
-        super(name);
+    constructor() {
+        super();
 
         this.stats = null;
 

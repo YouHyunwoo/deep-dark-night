@@ -3,8 +3,8 @@ import { Component } from '../../../engine/game/component.js';
 
 
 export class Statistics extends Component {
-	constructor(name) {
-		super(name);
+	constructor() {
+		super();
 
 		this.hp = 0;
 		this.maxhp = 0;

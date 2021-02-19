@@ -5,8 +5,8 @@ import { Area } from '../../math/geometry/area.js';
 
 
 export class SpriteRenderer extends Component {
-    constructor(name) {
-        super(name);
+    constructor() {
+        super();
 
         this.basePosition = Vector2.zeros();
 

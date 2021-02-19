@@ -3,8 +3,8 @@ import { Component } from '../../game/component.js';
 
 
 export class StateContext extends Component {
-    constructor(name) {
-        super(name);
+    constructor() {
+        super();
 
         this.states = {};
 
@@ -65,8 +65,8 @@ export class StateContext extends Component {
 }
 
 export class State extends Component {
-    constructor(name) {
-        super(name);
+    constructor() {
+        super();
 
         this.context = null;
     }

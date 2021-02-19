@@ -3,8 +3,8 @@ import { Component } from '../../../engine/game/component.js';
 
 
 export class MapRenderer extends Component {
-    constructor(name) {
-        super(name);
+    constructor() {
+        super();
 
         this.backgroundColor = 'white';
     }

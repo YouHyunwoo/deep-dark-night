@@ -3,8 +3,8 @@ import { Component } from "../../../engine/game/component.js";
 
 
 export class TimeSystem extends Component {
-    constructor(name) {
-        super(name);
+    constructor() {
+        super();
 
         this.time = 0;
         this.speed = 3600;

@@ -7,8 +7,8 @@ import { Statistics } from './statistics.js';
 
 
 export class Gathering extends Component {
-    constructor(name) {
-        super(name);
+    constructor() {
+        super();
 
         this.gatheringQueue = [];
         this.gatherings = [];

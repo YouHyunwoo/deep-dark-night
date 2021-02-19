@@ -13,8 +13,8 @@ import { MoveState } from './state/move.js';
 
 
 export class PlayerInput extends Component {
-    constructor(name) {
-        super(name);
+    constructor() {
+        super();
 
         this.pointed = null;
         this.selected = null;

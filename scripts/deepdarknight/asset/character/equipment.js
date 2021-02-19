@@ -12,8 +12,8 @@ export class Equipment extends Component {
 	static get Body() { return 'BODY'; }
 	static get Foot() { return 'FOOT'; }
 
-	constructor(name) {
-		super(name);
+	constructor() {
+		super();
 
 		this.head = null;
 		this.leftHand = null;
