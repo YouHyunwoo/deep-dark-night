@@ -87,6 +87,10 @@ export class UIItemSlot extends UIObject {
     
             this.addGameObjects(label);
         }
+
+        this._events.addListener('mousein', this.onMouseIn.bind(this));
+        this._events.addListener('mouseout', this.onMouseOut.bind(this));
+        this._events.addListener('click', this.onClick.bind(this));
     }
 
     reset() {
@@ -107,8 +111,18 @@ export class UIItemSlot extends UIObject {
         this.itemSprite = itemSprite;
     }
 
+    event(events) {
+        for (const event of events) {
+            if (event.type === 'mousedown' && !this.pointable) {
+                continue;
+            }
+            
+            super.event(events);
+        }
+    }
+
     draw(context) {
-        if (this.initialized && !this.disposed && this.enable && this.visible) {
+        if (this._state === this._states.initialized && this._enable && this.visible) {
             const sizeArea = this.area.getSize().toList();
 
             context.save();
@@ -130,7 +144,7 @@ export class UIItemSlot extends UIObject {
                         component.onDraw(context);
                     });
 
-                    this.objects.forEach(object => {
+                    this.gameObjects.forEach(object => {
                         object.draw(context);
                     });
                     
@@ -167,8 +181,6 @@ export class UIItemSlot extends UIObject {
     }
 
     onClick(event) {
-        // this.isDisabled = !this.isDisabled;
-
-        this.events.notify('click', event, this);
+        this.events.notify('clickItemSlot', event);
     }
 }

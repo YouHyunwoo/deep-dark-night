@@ -8,29 +8,26 @@ export class Tile extends Component {
     constructor() {
         super();
 
+        this.tileInfo = {
+            types: ['dirt', 'grass'],
+            backgroundColors: ['saddlebrown', 'green'],
+        };
+
         this.sizeTile = Vector2.full(50);
 
         this.tiles = null;
 
         this.pointed = null;
-        this.pointedArea = null;
+        // this.pointedArea = null;
     }
 
     onInitialize() {
-        const object = this.gameObject;
+        this.scene = this.gameObject.scene;
+        this.engine = this.gameObject.scene.game.engine;
 
-        this.object = object;
-
-        const world = object.owner;
-        const scene = world.scene;
-        const game = scene.game;
-
-        this.game = game;
-
-        const map = object.owner;
+        const map = this.gameObject.parent;
 
         const sizeArea = map.area.getSize();
-
         const tileCount = sizeArea.divideEach(this.sizeTile);
 
         const rowCount = Math.floor(tileCount.y);
@@ -42,14 +39,11 @@ export class Tile extends Component {
             const rowTiles = [];
 
             for (let col = 0; col < columnCount; col++) {
-                const types = ['dirt', 'grass'];
-                const backgroundColors = ['saddlebrown', 'green'];
-
-                const index = Math.floor(Math.random() * types.length);
+                const index = Math.floor(Math.random() * this.tileInfo.types.length);
 
                 const tile = {
-                    type: types[index],
-                    backgroundColor: backgroundColors[index],
+                    type: this.tileInfo.types[index],
+                    backgroundColor: this.tileInfo.backgroundColors[index],
                 };
 
                 rowTiles.push(tile);
@@ -59,46 +53,43 @@ export class Tile extends Component {
         }
     }
 
-    onUpdate(timeDelta) {
-        const mousePosition = this.game.engine.mouse;
+    // onUpdate(timeDelta) {
+        // const mousePosition = this.engine.mouse;
 
-        this.pointed = this.findTileByMousePosition(mousePosition);
-    }
+        // this.pointed = this.findTileByMousePosition(mousePosition);
+    // }
 
     onDraw(context) {
-        const types = ['dirt', 'grass'];
-        const backgroundColors = ['saddlebrown', 'green'];
-
         context.save();
 
-        let positionPointed = null;
+        // let positionPointed = null;
 
         for (let row = 0; row < this.tiles.length; row++) {
             for (let col = 0; col < this.tiles[row].length; col++) {
                 const tile = this.tiles[row][col];
 
-                const index = types.indexOf(tile.type);
+                const index = this.tileInfo.types.indexOf(tile.type);
 
-                context.fillStyle = backgroundColors[index];
+                context.fillStyle = this.tileInfo.backgroundColors[index];
 
                 const positionTile = this.sizeTile.multiplyEach(new Vector2(col, row));
 
                 context.fillRect(...positionTile.toList(), ...this.sizeTile.toList());
 
-                if (this.pointed === tile) {
-                    positionPointed = positionTile;
-                }
+                // if (this.pointed === tile) {
+                //     positionPointed = positionTile;
+                // }
             }
         }
 
-        if (positionPointed) {
-            context.strokeStyle = 'orange';
-            context.strokeRect(...positionPointed.toList(), ...this.sizeTile.toList());
-        }
+        // if (positionPointed) {
+        //     context.strokeStyle = 'orange';
+        //     context.strokeRect(...positionPointed.toList(), ...this.sizeTile.toList());
+        // }
 
-        if (this.pointedArea) {
-            const position = this.pointedArea.getPosition();
-            const size = this.pointedArea.getSize();
+        if (this.pointed) {
+            const position = this.pointed.getPosition();
+            const size = this.pointed.getSize();
 
             context.fillStyle = 'rgba(60, 179, 113, 0.5)';
             context.fillRect(...position.multiplyEach(this.sizeTile).toList(), ...size.multiplyEach(this.sizeTile).toList());
@@ -111,17 +102,21 @@ export class Tile extends Component {
     }
 
     findTileByMousePosition(mousePosition) {
-        const camera = this.gameObject.scene.camera;
+        const camera = this.scene.camera;
         const mouseInWorld = camera.screenToWorld(mousePosition);
 
-        for (let row = 0; row < this.tiles.length; row++) {
-            for (let col = 0; col < this.tiles[row].length; col++) {
+        const rowCount = this.tiles.length;
+
+        for (let row = 0; row < rowCount; row++) {
+            const columnCount = this.tiles[row].length;
+
+            for (let col = 0; col < columnCount; col++) {
                 const tile = this.tiles[row][col];
 
                 const sizeTile = this.sizeTile;
                 const positionTile = sizeTile.multiplyEach(new Vector2(col, row));
 
-                const areaPositionInWorld = this.object.localToGlobal(positionTile);
+                const areaPositionInWorld = this.gameObject.localToGlobal(positionTile);
 
                 const areaInWorld = Area.combine(areaPositionInWorld, sizeTile);
                 
@@ -130,9 +125,11 @@ export class Tile extends Component {
                 }
             }
         }
+
+        return null;
     }
 
     pointTiles(areaTile) {
-        this.pointedArea = areaTile;
+        this.pointed = areaTile;
     }
 }

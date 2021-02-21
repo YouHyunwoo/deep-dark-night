@@ -9,12 +9,9 @@ import { IdleState } from './idle.js';
 
 export class MoveState extends State {
     onInitialize() {
-        const goContext = this.context.gameObject;
-        const goPlayer = goContext.owner;
-
-        this.direction = goPlayer.findComponent(Direction);
-        this.animator = goPlayer.findComponent(Animator);
-        this.movement = goPlayer.findComponent(Movement);
+        this.direction = this.context.gameObject.parent.findComponent(Direction);
+        this.animator = this.context.gameObject.parent.findComponent(Animator);
+        this.movement = this.context.gameObject.parent.findComponent(Movement);
     }
 
     onUpdate(timeDelta) {

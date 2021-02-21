@@ -10,21 +10,14 @@ import { Statistics } from '../../character/statistics.js';
 
 
 export class GatherState extends State {
-    constructor(id) {
-        super(id);
+    onInitialize() {
+        this.gathering = this.context.gameObject.parent.findComponent(Gathering);
+        this.direction = this.context.gameObject.parent.findComponent(Direction);
+        this.animator = this.context.gameObject.parent.findComponent(Animator);
+        this.movement = this.context.gameObject.parent.findComponent(Movement);
+        this.stats = this.context.gameObject.parent.findComponent(Statistics);
 
         this.isGathering = false;
-    }
-
-    onInitialize() {
-        const goContext = this.context.gameObject;
-        const goPlayer = goContext.owner;
-
-        this.gathering = goPlayer.findComponent(Gathering);
-        this.direction = goPlayer.findComponent(Direction);
-        this.animator = goPlayer.findComponent(Animator);
-        this.movement = goPlayer.findComponent(Movement);
-        this.stats = goPlayer.findComponent(Statistics);
     }
 
     onEnter(targetObject) {

@@ -1,30 +1,26 @@
-import { Area } from '../math/geometry/area.js';
-import { Vector2 } from '../math/geometry/vector.js';
+import { BaseObject } from './object.js';
 import { Camera } from './camera.js';
+import { Area } from '../math/geometry/area.js';
 
 
 
-export class Scene {
+export class Scene extends BaseObject {
     constructor() {
-        this._states = {
-            created: 0,
-            initialized: 1,
-            disposed: 2,
-        };
-        this._state = 0;
+        super();
 
         this.game = null;
 
         this.camera = null;
 
-        this.objects = [];
+        this.reverseGameObjects = [];
+        this.gameObjects = [];
     }
 
     init() {
         if (this._state === this._states.created) {
-            for (const object of this.objects) {
-                if (object instanceof Camera) {
-                    this.camera = object;
+            for (const gameObject of this.gameObjects) {
+                if (gameObject instanceof Camera) {
+                    this.camera = gameObject;
                     break;
                 }
             }
@@ -32,7 +28,7 @@ export class Scene {
             if (!this.camera) {
                 const camera = new Camera('camera');
 
-                this.addGameObject(camera);
+                this.addGameObjects(camera);
 
                 // camera.area = new Area(0, 0, this.game.engine.canvas.width, this.game.engine.canvas.height);
                 camera.area = new Area(0, 0, 400, 400);
@@ -42,8 +38,9 @@ export class Scene {
 
             this.onInitialize();
 
-            this.objects.forEach(object => {
-                object.init();
+            this.gameObjects.forEach(gameObject => {
+                gameObject.scene = this;
+                gameObject.init();
             });
 
             this._state = this._states.initialized;
@@ -52,11 +49,16 @@ export class Scene {
 
     dispose() {
         if (this._state === this._states.initialized) {
-            this.objects.forEach(object => {
-                object.dispose();
+            this.gameObjects.forEach(gameObject => {
+                gameObject.dispose();
+                gameObject.scene = null;
             });
-    
+
+            this.gameObjects = null;
+
             this.onDispose();
+            this.camera = null;
+            this.game = null;
 
             this._state = this._states.disposed;
         }
@@ -66,8 +68,8 @@ export class Scene {
         if (this._state === this._states.initialized) {
             this.onEvent(events);
 
-            this.objects.slice().reverse().forEach(object => {
-                object.event(events);
+            this.gameObjects.forEach(gameObject => {
+                gameObject.event(events);
             });
         }
     }
@@ -76,19 +78,15 @@ export class Scene {
         if (this._state === this._states.initialized) {
             this.onUpdate(timeDelta);
 
-            this.objects.forEach(object => {
-                object.update(timeDelta);
+            this.gameObjects.forEach(gameObject => {
+                gameObject.update(timeDelta);
             });
         }
     }
 
     draw(context) {
         if (this._state === this._states.initialized) {
-            context.save();
-
             this.onDraw(context);
-    
-            context.restore();
     
             const camera = this.camera;
     
@@ -97,8 +95,8 @@ export class Scene {
                 const positionCamera = camera.area.getPosition();
                 const sizeCamera = camera.area.getSize();
     
-                this.objects
-                    .map((object, index) => [index, object])
+                this.gameObjects
+                    .map((gameObject, index) => [index, gameObject])
                     .sort((a, b) => {
                         const aForScreen = a[1].hasTag('Screen');
                         const bForScreen = b[1].hasTag('Screen');
@@ -113,16 +111,16 @@ export class Scene {
                             return -1;
                         }
                     })
-                    .map(element => element[1])
-                    .forEach(object => {
+                    .map(packed => packed[1])
+                    .forEach(gameObject => {
                         context.save();
                         
-                        if (!object.hasTag('Screen')) {
+                        if (!gameObject.hasTag('Screen')) {
                             context.scale(...scale.toList());
                             context.translate(...positionCamera.negate().add(sizeCamera.divide(2).floor()).toList());
                         }
     
-                        object.draw(context);
+                        gameObject.draw(context);
     
                         context.restore();
                     });
@@ -130,30 +128,50 @@ export class Scene {
         }
     }
 
-    addGameObject(gameObject) {
-        gameObject.scene = this;
+    addGameObjects(...gameObjects) {
+        if (this._state !== this._states.disposed) {
+            this.gameObjects = this.gameObjects.concat(gameObjects);
 
-        this.objects.push(gameObject);
-    }
+            gameObjects.forEach(gameObject => {
+                gameObject.scene = this;
+                gameObject.onAdded();
 
-    removeGameObject(gameObject) {
-        const index = this.objects.indexOf(gameObject);
+                if (this._state === this._states.initialized) {
+                    gameObject.init();
+                }
+            });
 
-        if (index >= 0) {
-            this.objects.splice(index, 1);
+            this.reverseGameObjects = this.gameObjects.slice().reverse();
         }
     }
 
+    removeGameObjects(...gameObjects) {
+        this.gameObjects = this.gameObjects.filter(gameObject => {
+            const result = !gameObjects.includes(gameObject);
+
+            if (!result) {
+                gameObject.scene = null;
+                gameObject.onRemoved();
+            }
+
+            return result;
+        });
+
+        this.reverseGameObjects = this.gameObjects.slice().reverse();
+    }
+
     findGameObjects(gameObjectName) {
-        return this.objects.filter(obj => obj.name === gameObjectName);
+        return this.gameObjects.filter(gameObject => gameObject.name === gameObjectName);
     }
 
     findGameObject(gameObjectName) {
-        console.assert(gameObjectName);
+        if (!gameObjectName) {
+            throw new Error('gameObject 이름이 잘못되었습니다.');
+        }
 
-        for (const object of this.objects) {
-            if (object.name === gameObjectName) {
-                return object;
+        for (const gameObject of this.gameObjects) {
+            if (gameObject.name === gameObjectName) {
+                return gameObject;
             }
         }
 
@@ -174,7 +192,7 @@ export class Scene {
 
 		const serializedName = serializedGameObject.name ?? '';
 		const serializedEnable = serializedGameObject.enable ?? true;
-		const serializedObjects = serializedGameObject.objects ?? [];
+		const serializedObjects = serializedGameObject.gameObjects ?? [];
 		const serializedComponents = serializedGameObject.components ?? [];
 		const serializedTags = serializedGameObject.tags ?? [];
 		const onDeserialized = serializedGameObject.onDeserialized;
@@ -184,11 +202,11 @@ export class Scene {
 		gameObject.name = serializedName;
 		gameObject.enable = serializedEnable;
 
-		const objects = await Promise.all(
+		const gameObjects = await Promise.all(
 			serializedObjects.map(async object => await this.deserializeObject(object))
 		);
 
-		gameObject.addGameObjects(...objects);
+		gameObject.addGameObjects(...gameObjects);
 		
 		const components = await Promise.all(
 			serializedComponents.map(async component => await this.deserializeComponent(component))
@@ -201,7 +219,7 @@ export class Scene {
 		delete serializedGameObject['type'];
 		delete serializedGameObject['name'];
 		delete serializedGameObject['enable'];
-		delete serializedGameObject['objects'];
+		delete serializedGameObject['gameObjects'];
 		delete serializedGameObject['components'];
 		delete serializedGameObject['tags'];
 		delete serializedGameObject['onDeserialized'];
@@ -251,24 +269,16 @@ export class Scene {
 	}
 
 	static deserialize(serializedScene) {
-		const scene = new Scene();
+		const scene = new this();
 
 		return (async () => {
-			for (const object of serializedScene.objects) {
+			for (const object of serializedScene.gameObjects) {
 				const gameObject = await scene.deserializeObject(object);
 
-				scene.addGameObject(gameObject);
+				scene.addGameObjects(gameObject);
 			}
-
-			scene.state = 'loaded';
 
             return scene;
 		})();
 	}
-
-    onInitialize() {}
-    onDispose() {}
-    onEvent(events) {}
-    onUpdate(timeDelta) {}
-    onDraw(context) {}
 }

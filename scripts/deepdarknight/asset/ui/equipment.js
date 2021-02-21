@@ -86,9 +86,9 @@ export class EquipmentWindow extends UIContainer {
 	
 			slot.pointable = true;
 	
-			slot.onClick = () => {
+			slot._events.addListener('click', () => {
 				equipment.unequip('foot');
-			}
+			});
 		}
 	}
 
@@ -96,8 +96,11 @@ export class EquipmentWindow extends UIContainer {
 		const slot = this.findGameObject(part);
 		
 		if (slot) {
-			slot.pointable = false;
 			slot.reset();
+
+			slot.pointable = false;
+
+			slot._events.removeListener('click');
 		}
 	}
 }

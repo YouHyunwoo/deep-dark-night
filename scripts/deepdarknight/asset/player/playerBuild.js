@@ -1,8 +1,5 @@
 import { Component } from '../../../engine/game/component.js';
-import { GameObject } from '../../../engine/game/object.js';
-import { SpriteRenderer } from '../../../engine/graphic/components/spriteRenderer.js';
 import { Area } from '../../../engine/math/geometry/area.js';
-import { Vector2 } from '../../../engine/math/geometry/vector.js';
 import { items } from '../data/items.js';
 import { Tile } from '../map/tile.js';
 
@@ -16,7 +13,7 @@ export class PlayerBuild extends Component {
     }
 
     onInitialize() {
-        this.map = this.gameObject.owner.owner;
+        this.map = this.gameObject.parent.parent;
 
         this.camera = this.gameObject.scene.camera;
         
@@ -25,7 +22,7 @@ export class PlayerBuild extends Component {
         this.tile = this.map.findGameObject('tile').findComponent(Tile);
         
         this.inventory = this.gameObject.scene.findGameObject('uiSystem').findGameObject('inventoryWindow');
-        this.inventory.events.addListener('clickItem', this.onClickInventoryItem.bind(this));
+        this.inventory.events.addListener('clickItemSlot', this.onClickInventoryItem.bind(this));
     }
 
     onUpdate(timeDelta) {
@@ -48,6 +45,8 @@ export class PlayerBuild extends Component {
                     this.tile.pointTiles(null);
 
                     this.isBuildMode = false;
+                    
+                    this.events.notify('mousedown', row, column);
                 }
                 else if (event.type === 'mousemove') {
                     const positionMouse = event.position;
@@ -58,15 +57,18 @@ export class PlayerBuild extends Component {
                     const column = positionIndex.x;
 
                     this.tile.pointTiles(new Area(column, row, 1, 1));
+
+                    this.events.notify('mousemove', row, column);
                 }
             }
         }
     }
 
-    onClickInventoryItem(event, slot, inventory) {
+    onClickInventoryItem(event, inventory) {
+        const slot = event.target;
         const item = items[slot.itemName];
         
-        if (item.type === '설치') {
+        if (item && item.type === '설치') {
             this.isBuildMode = true;
             this.item = item;
         }

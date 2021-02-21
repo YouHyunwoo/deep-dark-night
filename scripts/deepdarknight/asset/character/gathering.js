@@ -70,7 +70,7 @@ export class Gathering extends Component {
                         console.log(`[ Log ] 플레이어가 ${itemName}을(를) ${itemCount}개 수집했다.`);
                     });
 
-                    this.targetObject.remove();
+                    this.targetObject.dispose();
                     this.targetObject = null;
                 }
 

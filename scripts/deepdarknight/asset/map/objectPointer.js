@@ -6,49 +6,35 @@ import { SpriteRenderer } from '../../../engine/graphic/components/spriteRendere
 
 
 export class ObjectPointer extends Component {
-    onInitialize() {
-        const object = this.gameObject;
-        const world = object.owner;
-        const scene = world.scene;
-        const game = scene.game;
-
-        this.game = game;
-
-        this.layers = object.objects;
-    }
-
     findGameObjectPointingByMouse(mousePosition, exceptionObjects) {
-        const camera = this.gameObject.scene.camera;
+        const camera = this.scene.camera;
         const mouseInWorld = camera.screenToWorld(mousePosition);
 
-        const reverseLayers = this.layers.slice().reverse();
-
-        for (const layer of reverseLayers) {
-            const reverseObjects = layer.objects.slice().reverse();
-
-            for (const object of reverseObjects) {
-                if (exceptionObjects.includes(object)) {
+        for (const layer of this.gameObject.reverseGameObjects) {
+            for (const gameObject of layer.reverseGameObjects) {
+                if (exceptionObjects.includes(gameObject)) {
                     continue;
                 }
     
                 let area = null;
 
-                const boxCollider = object.findComponent(BoxCollider);
+                const boxCollider = gameObject.findComponent(BoxCollider);
+
                 if (boxCollider) {
                     area = boxCollider.area;
                 }
                 else {
-                    const spriteRenderer = object.findComponent(SpriteRenderer);
+                    const spriteRenderer = gameObject.findComponent(SpriteRenderer);
                     area = spriteRenderer.getSpriteArea();
                 }
                 
                 const areaPosition = area.getPosition();
                 const areaSize = area.getSize();
-                const areaPositionInWorld = object.localToGlobal(areaPosition);
+                const areaPositionInWorld = gameObject.localToGlobal(areaPosition);
                 const areaInWorld = Area.combine(areaPositionInWorld, areaSize);
                 
                 if (areaInWorld.containsVector(mouseInWorld)) {
-                    return object;
+                    return gameObject;
                 }
             }
         }

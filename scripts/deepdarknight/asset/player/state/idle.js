@@ -7,11 +7,8 @@ import { animations } from '../../data/animations.js';
 
 export class IdleState extends State {
     onInitialize() {
-        const goContext = this.context.gameObject;
-        const goPlayer = goContext.owner;
-
-        this.direction = goPlayer.findComponent(Direction);
-        this.animator = goPlayer.findComponent(Animator);
+        this.direction = this.context.gameObject.parent.findComponent(Direction);
+        this.animator = this.context.gameObject.parent.findComponent(Animator);
     }
 
     onEnter() {

@@ -1,61 +1,41 @@
-import { Event } from '../util/event.js';
+import { BaseObject } from './object.js';
 
 
 
-export class Component {
+export class Component extends BaseObject {
     constructor() {
-        this._states = {
-            created: 0,
-            initialized: 1,
-            disposed: 2,
-        };
-        this._state = 0;
+        super();
 
-        this.gameObject = null;
+        Object.defineProperty(this, 'gameObject', {
+            get() {
+                return this._owner;
+            },
+        });
 
-        this.enable = true;
-        this.events = new Event();
+        Object.defineProperty(this, 'bindGameObject', {
+            get() {
+                return this._bindOwner;
+            },
+        });
+
+        Object.defineProperty(this, 'unbindGameObject', {
+            get() {
+                return this._unbindOwner;
+            },
+        });
+
+        this.scene = null;
     }
 
-    init() {
-        if (this._state === this._states.created) {
-            this.onInitialize();
-
-            this._state = this._states.initialized;
-        }
+    _bindOwner(owner) {
+        this.scene = owner.scene;
+        this._owner = owner;
+        this.onAdded();
     }
 
-    dispose() {
-        if (this._state === this._states.initialized) {
-            this.onDispose();
-
-            this._state = this._states.disposed;
-        }
+    _unbindOwner() {
+        this.onRemoved();
+        this.scene = null;
+        this._owner = null;
     }
-
-    event(events) {
-        if (this._state === this._states.initialized && this.enable) {
-            this.onEvent(events);
-        }
-    }
-
-    update(timeDelta) {
-        if (this._state === this._states.initialized && this.enable) {
-            this.onUpdate(timeDelta);
-        }
-    }
-
-    draw(context) {
-        if (this._state === this._states.initialized && this.enable) {
-            this.onDraw(context);
-        }
-    }
-
-    onInitialize() {}
-    onDispose() {}
-    onAdded() {}
-    onRemoved() {}
-    onEvent(events) {}
-    onUpdate(timeDelta) {}
-    onDraw(context) {}
 }

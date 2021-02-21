@@ -7,58 +7,14 @@ export class UIObject extends GameObject {
     constructor(name) {
         super(name);
 
-        this._stateMouse = null;
         this._mouseDown = null;
-
-        this.engine = null;
+        this._mouseIn = null;
 
         this.visible = true;
     }
 
-    init() {
-        if (!this.initialized) {
-            const scene = this.scene;
-            const game = scene.game;
-            const engine = game.engine;
-            
-            this.engine = engine;
-            
-            this.onInitialize();
-
-            this.components.forEach(component => {
-                component.onInitialize();
-            });
-
-            this.objects.forEach(object => {
-                object.scene = this.scene;
-                object.init();
-            });
-    
-            this.initialized = true;
-        }
-    }
-
-    dispose() {
-        if (this.initialized && !this.disposed) {
-            this.objects.forEach(object => {
-                object.dispose();
-            });
-
-            this.onDispose();
-
-            this.components.forEach(component => {
-                component.onDispose();
-            });
-
-            this.scene = null;
-            this.engine = null;
-    
-            this.disposed = true;
-        }
-    }
-
     draw(context) {
-        if (this.initialized && !this.disposed && this.enable && this.visible) {
+        if (this._state === this._states.initialized && this._enable && this.visible) {
             context.save();
 
             context.translate(...this.area.getPosition().toList());
@@ -73,7 +29,7 @@ export class UIObject extends GameObject {
                 component.onDraw(context);
             });
 
-            this.objects.forEach(object => {
+            this.gameObjects.forEach(object => {
                 object.draw(context);
             });
 
@@ -81,137 +37,108 @@ export class UIObject extends GameObject {
         }
     }
 
-    event(events) {}
+    event(events) {
+        if (this._state === this._states.initialized && this._enable && this.visible) {
+            this.onEvent(events);
 
-    mouseEvent(events) {
-        if (!(this.initialized && !this.disposed && this.enable && this.visible)) {
-            return [];
-        }
+            this.components.forEach(component => {
+                component.event(events);
+            });
 
-        const usedEvents = [];
+            let captured = {
+                mousemove: false,
+                mouseup: false,
+            };
 
-        for (const event of events) {
-            if (event.type === 'mousedown') {
-                if (!this._stateMouse) {
-                    const positionMouse = event.position;
+            for (const event of events) {
+                if (event.bubble) {
+                    if (event.type === 'mousedown') {
+                        const positionMouse = this.globalToLocal(event.position);
 
-                    if (this.area.containsVector(positionMouse)) {
-                        this._mouseDown = true;
+                        if (Area.zeroPosition(this.area).containsVector(positionMouse)) {
+                            this._mouseDown = true;
 
-                        this.mouseIn(event);
-                        this.mouseDown(event);
-
-                        usedEvents.push(event);
+                            event.captured = true;
+                        }
+                    }
+                    else if (event.type === 'mousemove') {
+                        const positionMouse = this.globalToLocal(event.position);
+    
+                        if (Area.zeroPosition(this.area).containsVector(positionMouse)) {
+                            captured.mousemove = true;
+                            event.captured = true;
+                        }
+                    }
+                    else if (event.type === 'mouseup') {
+                        const positionMouse = this.globalToLocal(event.position);
+    
+                        if (Area.zeroPosition(this.area).containsVector(positionMouse)) {
+                            captured.mouseup = true;
+                            event.captured = true;
+                        }
                     }
                 }
-                else if (this._stateMouse === 'mousemove') {
-                    this._mouseDown = true;
-
-                    this.mouseDown(event);
-
-                    usedEvents.push(event);
-                }
             }
-            else if (event.type === 'mousemove') {
-                const positionMouse = this.globalToLocal(event.position);
+            
+            const capturedEvents = events.filter(event => {
+                const result = event.captured || event.type === 'mousemove' || event.type === 'mouseup';
 
-                if (Area.zeroPosition(this.area).containsVector(positionMouse)) {
-                    if (this._stateMouse === 'mouseout' || !this._stateMouse) {
-                        this._stateMouse = 'mousemove';
+                event.captured = false;
 
-                        this.mouseIn(event);
-                        this.mouseMove(event);
+                return result;
+            });
+            
+            this.gameObjects.forEach(gameObject => {
+                gameObject.event(capturedEvents);
+            });
+
+            for (const event of capturedEvents) {
+                if (event.bubble) {
+                    event.target = this;
+
+                    if (event.type === 'mousedown') {
+                        if (!this._mouseIn) {
+                            this._events.notify('mousein', event);
+                            this._mouseIn = true;
+                        }
                         
-                        usedEvents.push(event);
+                        this._events.notify('mousedown', event);
+                        this._mouseDown = true;
                     }
-                    else {
-                        this.mouseMove(event);
+                    else if (event.type === 'mousemove') {
+                        if (captured.mousemove) {
+                            this._events.notify('mousemove', event);
 
-                        usedEvents.push(event);
+                            if (!this._mouseIn) {
+                                this._events.notify('mousein', event);
+                                this._mouseIn = true;
+                            }
+                        }
+                        else {
+                            if (this._mouseIn) {
+                                this._events.notify('mouseout', event);
+                                this._mouseIn = false;
+                            }
+                        }
                     }
-                }
-                else {
-                    if (this._stateMouse === 'mousemove' || !this._stateMouse) {
-                        this._stateMouse = 'mouseout';
+                    else if (event.type === 'mouseup') {
+                        if (captured.mouseup) {
+                            if (!this._mouseIn) {
+                                this._events.notify('mousein', event);
+                                this._mouseIn = true;
+                            }
+    
+                            this._events.notify('mouseup', event);
+    
+                            if (this._mouseDown) {
+                                this._events.notify('click', event);
+                            }
+                        }
 
-                        this.mouseOut(event);
-
-                        usedEvents.push(event);
+                        this._mouseDown = false;
                     }
                 }
             }
-            else if (event.type === 'mouseup') {
-                if (!this._stateMouse) {
-                    const positionMouse = event.position;
-
-                    if (Area.zeroPosition(this.area).containsVector(positionMouse)) {
-                        this.mouseIn(event);
-                        this.mouseUp(event);
-
-                        usedEvents.push(event);
-                    }
-                }
-                else if (this._stateMouse === 'mousemove') {
-                    this.mouseUp(event);
-
-                    if (this._mouseDown) {
-                        this.onClick(event);
-                    }
-
-                    usedEvents.push(event);
-                }
-
-                this._mouseDown = false;
-            }
-
-            if (event.bubble) {
-                this.objects.forEach(object => {
-                    const usedEventsInChildren = object.mouseEvent(events) ?? [];
-
-                    usedEvents.concat(usedEventsInChildren);
-                });
-            }
-        }
-
-        return usedEvents;
-    }
-
-    mouseIn(event) {
-        if (this.initialized && !this.disposed && this.enable) {
-            this.onMouseIn(event);
         }
     }
-
-    mouseMove(event) {
-        if (this.initialized && !this.disposed && this.enable) {
-            this.onMouseMove(event);
-        }
-    }
-
-    mouseOut(event) {
-        if (this.initialized && !this.disposed && this.enable) {
-            this.onMouseOut(event);
-        }
-    }
-
-    mouseDown(event) {
-        if (this.initialized && !this.disposed && this.enable) {
-            this.onMouseDown(event);
-        }
-    }
-
-    mouseUp(event) {
-        if (this.initialized && !this.disposed && this.enable) {
-            this.onMouseUp(event);
-        }
-    }
-
-    onMouseIn(event) {}
-    onMouseMove(event) {}
-    onMouseOut(event) {}
-
-    onMouseDown(event) {}
-    onMouseUp(event) {}
-
-    onClick(event) {}
 }

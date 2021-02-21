@@ -45,6 +45,8 @@ export class InventoryWindow extends UIContainer {
                     itemSlot.area = new Area(10 + position.x, 40 + position.y, ...sizeSlot.toList());
                     itemSlot.pointable = false;
 
+                    this.addGameObjects(itemSlot);
+
                     const itemName = itemNames[index];
 
                     if (itemName) {
@@ -53,18 +55,16 @@ export class InventoryWindow extends UIContainer {
                         const itemSprite = items[itemName].sprite.copy();
                         itemSprite.anchor = new Vector2(0, 0);
 
-                        itemSlot.setItemSprite(itemSprite);
-                        itemSlot.setItemName(itemName);
-                        itemSlot.setItemCount(itemCount);
+                        slot.itemSprite = itemSprite;
+                        slot.itemName = itemName;
+                        slot.itemCount = itemCount;
 
                         itemSlot.pointable = true;
                     }
 
-                    itemSlot.events.addListener('click', this.onClickSlot.bind(this));
+                    itemSlot.events.addListener('clickItemSlot', this.onClickItemSlot.bind(this));
                     
                     this.slots.push(itemSlot);
-
-                    this.addGameObjects(itemSlot);
                 }
             }
         }
@@ -86,23 +86,21 @@ export class InventoryWindow extends UIContainer {
                 const itemSprite = items[itemName].sprite.copy();
                 itemSprite.anchor = new Vector2(0, 0);
 
-                slot.setItemSprite(itemSprite);
-                slot.setItemName(itemName);
-                slot.setItemCount(itemCount);
+                slot.itemSprite = itemSprite;
+                slot.itemName = itemName;
+                slot.itemCount = itemCount;
 
                 slot.pointable = true;
             }
             else if (slot.itemName) {
-                slot.setItemSprite(null);
-                slot.setItemName(null);
-                slot.setItemCount(null);
+                slot.reset();
 
                 slot.pointable = false;
             }
         }
     }
 
-    onClickSlot(event, slot) {
-        this.events.notify('clickItem', event, slot, this);
+    onClickItemSlot(event) {
+        this.events.notify('clickItemSlot', event, this);
     }
 }

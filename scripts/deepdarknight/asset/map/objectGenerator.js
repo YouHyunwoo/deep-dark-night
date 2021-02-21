@@ -7,26 +7,28 @@ import { Stone, Tree } from '../data/objects.js';
 
 export class ObjectGenerator extends Component {
     onInitialize() {
-        const object = this.gameObject;
-        const world = object.owner;
+        const gameObject = this.gameObject;
+        const world = gameObject.parent;
         const scene = world.scene;
         const game = scene.game;
         const engine = game.engine;
         const canvas = engine.canvas;
 
-        this.object = object;
+        this.object = gameObject;
         this.game = game;
         this.canvas = canvas;
 
-        this.layers = object.objects;
+        this.layers = gameObject.gameObjects;
     }
 
     onUpdate(timeDelta) {
-        if (Math.random() > 0.99) {
+        const objectCount = this.gameObject.findGameObject('ground').gameObjects.length;
+
+        if (Math.random() > 1 - 1 / (objectCount + 100)) {
             this.generateStone(1);
         }
 
-        if (Math.random() > 0.999) {
+        if (Math.random() > 1 - 1 / (objectCount + 100)) {
             this.generateTree(1);
         }
     }
@@ -58,8 +60,6 @@ export class ObjectGenerator extends Component {
 
             object.area.x = Math.random() * this.canvas.width;
             object.area.y = Math.random() * this.canvas.height;
-
-            object.findComponent(SpriteRenderer).sprite.scale = Vector2.full(3);
         }
     }
 

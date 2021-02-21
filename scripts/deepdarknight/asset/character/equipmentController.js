@@ -21,7 +21,7 @@ export class EquipmentController extends Component {
         this.equipment = this.gameObject.findComponent(Equipment);
 
 		this.inventoryWindow = this.gameObject.scene.findGameObject('uiSystem').findGameObject('inventoryWindow');
-		this.inventoryWindow.events.addListener('clickItem', this.onClickInventoryItem.bind(this));
+		this.inventoryWindow.events.addListener('clickItemSlot', this.onClickInventoryItem.bind(this));
 
 		console.assert(!!this.inventory, 'GameObject가 Inventory Component를 가지고 있지 않습니다.');
 		console.assert(!!this.statistics, 'GameObject가 Statistics Component를 가지고 있지 않습니다.');
@@ -40,7 +40,9 @@ export class EquipmentController extends Component {
 		this.statistics.apply(item.capability, true);
 	}
 
-	onClickInventoryItem(event, slot, inventory) {
+	onClickInventoryItem(event, inventory) {
+		const slot = event.target;
+
 		if (!slot.isDisabled && slot.pointable) {
             const item = items[slot.itemName];
 
@@ -48,6 +50,7 @@ export class EquipmentController extends Component {
                 this.equipment.equip(item);
 
                 slot.reset();
+				
                 slot.pointable = false;
             }
         }

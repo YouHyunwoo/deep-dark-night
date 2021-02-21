@@ -2,9 +2,8 @@ import { Area } from '../math/geometry/area.js';
 import { Event } from '../util/event.js';
 
 
-
-export class GameObject {
-    constructor(name='') {
+export class BaseObject {
+    constructor() {
         this._states = {
             created: 0,
             initialized: 1,
@@ -12,33 +11,49 @@ export class GameObject {
         };
         this._state = 0;
 
-        this.scene = null;
+        this._owner = null;
 
-        this.owner = null;
-        
-        this.name = name;
-        this.enable = true;
-        this.components = [];
-        this.objects = [];
-        this.tags = [];
+        this._enable = true;
 
-        this.events = new Event();
+        Object.defineProperty(this, 'enable', {
+            get() {
+                return this._enable;
+            },
+            set(value) {
+                value = !!value;
 
-        this.area = Area.zeros();
+                if (this._enable !== value) {
+                    if (value) {
+                        this.onEnabled();
+                    }
+                    else {
+                        this.onDisabled();
+                    }
+                    
+                    this._enable = value;
+                }
+            }
+        });
+
+        this._events = new Event();
+
+        Object.defineProperty(this, 'events', {
+            get() {
+                return this._events;
+            },
+        });
     }
 
     init() {
         if (this._state === this._states.created) {
             this.onInitialize();
 
-            this.components.forEach(component => {
-                component.init();
-            });
-
-            this.objects.forEach(object => {
-                object.scene = this.scene;
-                object.init();
-            });
+            if (this._enable) {
+                this.onEnabled();
+            }
+            else {
+                this.onDisabled();
+            }
 
             this._state = this._states.initialized;
         }
@@ -46,21 +61,84 @@ export class GameObject {
 
     dispose() {
         if (this._state === this._states.initialized) {
-            this.objects.forEach(object => {
-                object.dispose();
-                object.scene = null;
-            });
-
+            this.onDisabled();
             this.onDispose();
-
-            this.components.forEach(component => {
-                component.dispose();
-            });
-
-            this.scene = null;
 
             this._state = this._states.disposed;
         }
+    }
+
+    event(events) {
+        if (this._state === this._states.initialized && this._enable) {
+            this.onEvent(events);
+        }
+    }
+
+    update(timeDelta) {
+        if (this._state === this._states.initialized && this._enable) {
+            this.onUpdate(timeDelta);
+        }
+    }
+
+    draw(context) {
+        if (this._state === this._states.initialized && this._enable) {
+            this.onDraw(context);
+        }
+    }
+
+    _bindOwner(owner) {
+        this._owner = owner;
+        this.onAdded();
+    }
+
+    _unbindOwner() {
+        this.onRemoved();
+        this._owner = null;
+    }
+
+    onInitialize() {}
+    onDispose() {}
+    onEnabled() {}
+    onDisabled() {}
+    onAdded() {}
+    onRemoved() {}
+    onEvent(events) {}
+    onUpdate(timeDelta) {}
+    onDraw(context) {}
+}
+
+export class GameObject extends BaseObject {
+    constructor(name) {
+        super();
+
+        Object.defineProperty(this, 'parent', {
+            get() {
+                return this._owner;
+            },
+        });
+
+        Object.defineProperty(this, 'bindParent', {
+            get() {
+                return this._bindOwner;
+            },
+        });
+
+        Object.defineProperty(this, 'unbindParent', {
+            get() {
+                return this._unbindOwner;
+            },
+        });
+
+        this.scene = null;
+
+        this.name = name ?? '';
+        this.components = [];
+        this.tags = [];
+
+        this.reverseGameObjects = [];
+        this.gameObjects = [];
+
+        this.area = Area.zeros();
     }
 
     addComponents(...components) {
@@ -74,8 +152,7 @@ export class GameObject {
 
                 this.components.push(component);
 
-                component.gameObject = this;
-                component.onAdded();
+                component.bindGameObject(this);
 
                 if (this.initialized) {
                     component.onInitialize();
@@ -85,11 +162,25 @@ export class GameObject {
     }
 
     removeComponents(...components) {
-        this.components = this.components.filter(component => !components.includes(component));
+        this.components = this.components.filter(component => {
+            const result = !components.includes(component);
 
-        components.forEach(component => {
-            component.gameObject = null;
-            component.onRemoved();
+            if (!result) {
+                component.unbindGameObject();
+            }
+
+            return result;
+        });
+    }
+
+    removeComponentsByType(...componentTypes) {
+        componentTypes.forEach(componentType => {
+            for (const component of this.components) {
+                if (component.constructor.name === componentType) {
+                    this.removeComponents(component);
+                    break;
+                }
+            }
         });
     }
 
@@ -98,11 +189,15 @@ export class GameObject {
     }
 
     findComponent(componentType) {
-        console.assert(componentType);
+        if (!componentType) {
+            throw new Error('Component Type이 잘못되었습니다.');
+        }
 
-        for (const component of this.components) {
-            if (component.constructor.name === componentType.name) {
-                return component;
+        if (this._state !== this._states.disposed) {
+            for (const component of this.components) {
+                if (component.constructor.name === componentType.name) {
+                    return component;
+                }
             }
         }
 
@@ -123,90 +218,137 @@ export class GameObject {
         return this.tags.includes(tag);
     }
 
-    addGameObjects(...objects) {
+    addGameObjects(...gameObjects) {
         if (this._state !== this._states.disposed) {
-            this.objects = this.objects.concat(objects);
-            objects.forEach(obj => {
-                obj.scene = this.scene;
-                obj.owner = this;
-                obj.onAdded();
+            this.gameObjects = this.gameObjects.concat(gameObjects);
+
+            gameObjects.forEach(gameObject => {
+                gameObject.bindParent(this);
 
                 if (this._state === this._states.initialized) {
-                    obj.init();
+                    gameObject.init();
                 }
             });
+
+            this.reverseGameObjects = this.gameObjects.slice().reverse();
         }
     }
 
-    removeGameObjects(...objects) {
-        this.objects = this.objects.filter(obj => !objects.includes(obj));
-        objects.forEach(obj => {
-            obj.scene = null;
-            obj.owner = null;
-            obj.onRemoved();
+    removeGameObjects(...gameObjects) {
+        this.gameObjects = this.gameObjects.filter(gameObject => {
+            const result = !gameObjects.includes(gameObject);
+
+            if (!result) {
+                gameObject.unbindParent();
+            }
+
+            return result;
         });
+
+        this.reverseGameObjects = this.gameObjects.slice().reverse();
     }
 
     findGameObjects(gameObjectName) {
-        return this.objects.filter(obj => obj.name === gameObjectName);
+        return this.gameObjects.filter(gameObject => gameObject.name === gameObjectName);
     }
 
     findGameObject(gameObjectName) {
-        console.assert(gameObjectName);
+        if (!gameObjectName) {
+            throw new Error('gameObject 이름이 잘못되었습니다.');
+        }
 
-        for (const object of this.objects) {
-            if (object.name === gameObjectName) {
-                return object;
+        for (const gameObject of this.gameObjects) {
+            if (gameObject.name === gameObjectName) {
+                return gameObject;
             }
         }
 
         return null;
     }
 
-    remove() {
-        this.owner?.removeGameObjects(this);
+    init() {
+        if (this._state === this._states.created) {
+            if (this._enable) {
+                this.onEnabled();
+            }
+            else {
+                this.onDisabled();
+            }
 
-        this.dispose();
+            this.onInitialize();
+
+            this._state = this._states.initialized;
+
+            this.components.forEach(component => {
+                component.scene = this.scene;
+                component.init();
+            });
+
+            this.gameObjects.forEach(gameObject => {
+                gameObject.scene = this.scene;
+                gameObject.init();
+            });
+        }
+    }
+
+    dispose() {
+        if (this._state === this._states.initialized) {
+            this._owner?.removeGameObjects(this);
+
+            this.gameObjects.forEach(gameObject => {
+                gameObject.dispose();
+                gameObject.scene = null;
+            });
+
+            this.gameObjects = null;
+
+            this.components.forEach(component => {
+                component.dispose();
+                component.scene = null;
+            });
+
+            this.components = null;
+
+            this.onDisabled();
+            this.onDispose();
+            this.scene = null;
+
+            this._state = this._states.disposed;
+        }
     }
 
     event(events) {
-        if (this._state === this._states.initialized && this.enable) {
+        if (this._state === this._states.initialized && this._enable) {
             this.onEvent(events);
 
             this.components.forEach(component => {
                 component.event(events);
             });
 
-            this.objects.slice().reverse().forEach(object => {
-                object.event(events);
+            this.gameObjects.forEach(gameObject => {
+                gameObject.event(events);
             });
         }
     }
 
     update(timeDelta) {
-        if (this._state === this._states.initialized && this.enable) {
+        if (this._state === this._states.initialized && this._enable) {
             this.onUpdate(timeDelta);
 
             this.components.forEach(component => {
                 component.update(timeDelta);
             });
 
-            this.objects.forEach(object => {
-                object.update(timeDelta);
+            this.gameObjects.forEach(gameObject => {
+                gameObject.update(timeDelta);
             });
         }
     }
 
     draw(context) {
-        if (this._state === this._states.initialized && this.enable) {
+        if (this._state === this._states.initialized && this._enable) {
             context.save();
-
-            const position = this.area.getPosition();
-            
-            position.x = Math.floor(position.x);
-            position.y = Math.floor(position.y);
-
-            context.translate(...position.toList());
+            context.translate(~~this.area.x, ~~this.area.y); // for speed, ~~ === Math.floor
 
             this.onDraw(context);
 
@@ -214,7 +356,7 @@ export class GameObject {
                 component.draw(context);
             });
 
-            this.objects.forEach(object => {
+            this.gameObjects.forEach(object => {
                 object.draw(context);
             });
 
@@ -225,11 +367,11 @@ export class GameObject {
     localToGlobal(positionInLocal) {
         const positionInOwner = positionInLocal.add(this.area.getPosition().floor());
         
-        return this.owner?.localToGlobal(positionInOwner) ?? positionInOwner;
+        return this.parent?.localToGlobal(positionInOwner) ?? positionInOwner;
     }
 
     globalToLocal(positionInGlobal) {
-        const positionInOwner = this.owner?.globalToLocal(positionInGlobal) ?? positionInGlobal;
+        const positionInOwner = this.parent?.globalToLocal(positionInGlobal) ?? positionInGlobal;
 
         return positionInOwner.subtract(this.area.getPosition().floor());
     }
@@ -238,11 +380,15 @@ export class GameObject {
         return this._state === this._states.disposed;
     }
 
-    onInitialize() {}
-    onDispose() {}
-    onAdded() {}
-    onRemoved() {}
-    onEvent(events) {}
-    onUpdate(timeDelta) {}
-    onDraw(context) {}
+    _bindOwner(parent) {
+        this.scene = parent.scene;
+        this._owner = parent;
+        this.onAdded();
+    }
+
+    _unbindOwner() {
+        this.onRemoved();
+        this.scene = null;
+        this._owner = null;
+    }
 }

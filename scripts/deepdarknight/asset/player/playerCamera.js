@@ -1,26 +1,12 @@
 import { Component } from '../../../engine/game/component.js';
-import { Vector2 } from '../../../engine/math/geometry/vector.js';
 
 
 
 export class PlayerCamera extends Component {
     onInitialize() {
-        const player = this.gameObject;
-
-        this.player = player;
-
-        const layer = player.owner;
-        const map = layer.owner;
-
-        this.map = map;
-
-        const scene = player.scene;
-
-        this.scene = scene;
-
-        const canvas = scene.game.engine.canvas;
-
-        this.canvas = canvas;
+        this.map = this.gameObject.parent.parent;
+        this.scene = this.gameObject.scene;
+        this.canvas = this.gameObject.scene.game.engine.canvas;
     }
 
     onUpdate(timeDelta) {
@@ -34,7 +20,7 @@ export class PlayerCamera extends Component {
                 camera.area.x = Math.floor(sizeMap.x / 2);
             }
             else {
-                camera.area.x = Math.floor(this.player.area.x);
+                camera.area.x = Math.floor(this.gameObject.area.x);
                 camera.area.x = Math.max(Math.floor(sizeCamera.x / 2), Math.min(camera.area.x, sizeMap.x - Math.floor(sizeCamera.x / 2)));
             }
             
@@ -42,7 +28,7 @@ export class PlayerCamera extends Component {
                 camera.area.y = Math.floor(sizeMap.y / 2);
             }
             else {
-                camera.area.y = Math.floor(this.player.area.y);
+                camera.area.y = Math.floor(this.gameObject.area.y);
                 camera.area.y = Math.max(Math.floor(sizeCamera.y / 2), Math.min(camera.area.y, sizeMap.y - Math.floor(sizeCamera.y / 2)));
             }
         }

@@ -21,33 +21,25 @@ export class PlayerInput extends Component {
     }
 
     onInitialize() {
-        const gameObjectPlayer = this.gameObject;
-        const layer = gameObjectPlayer.owner;
-        const map = layer.owner;
-        const world = map.owner;
-        const scene = world.scene;
-        const game = scene.game;
-
-        this.game = game;
-        this.map = map.findComponent(ObjectPointer);
+        this.engine = this.gameObject.scene.game.engine;
         
-        const uiSystem = scene.findGameObject('uiSystem');
+        const uiSystem = this.gameObject.scene.findGameObject('uiSystem');
 
         this.inventoryWindow = uiSystem.findGameObject('inventoryWindow');
         this.mixWindow = uiSystem.findGameObject('mixWindow');
         this.equipmentWindow = uiSystem.findGameObject('equipmentWindow');
 
-        this.movement = gameObjectPlayer.findComponent(Movement);
-        this.gathering = gameObjectPlayer.findComponent(Gathering);
-        this.stats = gameObjectPlayer.findComponent(Statistics);
+        this.movement = this.gameObject.findComponent(Movement);
+        this.gathering = this.gameObject.findComponent(Gathering);
+        this.stats = this.gameObject.findComponent(Statistics);
 
-        const gameObjectState = gameObjectPlayer.findGameObject('state');
-        
-        this.state = gameObjectState.findComponent(StateContext);
+        this.state = this.gameObject.findGameObject('state').findComponent(StateContext);
+
+        this.objectPointer = this.gameObject.parent.parent.findComponent(ObjectPointer);
     }
 
     onUpdate(timeDelta) {
-        for (const event of this.game.engine.events) {
+        for (const event of this.engine.events) {
             if (event.type === 'keyup') {
                 // console.log(event.key);
 
@@ -74,7 +66,7 @@ export class PlayerInput extends Component {
             }
         }
 
-        const mousePosition = this.game.engine.mouse;
+        const mousePosition = this.engine.mouse;
 
         this.pointed = this.findGameObjectPointingByMouseInMap(mousePosition);
 
@@ -96,20 +88,26 @@ export class PlayerInput extends Component {
             if (boxCollider) {
                 area = boxCollider.area;
             }
-            else {
+
+            if (!area) {
                 const spriteRenderer = this.selected.findComponent(SpriteRenderer);
-                area = spriteRenderer.getSpriteArea();
+
+                if (spriteRenderer) {
+                    area = spriteRenderer.getSpriteArea();
+                }
             }
 
-            const areaPosition = area.getPosition();
-            const areaSize = area.getSize();
-            const areaPositionInWorld = this.selected.localToGlobal(areaPosition);
-            const areaPositionInPlayer = this.gameObject.globalToLocal(areaPositionInWorld);
-            const areaInPlayer = Area.combine(areaPositionInPlayer, areaSize);
-
-            context.lineWidth = 3;
-            context.strokeStyle = 'red';
-            context.strokeRect(...areaInPlayer.toList());
+            if (area) {
+                const areaPosition = area.getPosition();
+                const areaSize = area.getSize();
+                const areaPositionInWorld = this.selected.localToGlobal(areaPosition);
+                const areaPositionInPlayer = this.gameObject.globalToLocal(areaPositionInWorld);
+                const areaInPlayer = Area.combine(areaPositionInPlayer, areaSize);
+    
+                context.lineWidth = 3;
+                context.strokeStyle = 'red';
+                context.strokeRect(...areaInPlayer.toList());
+            }
         }
 
         if (this.pointed) {
@@ -120,20 +118,26 @@ export class PlayerInput extends Component {
             if (boxCollider) {
                 area = boxCollider.area;
             }
-            else {
+
+            if (!area) {
                 const spriteRenderer = this.pointed.findComponent(SpriteRenderer);
-                area = spriteRenderer.getSpriteArea();
+                
+                if (spriteRenderer) {
+                    area = spriteRenderer.getSpriteArea();
+                }
             }
 
-            const areaPosition = area.getPosition();
-            const areaSize = area.getSize();
-            const areaPositionInWorld = this.pointed.localToGlobal(areaPosition);
-            const areaPositionInPlayer = this.gameObject.globalToLocal(areaPositionInWorld);
-            const areaInPlayer = Area.combine(areaPositionInPlayer, areaSize);
+            if (area) {
+                const areaPosition = area.getPosition();
+                const areaSize = area.getSize();
+                const areaPositionInWorld = this.pointed.localToGlobal(areaPosition);
+                const areaPositionInPlayer = this.gameObject.globalToLocal(areaPositionInWorld);
+                const areaInPlayer = Area.combine(areaPositionInPlayer, areaSize);
 
-            context.lineWidth = 2;
-            context.strokeStyle = 'blue';
-            context.strokeRect(...areaInPlayer.toList());
+                context.lineWidth = 2;
+                context.strokeStyle = 'blue';
+                context.strokeRect(...areaInPlayer.toList());
+            }
         }
     }
 
@@ -161,7 +165,7 @@ export class PlayerInput extends Component {
     }
 
     findGameObjectPointingByMouseInMap(mousePosition) {
-        const gameObject = this.map.findGameObjectPointingByMouse(mousePosition, [this.gameObject]);
+        const gameObject = this.objectPointer.findGameObjectPointingByMouse(mousePosition, [this.gameObject]);
 
         return gameObject;
     }

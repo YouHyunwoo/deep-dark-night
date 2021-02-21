@@ -1,18 +1,18 @@
-import { GameObject } from '../../engine/game/object.js';
 import { Area } from '../../engine/math/geometry/area.js';
 
 
 
 export const sceneData = {
-	objects: [
+	gameObjects: [
 		{
 			name: 'world',
-			objects: [
+			gameObjects: [
 				{
 					name: 'map',
-					objects: [
+					gameObjects: [
 						{
 							name: 'tile',
+							enable: false,
 							components: [
 								{
 									module: '/scripts/deepdarknight/asset/map/tile.js',
@@ -22,7 +22,7 @@ export const sceneData = {
 						},
 						{
 							name: 'ground',
-							objects: [
+							gameObjects: [
 								{
 									name: 'player',
 									components: [
@@ -81,7 +81,7 @@ export const sceneData = {
 											type: 'PlayerCamera',
 										},
 									],
-									objects: [
+									gameObjects: [
 										{
 											name: 'state',
 											components: [
@@ -141,12 +141,11 @@ export const sceneData = {
 		},
 		{
 			name: 'timeSystem',
+			enable: false,
 			components: [
 				{
 					module: '/scripts/deepdarknight/asset/system/timeSystem.js',
 					type: 'TimeSystem',
-					time: 3600 * 12,
-					speed: 0,
 				}
 			],
 			tags: ['Screen']
@@ -156,15 +155,16 @@ export const sceneData = {
 			type: 'UISystem',
 			name: 'uiSystem',
 			components: [],
-			objects: [
+			gameObjects: [
 				{
 					module: '/scripts/deepdarknight/asset/ui/inventory.js',
 					type: 'InventoryWindow',
 					name: 'inventoryWindow',
-					objects: [
+					gameObjects: [
 						{
 							module: '/scripts/engine/game/ui/label.js',
 							type: 'UILabel',
+							name: 'label',
 							area: new Area(10, 10, null, 20),
 							fitContentHorizontal: true,
 							font: '20px 굴림체',
@@ -180,10 +180,11 @@ export const sceneData = {
 					module: '/scripts/deepdarknight/asset/ui/mix.js',
 					type: 'MixWindow',
 					name: 'mixWindow',
-					objects: [
+					gameObjects: [
 						{
 							module: '/scripts/engine/game/ui/label.js',
 							type: 'UILabel',
+							name: 'label',
 							area: new Area(10, 10, null, 20),
 							fitContentHorizontal: true,
 							font: '20px 굴림체',
@@ -199,10 +200,11 @@ export const sceneData = {
 					module: '/scripts/deepdarknight/asset/ui/equipment.js',
 					type: 'EquipmentWindow',
 					name: 'equipmentWindow',
-					objects: [
+					gameObjects: [
 						{
 							module: '/scripts/engine/game/ui/label.js',
 							type: 'UILabel',
+							name: 'label',
 							area: new Area(10, 10, null, 20),
 							fitContentHorizontal: true,
 							font: '20px 굴림체',
@@ -219,5 +221,3 @@ export const sceneData = {
 		}
 	]
 };
-
-// gameObject -> component: this.getComponent(Type)

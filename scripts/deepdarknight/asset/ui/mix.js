@@ -70,39 +70,12 @@ export class MixWindow extends UIContainer {
 
                         const itemSprite = items[itemName].sprite.copy();
                         itemSprite.anchor = new Vector2(0, 0);
-                        
-                        slotProduct.setItemSprite(itemSprite);
-                        slotProduct.setItemName(itemName);
-                        slotProduct.setItemCount(1);
 
-                        slotProduct.onClick = () => {
-                            if (slotProduct.isDisabled) {
-                                console.log(`[ Log ] 재료가 부족합니다.`);
-                            }
-                            else {
-                                const product = {
-                                    name: itemName,
-                                    count: 1,
-                                };
+                        slotProduct.itemSprite = itemSprite;
+                        slotProduct.itemName = itemName;
+                        slotProduct.itemCount = 1;
 
-                                const hasAllMaterial = item.mix.every(material => this.inventory.hasItem(...material));
-
-                                if (hasAllMaterial) {
-                                    for (const material of item.mix) {
-                                        const itemMaterial = {
-                                            name: material[0],
-                                            count: material[1],
-                                        };
-
-                                        this.inventory.removeItems(itemMaterial);
-                                    }
-
-                                    this.inventory.addItems(product);
-
-                                    console.log(`[ Log ] ${itemName}을 ${1}개 조합했습니다.`);
-                                }
-                            }
-                        };
+                        slotProduct._events.addListener('click', this.onClickProduct.bind(this));
                     }
 
 
@@ -135,9 +108,9 @@ export class MixWindow extends UIContainer {
                                 const itemSprite = items[materialItemName].sprite.copy();
                                 itemSprite.anchor = new Vector2(0, 0);
             
-                                slotMaterial.setItemSprite(itemSprite);
-                                slotMaterial.setItemName(materialItemName);
-                                slotMaterial.setItemCount(materialItemCount);
+                                slotMaterial.itemSprite = itemSprite;
+                                slotMaterial.itemName = materialItemName;
+                                slotMaterial.itemCount = materialItemCount;
             
                                 slotMaterial.isDisabled = isDisabled;
 
@@ -200,5 +173,39 @@ export class MixWindow extends UIContainer {
 
     toggle() {
         this.visible = !this.visible;
+    }
+
+    onClickProduct(event) {
+        const slotProduct = event.target;
+
+        if (slotProduct.isDisabled) {
+            console.log(`[ Log ] 재료가 부족합니다.`);
+        }
+        else {
+            const itemName = slotProduct.itemName;
+            const item = items[itemName];
+
+            const product = {
+                name: itemName,
+                count: 1,
+            };
+
+            const hasAllMaterial = item.mix.every(material => this.inventory.hasItem(...material));
+
+            if (hasAllMaterial) {
+                for (const material of item.mix) {
+                    const itemMaterial = {
+                        name: material[0],
+                        count: material[1],
+                    };
+
+                    this.inventory.removeItems(itemMaterial);
+                }
+
+                this.inventory.addItems(product);
+
+                console.log(`[ Log ] ${itemName}을 ${1}개 조합했습니다.`);
+            }
+        }
     }
 }
