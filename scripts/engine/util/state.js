@@ -28,8 +28,8 @@ export class StateContext {
 }
 
 export class State {
-    constructor(owner, id) {
-        this.owner = owner;
+    constructor(context, id) {
+        this.context = context;
         this.id = id;
     }
 
