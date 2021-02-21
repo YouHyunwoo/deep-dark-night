@@ -19,13 +19,18 @@ export class Event {
         const listeners = this._events[event];
 
         if (listeners) {
-            const index = listeners.map(listener => listener[0]).indexOf(listener);
+            if (listener) {
+                const index = listeners.map(listener => listener[0]).indexOf(listener);
 
-            if (index >= 0) {
-                listeners.splice(index, 1);
+                if (index >= 0) {
+                    listeners.splice(index, 1);
+                }
+
+                if (listeners.length === 0) {
+                    delete this._events[event];
+                }
             }
-
-            if (listeners.length === 0) {
+            else {
                 delete this._events[event];
             }
         }
