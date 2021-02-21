@@ -75,7 +75,7 @@ export class MixWindow extends UIContainer {
                         slotProduct.itemName = itemName;
                         slotProduct.itemCount = 1;
 
-                        slotProduct._events.addListener('click', this.onClickProduct.bind(this));
+                        slotProduct.events.addListener('click', this.onClickProduct.bind(this));
                     }
 
 

@@ -31,6 +31,7 @@ export class EquipmentController extends Component {
     }
 
 	onEquip(item, part, equipment) {
+		console.log('equip', item, part);
 		this.inventory.removeItems({ name: item.name, count: 1 });
 		this.statistics.apply(item.capability);
 	}
@@ -47,11 +48,8 @@ export class EquipmentController extends Component {
             const item = items[slot.itemName];
 
             if (item.type === '장비') {
-                this.equipment.equip(item);
-
-                slot.reset();
 				
-                slot.pointable = false;
+                this.equipment.equip(item);
             }
         }
 	}

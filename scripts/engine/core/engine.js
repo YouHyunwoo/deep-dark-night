@@ -36,7 +36,8 @@ export class Engine {
             this.events.push({
                 type: 'mousedown',
                 position: new Vector2(e.offsetX, e.offsetY),
-                bubble: true
+                bubble: true,
+                capturing: [],
             });
         });
 
@@ -44,7 +45,8 @@ export class Engine {
             this.events.push({
                 type: 'mousemove',
                 position: new Vector2(e.offsetX, e.offsetY),
-                bubble: true
+                bubble: true,
+                capturing: [],
             });
 
             this.mouse.x = e.offsetX;
@@ -55,7 +57,8 @@ export class Engine {
             this.events.push({
                 type: 'mouseup',
                 position: new Vector2(e.offsetX, e.offsetY),
-                bubble: true
+                bubble: true,
+                capturing: [],
             })
         });
 
@@ -63,7 +66,8 @@ export class Engine {
             this.events.push({
                 type: 'keydown',
                 key: e.key,
-                bubble: true
+                bubble: true,
+                capturing: [],
             })
         });
 
@@ -71,7 +75,8 @@ export class Engine {
             this.events.push({
                 type: 'keyup',
                 key: e.key,
-                bubble: true
+                bubble: true,
+                capturing: [],
             })
         });
 

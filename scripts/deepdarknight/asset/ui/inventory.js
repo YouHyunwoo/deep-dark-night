@@ -79,10 +79,10 @@ export class InventoryWindow extends UIContainer {
         
         for (let i = 0; i < this.slots.length; i++) {
             const itemName = itemNames[i];
-            const slot = this.findGameObject(`${i}`);
+            const slot = this.slots[i];
 
             if (itemName) {
-                const itemCount = this.inventory.items[itemName];
+                const itemCount = inventory.items[itemName];
                 const itemSprite = items[itemName].sprite.copy();
                 itemSprite.anchor = new Vector2(0, 0);
 

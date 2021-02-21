@@ -88,9 +88,9 @@ export class UIItemSlot extends UIObject {
             this.addGameObjects(label);
         }
 
-        this._events.addListener('mousein', this.onMouseIn.bind(this));
-        this._events.addListener('mouseout', this.onMouseOut.bind(this));
-        this._events.addListener('click', this.onClick.bind(this));
+        this.events.addListener('mousein', this.onMouseIn.bind(this));
+        this.events.addListener('mouseout', this.onMouseOut.bind(this));
+        this.events.addListener('click', this.onClick.bind(this));
     }
 
     reset() {

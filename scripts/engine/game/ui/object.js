@@ -58,7 +58,7 @@ export class UIObject extends GameObject {
                         if (Area.zeroPosition(this.area).containsVector(positionMouse)) {
                             this._mouseDown = true;
 
-                            event.captured = true;
+                            event.capturing.push(this);
                         }
                     }
                     else if (event.type === 'mousemove') {
@@ -66,7 +66,7 @@ export class UIObject extends GameObject {
     
                         if (Area.zeroPosition(this.area).containsVector(positionMouse)) {
                             captured.mousemove = true;
-                            event.captured = true;
+                            event.capturing.push(this);
                         }
                     }
                     else if (event.type === 'mouseup') {
@@ -74,18 +74,14 @@ export class UIObject extends GameObject {
     
                         if (Area.zeroPosition(this.area).containsVector(positionMouse)) {
                             captured.mouseup = true;
-                            event.captured = true;
+                            event.capturing.push(this);
                         }
                     }
                 }
             }
             
             const capturedEvents = events.filter(event => {
-                const result = event.captured || event.type === 'mousemove' || event.type === 'mouseup';
-
-                event.captured = false;
-
-                return result;
+                return event.capturing[event.capturing.length-1] === this || event.type === 'mousemove' || event.type === 'mouseup';
             });
             
             this.gameObjects.forEach(gameObject => {
@@ -139,6 +135,12 @@ export class UIObject extends GameObject {
                     }
                 }
             }
+
+            const engine = this.scene.game.engine;
+
+            engine.events = engine.events.filter(event => {
+                return event.capturing.length === 0 || !event.capturing.includes(this);
+            });
         }
     }
 }
