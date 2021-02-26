@@ -36,3 +36,13 @@ export const woodenShoes = new SpriteSheet('scripts/deepdarknight/resources/imag
 
 export const spriteWoodenShoes = new Sprite(woodenShoes);
 spriteWoodenShoes.scale = new Vector2(0.03, 0.03);
+
+export const woodenKnife = new SpriteSheet('scripts/deepdarknight/resources/images/woodenKnife.png');
+
+export const spriteWoodenKnife = new Sprite(woodenKnife);
+// spriteWoodenKnife.scale = new Vector2(0.03, 0.03);
+
+export const woodenAxe = new SpriteSheet('scripts/deepdarknight/resources/images/woodenAxe.png');
+
+export const spriteWoodenAxe = new Sprite(woodenAxe);
+// spriteWoodenAxe.scale = new Vector2(0.03, 0.03);

@@ -1,4 +1,4 @@
-import { spriteStone, spriteTree1, spriteWoodenShoes } from './sprites.js';
+import { spriteStone, spriteTree1, spriteWoodenAxe, spriteWoodenKnife, spriteWoodenShoes } from './sprites.js';
 import { Tree } from './objects.js';
 
 
@@ -35,7 +35,7 @@ export const items = {
     '돌도끼': {
         name: '돌도끼',
         description: '돌과 나무로 만든 도끼',
-        sprite: spriteStone,
+        sprite: spriteWoodenAxe,
         type: '장비',
         part: '손',
         mix: [['돌', 20], ['나무', 10]],
@@ -44,7 +44,7 @@ export const items = {
     '돌칼': {
         name: '돌칼',
         description: '돌과 나무로 만든 칼',
-        sprite: spriteStone,
+        sprite: spriteWoodenKnife,
         type: '장비',
         part: '손',
         mix: [['돌', 10], ['나무', 5]],
